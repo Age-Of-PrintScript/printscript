@@ -1,2 +1,2 @@
-# interpreter
+# PrintScript
 This is the main repo for the interpreter of PrintScript
