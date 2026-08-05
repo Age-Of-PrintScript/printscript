@@ -1,11 +1,11 @@
-sealed interface TokenType {
-    object LET: TokenType
-    object COLON: TokenType
-    object SEMICOLON: TokenType
-    object ASSIGN: TokenType
-    object NUMBER_TYPE: TokenType
-    object STRING_TYPE: TokenType
-}
+sealed interface TokenType {}
+
+object LET: TokenType
+object COLON: TokenType
+object SEMICOLON: TokenType
+object ASSIGN: TokenType
+object NUMBER_TYPE: TokenType
+object STRING_TYPE: TokenType
 
 enum class Operator: TokenType {
     SUM, SUBSTRACT, MULTIPLY, DIVIDE
