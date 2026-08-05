@@ -6,5 +6,5 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    implementation(project(":domain"))
+    implementation(project(":ast"))
 }

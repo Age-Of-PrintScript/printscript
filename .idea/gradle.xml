@@ -8,10 +8,12 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/ast" />
             <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/interpreter" />
             <option value="$PROJECT_DIR$/lexer" />
             <option value="$PROJECT_DIR$/parser" />
+            <option value="$PROJECT_DIR$/tokens" />
           </set>
         </option>
       </GradleProjectSettings>
