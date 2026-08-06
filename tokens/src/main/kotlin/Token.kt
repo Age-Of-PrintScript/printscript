@@ -11,19 +11,19 @@ object LET: TokenType
 object COLON: TokenType
 object SEMICOLON: TokenType
 object ASSIGN: TokenType
-object NUMBER_TYPE: TokenType
-object STRING_TYPE: TokenType
 
-enum class Operator: TokenType {
-    SUM, SUBSTRACT, MULTIPLY, DIVIDE
-}
+data class Operator(val operator: PrintScriptOperator): TokenType
 
 //Nombre de variable
 data class Identifier(val name: String): TokenType
 
-//valor de un numero
-data class NumberLiteral(val number: Number): TokenType
+//valor de literal
+data class Literal(val value: PrintScriptValue): TokenType
 
-//valor de un string
-data class StringLiteral(val string: String): TokenType
+//tipo de dato
+data class DataType(val type: PrintScriptType): TokenType
+
+//llamado a una funcion
+data class Call(val type: PrintScriptFunctions): TokenType
+
 
