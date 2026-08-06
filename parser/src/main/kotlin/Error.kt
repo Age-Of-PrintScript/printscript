@@ -1,5 +1,6 @@
 
 enum class ParsingError(val mensaje: String): Error {
-    PARSE_ERROR("no se pudo parsear");
+    NO_ASSIGNMENT_ERROR("Expression expected"),
+    ILLEGAL_OPERATION("Illegal arithmetic operation");
     //TODO -> AGREGAR LOS TIPOS CORRESPONDIENTES DE ERRORES
 }
