@@ -18,9 +18,12 @@ enum class Operator: TokenType {
     SUM, SUBSTRACT, MULTIPLY, DIVIDE
 }
 
+//Nombre de variable
 data class Identifier(val name: String): TokenType
 
+//valor de un numero
 data class NumberLiteral(val number: Number): TokenType
 
+//valor de un string
 data class StringLiteral(val string: String): TokenType
 
