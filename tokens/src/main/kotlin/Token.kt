@@ -23,4 +23,7 @@ data class Literal(val value: PrintScriptValue): TokenType
 //tipo de dato
 data class DataType(val type: PrintScriptType): TokenType
 
+//llamado a una funcion
+data class Call(val type: PrintScriptFunctions): TokenType
+
 

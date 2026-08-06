@@ -22,3 +22,7 @@ sealed interface PrintScriptValue{
 enum class PrintScriptOperator {
     SUM, SUBTRACT, MULTIPLY, DIVIDE
 }
+
+enum class PrintScriptFunctions{
+    PRINTLN
+}
