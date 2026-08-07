@@ -1,6 +1,6 @@
 /**
  * # PRINTSCRIPT DATATYPES
- * This are the supported datatypes in printscript
+ * These are the supported datatypes in printscript
  * last updated: 6/8/26
  */
 
@@ -15,13 +15,20 @@ sealed interface PrintScriptValue{
 
 /**
  * # PRINTSCRIPT OPERATIONS
- * * This are the supported operations in printscript
+ * * These are the supported operations in printscript
  * last updated: 6/8/26
  */
 
 enum class PrintScriptOperator {
     SUM, SUBTRACT, MULTIPLY, DIVIDE
 }
+
+
+/**
+ * # PRINTSCRIPT OPERATIONS
+ * * This is the only built-in function in printscript
+ * last updated: 6/8/26
+ */
 
 enum class PrintScriptFunctions{
     PRINTLN

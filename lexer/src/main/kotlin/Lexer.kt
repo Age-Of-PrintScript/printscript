@@ -1,9 +1,10 @@
 interface Lexer {
-    fun tokenize(source: String): List<Token>
+    fun tokenize(source: String): Either<LexerError, TokenList>
 }
 
 class LexerImpl : Lexer {
-    override fun tokenize(source: String): List<Token> {
+    override fun tokenize(source: String): Either<LexerError, TokenList> {
         TODO("Not yet implemented")
     }
 }
+
