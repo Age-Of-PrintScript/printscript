@@ -1,6 +1,6 @@
 
-enum class ParsingError(val mensaje: String): Error {
-    NO_ASSIGNMENT_ERROR("Expression expected"),
-    ILLEGAL_OPERATION("Illegal arithmetic operation");
-    //TODO -> AGREGAR LOS TIPOS CORRESPONDIENTES DE ERRORES
-}
+internal interface ParsingError: Error
+data class NO_ASSIGNMENT_ERROR(val reason: String = "Expression expected"): ParsingError
+data class ILLEGAL_OPERATION(val reason: String = "Illegal arithmetic operation"): ParsingError
+data class SINTAX_ERROR(val mensaje: String = "Sintax Error"): ParsingError
+
