@@ -65,7 +65,9 @@ private tailrec fun parseTermRec(
 
 /** Devuelve el operador que está en esa posición de la lista de tokens,
  * PERO solo si ese operador es uno de los que le pasaste como argumento (SUM, SUBTRACT, etc).
- * Si el token en esa posición no es un operador, o es un operador que no está en la lista que le pasaste, o la posición está fuera de rango — devuelve null en cualquiera de esos casos. (muy feo) */
+ * Si el token en esa posición no es un operador, o es un operador que no está en la lista que le pasaste, o la posición está fuera de rango — devuelve null en cualquiera de esos casos. (muy feo)
+ **/
+
 
 private fun currentOperator(tokens: List<Token>, position: Int, vararg operators: PrintScriptOperator): PrintScriptOperator? {
     val type = tokens.getOrNull(position)?.type

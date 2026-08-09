@@ -8,4 +8,5 @@ repositories {
 dependencies {
     implementation(project(":tokens"))
     implementation(project(":ast"))
+    testImplementation(kotlin("test"))
 }
