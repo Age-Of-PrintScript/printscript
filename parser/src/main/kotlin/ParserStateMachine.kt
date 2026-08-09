@@ -5,18 +5,17 @@ internal interface State{
     fun consume(token: Token): Either<SINTAX_ERROR,State>
 }
 
-//THIS IS THE INITIAL STATE OF THE MACHINE
-internal object Q0 : State{
+internal object Start : State{
     override fun consume(token: Token): Either<SINTAX_ERROR,State> {
         return when(token.type){
             is Call -> TODO()
             is Identifier -> TODO()
-            LET -> Success(Q1)
+            LET -> Success(LetSeen)
             else -> Failure(SINTAX_ERROR())
         }
     }
 }
-internal object Q1 : State{
+internal object LetSeen : State{
     override fun consume(token: Token): Either<SINTAX_ERROR,State> {
         when(token.type){
             is Identifier -> TODO()
@@ -24,29 +23,57 @@ internal object Q1 : State{
         }
     }
 }
-internal object Q2 : State{
-    override fun consume(token: Token): Either<SINTAX_ERROR,State> {
-        when(token.type){
-            is COLON -> TODO()
-            else -> return Failure(SINTAX_ERROR("Missing colon"))
+internal data class DeclarationIdSeen(val id: Identifier) : State {
+    override fun consume(token: Token): Either<SINTAX_ERROR, State> {
+        return when (token.type) {
+            COLON -> TODO()
+            else -> Failure(SINTAX_ERROR("Missing colon"))
         }
     }
 }
-internal object Q3 : State{
-    override fun consume(token: Token): Either<SINTAX_ERROR,State> {
-        when(token.type){
+internal data class DeclarationColonSeen(val id: Identifier) : State {
+    override fun consume(token: Token): Either<SINTAX_ERROR, State> {
+        return when (token.type) {
             is DataType -> TODO()
-            else -> return Failure(SINTAX_ERROR("Missing type declaration"))
+            else -> Failure(SINTAX_ERROR("Missing type declaration"))
         }
     }
 }
 
-internal object Q4 : State{
-    override fun consume(token: Token): Either<SINTAX_ERROR,State> {
-        when(token.type){
-            is ASSIGN -> TODO()
-            is SEMICOLON -> TODO()
-            else -> return Failure(SINTAX_ERROR("Unresolved reference"))
+
+internal data class DeclarationTypeSeen(val id: Identifier, val type: DataType) : State {
+    override fun consume(token: Token): Either<SINTAX_ERROR, State> {
+        return when (token.type) {
+            ASSIGN -> TODO()
+            SEMICOLON -> TODO()
+            else -> Failure(SINTAX_ERROR("Unresolved reference"))
         }
+    }
+}
+internal data class AssignmentIdSeen(val id: Identifier) : State {
+    override fun consume(token: Token): Either<SINTAX_ERROR, State> {
+        return when (token.type) {
+            ASSIGN -> TODO()
+            else -> Failure(SINTAX_ERROR("Expected assignment"))
+        }
+    }
+}
+internal data class ExpressionPending(val id: Identifier, val type: DataType?) : State {
+    override fun consume(token: Token): Either<SINTAX_ERROR, State> {
+        TODO()
+    }
+}
+
+internal data class CallSeen(val function: PrintScriptFunctions) : State {
+    override fun consume(token: Token): Either<SINTAX_ERROR, State> {
+        return when (token.type) {
+            SEMICOLON -> TODO()
+            else -> Failure(SINTAX_ERROR("Expected semicolon after call"))
+        }
+    }
+}
+internal object StatementComplete : State {
+    override fun consume(token: Token): Either<SINTAX_ERROR, State> {
+        return Failure(SINTAX_ERROR("Unexpected token after end of statement"))
     }
 }
