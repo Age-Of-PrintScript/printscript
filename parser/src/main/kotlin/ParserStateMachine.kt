@@ -60,6 +60,13 @@ internal data class AssignmentIdSeen(val id: Identifier) : State {
 }
 internal data class ExpressionPending(val id: Identifier, val type: DataType?) : State {
     override fun consume(token: Token): Either<SINTAX_ERROR, State> {
+        when(token.type){
+            is Literal -> TODO()
+            is Identifier -> TODO()
+            is Operator -> TODO()
+            is SEMICOLON -> TODO()
+            else -> return Failure(SINTAX_ERROR("Unresolved reference"))
+        }
         TODO()
     }
 }
