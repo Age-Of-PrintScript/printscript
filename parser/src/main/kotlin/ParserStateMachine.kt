@@ -1,7 +1,3 @@
-internal sealed interface StateResult
-internal data class NextState(val state: State): StateResult
-internal object Done: StateResult
-
 internal class ParserStateMachine {
 }
 
