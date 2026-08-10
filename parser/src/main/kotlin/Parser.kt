@@ -9,7 +9,7 @@ class ParserImpl : Parser {
     }
 }
 
-private data class ParseResult<out T>(val value: T, val nextPosition: Int)
+private data class ParseResult<T>(val value: T, val nextPosition: Int)
 
 
 private fun parseExpression(tokens: List<Token>, position: Int): ParseResult<Expression> {
