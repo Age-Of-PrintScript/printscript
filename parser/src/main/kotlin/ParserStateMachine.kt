@@ -21,9 +21,9 @@ internal class ParserStateMachine {
                     }
                 }
             }
-            if (state != Start) {
-                return Failure(SINTAX_ERROR("Unexpected end of input, incomplete statement"))
-            }
+        }
+        if (state != Start) {
+            return Failure(SINTAX_ERROR("Unexpected end of input, incomplete statement"))
         }
         return Success(Program(trees, tokens.first().start, tokens.last().end))
     }

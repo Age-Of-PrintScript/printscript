@@ -47,7 +47,7 @@ internal data class DeclarationColonSeen(val id: Identifier) : State {
         return when (val t = token.type) {
             is DataType -> {
                 val b = builder as ASTBuilder.DeclarationBuilder
-                val type = DataType(PrintScriptType.STRING)
+                val type = DataType(t.type)
                 Success(DeclarationTypeSeen(id, type) to b.copy(type = type))
             }
             else -> Failure(SINTAX_ERROR("Missing type declaration"))
