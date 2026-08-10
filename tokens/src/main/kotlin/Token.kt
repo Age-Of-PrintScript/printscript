@@ -27,3 +27,6 @@ data class DataType(val type: PrintScriptType): TokenType
 data class Call(val type: PrintScriptFunctions): TokenType
 
 
+typealias TokenList = List<Token>
+
+

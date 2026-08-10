@@ -1,12 +1,11 @@
 interface Parser {
-    fun parse(tokens: List<Token>): Program
+    fun parse(tokens: List<Token>): Either<ParsingError,Program>
 }
 class ParserImpl : Parser {
-    override fun parse(tokens: List<Token>): Program {
+    override fun parse(tokens: List<Token>): Either<ParsingError,Program> {
         val result: Expression = parseExpression(tokens, 0).value
-
         //todo -> enchufar la expression al AST (lo de abajo es un dummy)
-        return Program(listOf(),Position(0,0),Position(0,0))
+        TODO("Not yet implemented")
     }
 }
 
