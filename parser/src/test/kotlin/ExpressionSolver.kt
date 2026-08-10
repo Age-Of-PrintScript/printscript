@@ -1,16 +1,21 @@
 
 internal class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sirve para expresiones sin variables
 
-    internal fun solve(expression: Expression): Int = when (expression) {
-            is Num ->  expression.number
-            is Variable -> throw IllegalArgumentException("Unexpected expression")
-            is Operation -> solveOperation(expression)
+    internal fun solve(expression: Expression): Number = when (expression) {
+            is Expression.Literal ->  {
+                when (val scriptValue = expression.value){
+                    is PrintScriptValue.NumberLiteral -> scriptValue.value
+                    is PrintScriptValue.StringLiteral -> TODO()
+                }
+            }
+            is Expression.Variable -> throw IllegalArgumentException("Unexpected expression")
+            is Expression.Operation -> solveOperation(expression)
             }
 
 
-    private fun solveOperation(operation: Operation): Int {
-        val left = solve(operation.left)
-        val right = solve(operation.right)
+    private fun solveOperation(operation: Expression.Operation): Number {
+        val left = solve(operation.left).toDouble()
+        val right = solve(operation.right).toDouble()
 
         return when (operation.operator) {
             PrintScriptOperator.SUM -> left + right

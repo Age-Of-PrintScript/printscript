@@ -22,6 +22,8 @@ sealed interface PrintScriptValue{
 enum class PrintScriptOperator {
     SUM, SUBTRACT, MULTIPLY, DIVIDE
 }
+val termSeparators = listOf(PrintScriptOperator.SUM, PrintScriptOperator.SUBTRACT)
+val factorSeparators = listOf(PrintScriptOperator.MULTIPLY, PrintScriptOperator.DIVIDE)
 
 
 /**

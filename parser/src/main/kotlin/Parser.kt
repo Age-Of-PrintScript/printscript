@@ -27,8 +27,8 @@ private fun parseFactor(tokens: List<Token>, position: Int): ParseResult<Express
         ?: throw IllegalStateException("Se esperaba un token en posicion $position, pero la lista termino")
 
     val expression = when (val type = token.type) {
-        is Literal -> Num(literalToInt(type.value))
-        is Identifier -> Variable(type.name)
+        is Literal -> Expression.Literal(type.value)
+        is Identifier -> Expression.Variable(type.name)
         else -> throw IllegalStateException("Se esperaba numero o variable, se encontro $type en posicion $position")
     }
     return ParseResult(expression, position + 1)
@@ -45,7 +45,7 @@ private tailrec fun parseExpressionRec(
         ?: return ParseResult(left, position) //si es nulo, entonces no hay una expression. Me quedo con lo de la izquierda.
 
     val right = parseTerm(tokens, position + 1)
-    return parseExpressionRec(tokens, right.nextPosition, Operation(left, right.value, operator))
+    return parseExpressionRec(tokens, right.nextPosition, Expression.Operation(left, right.value, operator))
 }
 
 private tailrec fun parseTermRec(
@@ -57,7 +57,7 @@ private tailrec fun parseTermRec(
         ?: return ParseResult(left, position)
 
     val right = parseFactor(tokens, position + 1)
-    return parseTermRec(tokens, right.nextPosition, Operation(left, right.value, operator))
+    return parseTermRec(tokens, right.nextPosition, Expression.Operation(left, right.value, operator))
 }
 
 
@@ -73,25 +73,11 @@ private fun currentOperator(tokens: List<Token>, position: Int, vararg operators
     return if (type is Operator && type.operator in operators) type.operator else null
 }
 
-private fun literalToInt(value: PrintScriptValue): Int = when (value) {
-    is PrintScriptValue.NumberLiteral -> value.value.toInt()
-    else -> throw IllegalStateException("Se esperaba un literal numerico, se encontro $value")
-}
 
 
 
 
-//no se si debería ir en el dominio
-internal sealed interface Expression{
-}
-internal class Num(val number: Int): Expression {
-}
-internal class Variable(val value: String): Expression {
-}
-internal class Operation(val left: Expression,
-                         val right: Expression,
-                         val operator: PrintScriptOperator
-): Expression
+
 
 
 
