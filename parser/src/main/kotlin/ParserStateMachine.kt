@@ -1,3 +1,5 @@
+import kotlin.math.exp
+
 internal class ParserStateMachine {
     fun parse(tokens: TokenList, expressionParser: ExpressionParser): Either<ParsingError, Program>{
         var state: State = Start
@@ -5,7 +7,7 @@ internal class ParserStateMachine {
         val trees = mutableListOf<AST>()
 
         for(token in tokens){
-            val result = state.consume(token, builder)
+            val result = state.consume(token, builder, expressionParser)
             when(result){
                 is Failure -> return Failure(result.value)
                 is Success -> {

@@ -1,6 +1,5 @@
 internal sealed interface ASTBuilder {
     fun build(): Either<SINTAX_ERROR, AST>
-
     object EmptyBuilder : ASTBuilder{
         override fun build(): Either<SINTAX_ERROR, AST>{
             return Failure(SINTAX_ERROR("Unexpected token"))
