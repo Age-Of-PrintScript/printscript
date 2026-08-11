@@ -39,8 +39,8 @@ internal class TokenBuilder {
                     }
                 }
             }
-            chr == '\'' -> type = Literal(StringLiteral(""))
-            chr == '"' -> type = Literal(StringLiteral(""))
+            chr == '\'' -> type = type ?: Literal(StringLiteral(""))
+            chr == '"' -> type = type ?: Literal(StringLiteral(""))
             chr == ':' -> type = COLON
             chr == ';' -> type = SEMICOLON
             chr == '=' -> type = ASSIGN
