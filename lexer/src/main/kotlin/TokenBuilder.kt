@@ -3,15 +3,27 @@ import PrintScriptValue.*
 internal class TokenBuilder {
     private var type: TokenType? = null
 
-    fun addChar(chr: Char) {
+    fun addChar(chr: Char): Either<LexerError, Unit> {
         when {
             chr.isDigit() -> {
                 if (type == null) type = Literal(NumberLiteral(chr.code))
-                else type = updateTypeWithNumber(type, chr)
+                else {
+                    val newType = updateTypeWithNumber(type, chr)
+                    when (newType) {
+                        is Success -> type = newType.value
+                        is Failure -> return Failure(newType.value)
+                    }
+                }
             }
             chr.isLetter() -> {
                 if (type == null) type = Identifier(chr.toString())
-                else type = updateTypeWithString(type, chr)
+                else {
+                    val newType = updateTypeWithString(type, chr)
+                    when (newType) {
+                        is Success -> type = newType.value
+                        is Failure -> return Failure(newType.value)
+                    }
+                }
             }
             chr == '\'' -> type = Literal(StringLiteral(""))
             chr == '"' -> type = Literal(StringLiteral(""))
@@ -24,38 +36,59 @@ internal class TokenBuilder {
             chr == '/' -> type = Operator(PrintScriptOperator.DIVIDE)
             chr == '(' -> type = Operator(PrintScriptOperator.OPEN_PARENTHESIS)
             chr == ')' -> type = Operator(PrintScriptOperator.CLOSE_PARENTHESIS)
-            else -> TODO()
+            else -> return Failure(LexerError.INVALID_CHARACTER)
         }
+        return Success(Unit)
     }
 
-    private fun updateTypeWithNumber(type: TokenType?, chr: Char): TokenType {
+    private fun updateTypeWithNumber(type: TokenType?, chr: Char): Either<LexerError, TokenType> {
         return when (type) {
-            is Identifier -> Identifier(type.name + chr)
+            is Identifier -> Success(Identifier(type.name + chr))
             is Literal -> {
                 when (val newType = type.value) {
-                    is NumberLiteral -> Literal(newType.concatNumber(chr))
-                    is StringLiteral -> Literal(newType.concatString(chr))
+                    is NumberLiteral -> Success(Literal(newType.concatNumber(chr)))
+                    is StringLiteral -> Success(Literal(newType.concatString(chr)))
                 }
             }
-            else -> TODO()
+            else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
         }
     }
 
-    private fun updateTypeWithString(type: TokenType?, chr: Char): TokenType {
+    private fun updateTypeWithString(type: TokenType?, chr: Char): Either<LexerError, TokenType> {
         return when (type) {
-            is Identifier -> Identifier(type.name + chr)
+            is Identifier -> Success(Identifier(type.name + chr))
             is Literal -> {
                 when (val newType = type.value) {
-                    is NumberLiteral -> TODO()
-                    is StringLiteral -> Literal(newType.concatString(chr))
+                    is NumberLiteral -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
+                    is StringLiteral -> Success(Literal(newType.concatString(chr)))
                 }
             }
-            else -> TODO()
+            else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
         }
     }
 
-    fun build(): Token {
-        TODO()
+    fun build(): Either<LexerError, Token> {
+        if (type == null) return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
+        if (isStringLiteralAndDoesNotEnd(type)) return Failure(LexerError.UNTERMINATED_STRING)
+        return Success(Token (
+            type!!,
+            Position(0,0),
+            Position(0,0)
+        ))
     }
-    fun reset() {}
+
+    private fun isStringLiteralAndDoesNotEnd(type: TokenType?): Boolean {
+        val value = (type as? Literal)?.value
+        if (value is StringLiteral) {
+            val str = value.value
+            if (str[str.length - 1] != '"' || str[str.length - 1] != '\'') {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun reset() {
+        type = null
+    }
 }

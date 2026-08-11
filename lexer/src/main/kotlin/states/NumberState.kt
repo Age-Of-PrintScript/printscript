@@ -14,7 +14,7 @@ import Next
 internal class IntegerState : State {
     override fun consume(chr: Char): Either<LexerError, StateResult> {
         return when {
-            chr.isDigit() -> Success(Next(this, ))
+            chr.isDigit() -> Success(Next(this))
             chr == '.' -> Success(Next(DecimalPointState()))
             else -> Success(Done)
         }

@@ -16,14 +16,25 @@ internal class Automata {
         return Success(tokenList.toList())
     }
 
-    private fun handleSuccess(chr: Char, result: StateResult, tokenList: MutableList<Token>) {
+    private fun handleSuccess(
+        chr: Char,
+        result: StateResult,
+        tokenList: MutableList<Token>
+    ): Either<LexerError, Unit> {
         builder.addChar(chr)
         when (result) {
             is Next -> state = result.state
             is Done -> {
-                tokenList.add(builder.build())
-                builder.reset()
+                val newToken = builder.build()
+                when (newToken) {
+                    is Failure -> return Failure(newToken.value)
+                    is Success -> {
+                        tokenList.add(newToken.value)
+                        builder.reset()
+                    }
+                }
             }
         }
+        return Success(Unit)
     }
 }
