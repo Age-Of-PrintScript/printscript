@@ -1,3 +1,6 @@
+package parser
+
+import Error
 
 interface ParsingError: Error
 data class NO_ASSIGNMENT_ERROR(val reason: String = "Expression expected"): ParsingError

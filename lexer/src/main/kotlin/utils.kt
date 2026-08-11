@@ -1,3 +1,8 @@
+import tokens.Call
+import tokens.DataType
+import tokens.LET
+import tokens.TokenType
+
 object Lexicon {
     val KEYWORDS: Map<String, TokenType> = mapOf(
         "let" to LET,

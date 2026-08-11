@@ -1,3 +1,14 @@
+package parser
+
+import tokens.ASSIGN
+import ast.ASTDataType
+import ast.ASTIdentifier
+import tokens.COLON
+import Failure
+import tokens.LET
+import tokens.SEMICOLON
+import Success
+
 internal typealias ConsumeResult = Pair<State, ASTBuilder>
 
 
@@ -114,7 +125,7 @@ internal data class CallSeen(val function: PrintScriptFunctions) : State {
 // ---------- Estado de aceptación ----------
 
 internal object StatementComplete : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError,ConsumeResult> {
+    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
         return Failure(SYNTAX_ERROR("Unexpected token after end of statement"))
     }
 }

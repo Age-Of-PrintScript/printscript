@@ -1,5 +1,12 @@
+package parser
+
+import Failure
+import Position
+import ast.Program
+import Success
+
 internal class ParserStateMachine {
-    fun parse(tokens: TokenList, expressionParser: ExpressionParser): Either<ParsingError, Program>{
+    fun parse(tokens: TokenList, expressionParser: ExpressionParser): Either<ParsingError, Program> {
         var state: State = Start
         var builder: ASTBuilder = ASTBuilder.EmptyBuilder
         val trees = mutableListOf<AST>()
@@ -32,7 +39,8 @@ internal class ParserStateMachine {
         if (state != Start) {
             return Failure(SYNTAX_ERROR("Unexpected end of input, incomplete statement"))
         }
-        return Success(Program(
+        return Success(
+            Program(
             trees,
             if(tokens.isNotEmpty()) tokens.first().start else Position(0, 0),
             if(tokens.isNotEmpty()) tokens.last().end else Position(0, 0)

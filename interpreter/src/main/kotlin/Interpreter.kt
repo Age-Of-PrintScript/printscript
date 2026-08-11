@@ -1,3 +1,4 @@
+import ast.Program
 
 object Success;
 object Failure;

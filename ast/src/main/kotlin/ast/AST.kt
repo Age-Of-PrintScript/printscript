@@ -1,3 +1,5 @@
+package ast
+
 sealed interface AST {
     data class Declaration(val id: ASTIdentifier, val type: ASTDataType, val value: Expression?) : AST
     data class Assignment(val id: ASTIdentifier, val value: Expression) : AST

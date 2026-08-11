@@ -1,7 +1,13 @@
+package parser
+
+import Failure
+import Success
+import ast.AST
+
 internal sealed interface ASTBuilder {
     fun build(): Either<SYNTAX_ERROR, AST>
     object EmptyBuilder : ASTBuilder{
-        override fun build(): Either<SYNTAX_ERROR, AST>{
+        override fun build(): Either<SYNTAX_ERROR, AST> {
             return Failure(SYNTAX_ERROR("Unexpected token"))
         }
     }

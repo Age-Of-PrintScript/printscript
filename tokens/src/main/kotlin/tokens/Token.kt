@@ -1,3 +1,12 @@
+package tokens
+
+import Position
+import PrintScriptFunctions
+import PrintScriptOperator
+import PrintScriptType
+import PrintScriptValue
+
+
 data class Token(
     val type: TokenType,
     val start: Position,
