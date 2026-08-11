@@ -1,13 +1,15 @@
 internal class ExpressionParser {
-    fun parse(expression: List<Token>): Either<ParsingError, Expression> {
-        val result = parseExpression(expression, 0);
+    fun parseExpression(expression: List<Token>): Either<ParsingError, Expression> {
+        val result = parseExpressionRecursive(expression);
         return Success(result.value)
     }
+
+    //TODO -> Arreglar manejo de errores para patron either y no excepciones
     private data class ParseResult<T>(val value: T, val nextPosition: Int)
 
 
-    private fun parseExpression(tokens: List<Token>, position: Int): ParseResult<Expression> {
-        val term = parseTerm(tokens, position)
+    private fun parseExpressionRecursive(tokens: List<Token>): ParseResult<Expression> {
+        val term = parseTerm(tokens, 0)
         return parseExpressionRec(tokens, term.nextPosition, term.value)
     }
 

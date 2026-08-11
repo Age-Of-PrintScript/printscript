@@ -1,5 +1,5 @@
 internal class ParserStateMachine {
-    fun parse(tokens: TokenList): Either<ParsingError, Program>{
+    fun parse(tokens: TokenList, expressionParser: ExpressionParser): Either<ParsingError, Program>{
         var state: State = Start
         var builder: ASTBuilder = ASTBuilder.EmptyBuilder
         val trees = mutableListOf<AST>()
