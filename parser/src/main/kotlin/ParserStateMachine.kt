@@ -30,7 +30,7 @@ internal class ParserStateMachine {
         tokens: TokenList
     ): Either<ParsingError, Program> {
         if (state != Start) {
-            return Failure(SINTAX_ERROR("Unexpected end of input, incomplete statement"))
+            return Failure(SYNTAX_ERROR("Unexpected end of input, incomplete statement"))
         }
         return Success(Program(
             trees,
