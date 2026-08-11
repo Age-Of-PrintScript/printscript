@@ -6,7 +6,7 @@ sealed interface AST {
 
 //TODO -> Redefinir Declaration, Assignment y Call como hicimos en el pizarron
 
-data class Program(val trees: List<AST>, val start: Position, val end: Position )
+data class Program(val trees: List<AST>, val start: Position, val end: Position)
 
 data class Identifier(val name: String)
 data class DataType(val name: String)
