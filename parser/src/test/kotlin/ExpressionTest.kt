@@ -1,4 +1,4 @@
-import junit.framework.TestCase.assertEquals
+import kotlin.test.assertEquals
 import kotlin.test.Test
 
 typealias Num = PrintScriptValue.NumberLiteral

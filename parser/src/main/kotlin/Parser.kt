@@ -41,7 +41,7 @@ private tailrec fun parseExpressionRec(
     position: Int,
     left: Expression
 ): ParseResult<Expression> {
-    val operator = currentOperator(tokens, position, PrintScriptOperator.SUM, PrintScriptOperator.SUBTRACT)
+    val operator = currentOperator(tokens, position, termSeparators)
         ?: return ParseResult(left, position) //si es nulo, entonces no hay una expression. Me quedo con lo de la izquierda.
 
     val right = parseTerm(tokens, position + 1)
@@ -53,7 +53,7 @@ private tailrec fun parseTermRec(
     position: Int,
     left: Expression
 ): ParseResult<Expression> {
-    val operator = currentOperator(tokens, position, PrintScriptOperator.MULTIPLY, PrintScriptOperator.DIVIDE)
+    val operator = currentOperator(tokens, position, factorSeparators)
         ?: return ParseResult(left, position)
 
     val right = parseFactor(tokens, position + 1)
@@ -68,7 +68,7 @@ private tailrec fun parseTermRec(
  **/
 
 
-private fun currentOperator(tokens: List<Token>, position: Int, vararg operators: PrintScriptOperator): PrintScriptOperator? {
+private fun currentOperator(tokens: List<Token>, position: Int, operators: List<PrintScriptOperator>): PrintScriptOperator? {
     val type = tokens.getOrNull(position)?.type
     return if (type is Operator && type.operator in operators) type.operator else null
 }
