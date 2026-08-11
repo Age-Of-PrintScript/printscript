@@ -1,3 +1,5 @@
+package lexer
+
 import domain.PrintScriptFunctions
 import domain.PrintScriptType
 import tokens.Call

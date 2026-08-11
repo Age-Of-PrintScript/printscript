@@ -1,3 +1,5 @@
+package lexer
+
 import domain.Either
 import tokens.TokenList
 
@@ -5,9 +7,11 @@ interface Lexer {
     fun tokenize(source: String): Either<LexerError, TokenList>
 }
 
-class LexerImpl : Lexer {
+internal class LexerImpl : Lexer {
+    private val automata = Automata()
+
     override fun tokenize(source: String): Either<LexerError, TokenList> {
-        TODO("Not yet implemented")
+        return automata.tokenize(source)
     }
 }
 
