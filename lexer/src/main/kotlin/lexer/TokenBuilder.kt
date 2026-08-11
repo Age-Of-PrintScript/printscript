@@ -84,24 +84,12 @@ internal class TokenBuilder {
 
     fun build(): Either<LexerError, Token> {
         if (type == null) return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
-        if (isStringLiteralAndDoesNotEnd(type)) return Failure(LexerError.UNTERMINATED_STRING)
         return Success(
             Token(
             type!!,
                 Position(0, 0),
             Position(0,0)
         ))
-    }
-
-    private fun isStringLiteralAndDoesNotEnd(type: TokenType?): Boolean {
-        val value = (type as? Literal)?.value
-        if (value is PrintScriptValue.StringLiteral) {
-            val str = value.value
-            if (str[str.length - 1] != '"' || str[str.length - 1] != '\'') {
-                return true
-            }
-        }
-        return false
     }
 
     fun reset() {
