@@ -1,5 +1,3 @@
-import kotlin.math.exp
-
 internal class ParserStateMachine {
     fun parse(tokens: TokenList, expressionParser: ExpressionParser): Either<ParsingError, Program>{
         var state: State = Start
@@ -24,6 +22,13 @@ internal class ParserStateMachine {
                 }
             }
         }
+        return finalizeParsing(state, trees, tokens)
+    }
+    private fun finalizeParsing(
+        state: State,
+        trees: List<AST>,
+        tokens: TokenList
+    ): Either<ParsingError, Program> {
         if (state != Start) {
             return Failure(SINTAX_ERROR("Unexpected end of input, incomplete statement"))
         }
