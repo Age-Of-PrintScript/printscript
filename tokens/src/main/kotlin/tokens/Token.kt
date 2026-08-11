@@ -1,10 +1,10 @@
 package tokens
 
-import Position
-import PrintScriptFunctions
-import PrintScriptOperator
-import PrintScriptType
-import PrintScriptValue
+import domain.Position
+import domain.PrintScriptFunctions
+import domain.PrintScriptOperator
+import domain.PrintScriptType
+import domain.PrintScriptValue
 
 
 data class Token(

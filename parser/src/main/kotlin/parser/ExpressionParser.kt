@@ -1,11 +1,11 @@
 package parser
 
-import Either
-import PrintScriptOperator
-import Success
+import domain.Either
+import domain.PrintScriptOperator
+import domain.Success
 import ast.Expression
-import factorSeparators
-import termSeparators
+import domain.factorSeparators
+import domain.termSeparators
 import tokens.Identifier
 import tokens.Literal
 import tokens.Operator

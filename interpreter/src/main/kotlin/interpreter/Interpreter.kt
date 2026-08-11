@@ -1,6 +1,6 @@
 package interpreter
 
-import Either
+import domain.Either
 import ast.Program
 
 //TODO -> Cambiar return horrible que pusimos

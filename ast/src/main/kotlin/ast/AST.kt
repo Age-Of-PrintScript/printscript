@@ -1,8 +1,8 @@
 package ast
 
-import Position
-import PrintScriptFunctions
-import PrintScriptType
+import domain.Position
+import domain.PrintScriptFunctions
+import domain.PrintScriptType
 
 sealed interface AST {
     data class Declaration(val id: ASTIdentifier, val type: ASTDataType, val value: Expression?) : AST

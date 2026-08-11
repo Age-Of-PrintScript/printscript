@@ -1,9 +1,9 @@
 package parser
 
-import Either
-import Failure
-import PrintScriptFunctions
-import Success
+import domain.Either
+import domain.Failure
+import domain.PrintScriptFunctions
+import domain.Success
 import ast.AST
 import ast.ASTDataType
 import ast.ASTIdentifier

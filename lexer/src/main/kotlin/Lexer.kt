@@ -1,3 +1,4 @@
+import domain.Either
 import tokens.TokenList
 
 interface Lexer {

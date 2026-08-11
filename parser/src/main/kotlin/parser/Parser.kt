@@ -1,6 +1,6 @@
 package parser
 
-import Either
+import domain.Either
 import ast.Program
 import tokens.Token
 

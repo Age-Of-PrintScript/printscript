@@ -1,10 +1,10 @@
 package parser
 
-import Either
-import Failure
-import Position
+import domain.Either
+import domain.Failure
+import domain.Position
 import ast.Program
-import Success
+import domain.Success
 import ast.AST
 import tokens.TokenList
 

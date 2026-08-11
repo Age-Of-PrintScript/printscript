@@ -1,3 +1,5 @@
+import domain.PrintScriptFunctions
+import domain.PrintScriptType
 import tokens.Call
 import tokens.DataType
 import tokens.LET

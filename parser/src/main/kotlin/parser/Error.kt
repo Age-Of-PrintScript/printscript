@@ -1,6 +1,6 @@
 package parser
 
-import Error
+import domain.Error
 
 interface ParsingError: Error
 data class NO_ASSIGNMENT_ERROR(val reason: String = "Expression expected"): ParsingError

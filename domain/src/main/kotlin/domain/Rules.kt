@@ -1,3 +1,5 @@
+package domain
+
 /**
  * # PRINTSCRIPT DATATYPES
  * These are the supported datatypes in printscript

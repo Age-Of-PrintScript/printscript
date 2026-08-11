@@ -1,15 +1,15 @@
 package parser
 
-import Either
+import domain.Either
 import tokens.ASSIGN
 import ast.ASTDataType
 import ast.ASTIdentifier
 import tokens.COLON
-import Failure
-import PrintScriptFunctions
+import domain.Failure
+import domain.PrintScriptFunctions
 import tokens.LET
 import tokens.SEMICOLON
-import Success
+import domain.Success
 import ast.Expression
 import tokens.Call
 import tokens.DataType
