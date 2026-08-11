@@ -1,3 +1,10 @@
+package lexer
+
+import Call
+import DataType
+import LET
+import TokenType
+
 object Lexicon {
     val KEYWORDS: Map<String, TokenType> = mapOf(
         "let" to LET,
