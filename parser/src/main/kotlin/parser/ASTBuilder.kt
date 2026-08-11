@@ -1,8 +1,13 @@
 package parser
 
+import Either
 import Failure
+import PrintScriptFunctions
 import Success
 import ast.AST
+import ast.ASTDataType
+import ast.ASTIdentifier
+import ast.Expression
 
 internal sealed interface ASTBuilder {
     fun build(): Either<SYNTAX_ERROR, AST>
@@ -36,7 +41,7 @@ internal sealed interface ASTBuilder {
     }
 
     data class CallBuilder(
-        val functionName: String? = null
+        val functionName: PrintScriptFunctions? = null
     ) : ASTBuilder {
         override fun build(): Either<SYNTAX_ERROR, AST> {
             val safeName = functionName ?: return Failure(SYNTAX_ERROR("Missing function name in call"))

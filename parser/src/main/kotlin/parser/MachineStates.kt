@@ -1,13 +1,22 @@
 package parser
 
+import Either
 import tokens.ASSIGN
 import ast.ASTDataType
 import ast.ASTIdentifier
 import tokens.COLON
 import Failure
+import PrintScriptFunctions
 import tokens.LET
 import tokens.SEMICOLON
 import Success
+import ast.Expression
+import tokens.Call
+import tokens.DataType
+import tokens.Identifier
+import tokens.Literal
+import tokens.Operator
+import tokens.Token
 
 internal typealias ConsumeResult = Pair<State, ASTBuilder>
 
@@ -21,7 +30,7 @@ internal interface State {
 internal object Start : State {
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
         return when (val t = token.type) {
-            is Call -> Success(CallSeen(t.type) to ASTBuilder.CallBuilder(t.type.toString()))
+            is Call -> Success(CallSeen(t.type) to ASTBuilder.CallBuilder(t.type))
             is Identifier -> Success(AssignmentIdSeen(ASTIdentifier(t.name)) to ASTBuilder.AssignmentBuilder(ASTIdentifier(t.name)))
             LET -> Success(LetSeen to ASTBuilder.DeclarationBuilder())
             else -> Failure(SYNTAX_ERROR("Unexpected token"))

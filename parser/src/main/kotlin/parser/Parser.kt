@@ -1,5 +1,9 @@
 package parser
 
+import Either
+import ast.Program
+import tokens.Token
+
 interface Parser {
     fun parse(tokens: List<Token>): Either<ParsingError, Program>
 }
