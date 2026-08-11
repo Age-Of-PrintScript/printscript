@@ -15,7 +15,7 @@ sealed interface PrintScriptValue{
             return NumberLiteral(newValue)
         }
         fun concatNumber(chr: Char): NumberLiteral {
-            val num = chr.code
+            val num = chr.digitToInt()
             return concatNumber(num)
         }
     }

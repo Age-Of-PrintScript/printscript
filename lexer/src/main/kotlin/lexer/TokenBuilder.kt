@@ -20,7 +20,7 @@ internal class TokenBuilder {
     fun addChar(chr: Char): Either<LexerError, Unit> {
         when {
             chr.isDigit() -> {
-                if (type == null) type = Literal(NumberLiteral(chr.code))
+                if (type == null) type = Literal(NumberLiteral(chr.digitToInt()))
                 else {
                     val newType = updateTypeWithNumber(type, chr)
                     when (newType) {

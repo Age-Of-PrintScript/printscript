@@ -20,7 +20,10 @@ internal class Automata {
             val result = state.consume(chr)
             when (result) {
                 is Failure -> return Failure(result.value)
-                is Success -> handleSuccess(chr, result.value, tokenList)
+                is Success -> {
+                    val handled = handleSuccess(chr, result.value, tokenList)
+                    if (handled is Failure) return Failure(handled.value)
+                }
             }
         }
         return Success(tokenList.toList())
