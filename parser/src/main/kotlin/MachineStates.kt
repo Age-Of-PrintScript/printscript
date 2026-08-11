@@ -11,7 +11,7 @@ internal object Start : State {
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
         return when (val t = token.type) {
             is Call -> Success(CallSeen(t.type) to ASTBuilder.CallBuilder(t.type.toString()))
-            is Identifier -> Success(AssignmentIdSeen(Identifier(t.name)) to ASTBuilder.AssignmentBuilder(Identifier(t.name)))
+            is ASTIdentifier -> Success(AssignmentIdSeen(ASTIdentifier(t.name)) to ASTBuilder.AssignmentBuilder(ASTIdentifier(t.name)))
             LET -> Success(LetSeen to ASTBuilder.DeclarationBuilder())
             else -> Failure(SINTAX_ERROR("Unexpected token"))
         }
@@ -23,16 +23,16 @@ internal object Start : State {
 internal object LetSeen : State {
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
         return when (val t = token.type) {
-            is Identifier -> {
+            is ASTIdentifier -> {
                 val b = builder as ASTBuilder.DeclarationBuilder
-                Success(DeclarationIdSeen(Identifier(t.name)) to b.copy(id = Identifier(t.name)))
+                Success(DeclarationIdSeen(ASTIdentifier(t.name)) to b.copy(id = ASTIdentifier(t.name)))
             }
             else -> Failure(SINTAX_ERROR("Identifier expected"))
         }
     }
 }
 
-internal data class DeclarationIdSeen(val id: Identifier) : State {
+internal data class DeclarationIdSeen(val id: ASTIdentifier) : State {
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
         return when (token.type) {
             COLON -> Success(DeclarationColonSeen(id) to builder)
@@ -41,12 +41,12 @@ internal data class DeclarationIdSeen(val id: Identifier) : State {
     }
 }
 
-internal data class DeclarationColonSeen(val id: Identifier) : State {
+internal data class DeclarationColonSeen(val id: ASTIdentifier) : State {
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
         return when (val t = token.type) {
-            is DataType -> {
+            is ASTDataType -> {
                 val b = builder as ASTBuilder.DeclarationBuilder
-                val type = DataType(t.type)
+                val type = ASTDataType(t.type)
                 Success(DeclarationTypeSeen(id, type) to b.copy(type = type))
             }
             else -> Failure(SINTAX_ERROR("Missing type declaration"))
@@ -54,7 +54,7 @@ internal data class DeclarationColonSeen(val id: Identifier) : State {
     }
 }
 
-internal data class DeclarationTypeSeen(val id: Identifier, val type: DataType) : State {
+internal data class DeclarationTypeSeen(val id: ASTIdentifier, val type: ASTDataType) : State {
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
         return when (token.type) {
             ASSIGN -> Success(ExpressionPending(id) to builder)
@@ -66,7 +66,7 @@ internal data class DeclarationTypeSeen(val id: Identifier, val type: DataType) 
 
 // ---------- Rama ASSIGNMENT ----------
 
-internal data class AssignmentIdSeen(val id: Identifier) : State {
+internal data class AssignmentIdSeen(val id: ASTIdentifier) : State {
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
         return when (token.type) {
             ASSIGN -> Success(ExpressionPending(id) to builder)
@@ -78,7 +78,7 @@ internal data class AssignmentIdSeen(val id: Identifier) : State {
 // ---------- Punto en común: acumula tokens para el Expression Parser ----------
 
 internal data class ExpressionPending(
-    val id: Identifier,
+    val id: ASTIdentifier,
     val tokens: List<Token> = emptyList()
 ) : State {
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
@@ -93,7 +93,7 @@ internal data class ExpressionPending(
                     }
                 }
             }
-            is Literal, is Identifier, is Operator ->
+            is Literal, is ASTIdentifier, is Operator ->
                 Success(copy(tokens = tokens + token) to builder)
             else -> Failure(SINTAX_ERROR("Unexpected token in expression"))
         }

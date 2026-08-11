@@ -1,6 +1,6 @@
 sealed interface AST {
-    data class Declaration(val id: Identifier, val type: DataType, val value: Expression?) : AST
-    data class Assignment(val id: Identifier, val value: Expression) : AST
+    data class Declaration(val id: ASTIdentifier, val type: ASTDataType, val value: Expression?) : AST
+    data class Assignment(val id: ASTIdentifier, val value: Expression) : AST
     data class Call(val functionName: String) : AST
 }
 
@@ -8,5 +8,5 @@ sealed interface AST {
 
 data class Program(val trees: List<AST>, val start: Position, val end: Position)
 
-data class Identifier(val name: String)
-data class DataType(val name: String)
+data class ASTIdentifier(val name: String)
+data class ASTDataType(val name: String)

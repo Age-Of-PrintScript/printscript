@@ -24,7 +24,7 @@ internal class ExpressionParser {
 
         val expression = when (val type = token.type) {
             is Literal -> Expression.Literal(type.value)
-            is Identifier -> Expression.Variable(type.name)
+            is ASTIdentifier -> Expression.Variable(type.name)
             else -> throw IllegalStateException("Se esperaba numero o variable, se encontro $type en posicion $position")
         }
         return ParseResult(expression, position + 1)

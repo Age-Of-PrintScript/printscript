@@ -7,8 +7,8 @@ internal sealed interface ASTBuilder {
     }
 
     data class DeclarationBuilder(
-        val id: Identifier? = null,
-        val type: DataType? = null,
+        val id: ASTIdentifier? = null,
+        val type: ASTDataType? = null,
         val value: Expression? = null
     ) : ASTBuilder {
         override fun build(): Either<SINTAX_ERROR, AST> {
@@ -19,7 +19,7 @@ internal sealed interface ASTBuilder {
     }
 
     data class AssignmentBuilder(
-        val id: Identifier? = null,
+        val id: ASTIdentifier? = null,
         val value: Expression? = null
     ) : ASTBuilder {
         override fun build(): Either<SINTAX_ERROR, AST> {
