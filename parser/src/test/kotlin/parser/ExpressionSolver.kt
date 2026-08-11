@@ -27,6 +27,8 @@ internal class ExpressionSolver { //clase auxiliar para hacer tests mas faciles.
             PrintScriptOperator.SUBTRACT -> left - right
             PrintScriptOperator.MULTIPLY -> left * right
             PrintScriptOperator.DIVIDE -> left / right
+            PrintScriptOperator.OPEN_PARENTHESIS -> TODO()
+            PrintScriptOperator.CLOSE_PARENTHESIS -> TODO()
         }
 
     }

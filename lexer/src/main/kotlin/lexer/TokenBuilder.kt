@@ -1,18 +1,19 @@
 package lexer
 
-import ASSIGN
-import COLON
-import Either
-import Failure
-import Identifier
-import Literal
-import Operator
-import Position
-import PrintScriptValue.*
-import SEMICOLON
-import Success
-import Token
-import TokenType
+import domain.Either
+import domain.Failure
+import domain.Position
+import domain.PrintScriptOperator
+import domain.PrintScriptValue
+import domain.Success
+import tokens.ASSIGN
+import tokens.COLON
+import tokens.Identifier
+import tokens.Literal
+import tokens.Operator
+import tokens.SEMICOLON
+import tokens.Token
+import tokens.TokenType
 
 internal class TokenBuilder {
     private var type: TokenType? = null
@@ -20,7 +21,7 @@ internal class TokenBuilder {
     fun addChar(chr: Char): Either<LexerError, Unit> {
         when {
             chr.isDigit() -> {
-                if (type == null) type = Literal(NumberLiteral(chr.digitToInt()))
+                if (type == null) type = Literal(PrintScriptValue.NumberLiteral(chr.digitToInt()))
                 else {
                     val newType = updateTypeWithNumber(type, chr)
                     when (newType) {
@@ -39,8 +40,8 @@ internal class TokenBuilder {
                     }
                 }
             }
-            chr == '\'' -> type = type ?: Literal(StringLiteral(""))
-            chr == '"' -> type = type ?: Literal(StringLiteral(""))
+            chr == '\'' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
+            chr == '"' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
             chr == ':' -> type = COLON
             chr == ';' -> type = SEMICOLON
             chr == '=' -> type = ASSIGN
@@ -60,8 +61,8 @@ internal class TokenBuilder {
             is Identifier -> Success(Identifier(type.name + chr))
             is Literal -> {
                 when (val newType = type.value) {
-                    is NumberLiteral -> Success(Literal(newType.concatNumber(chr)))
-                    is StringLiteral -> Success(Literal(newType.concatString(chr)))
+                    is PrintScriptValue.NumberLiteral -> Success(Literal(newType.concatNumber(chr)))
+                    is PrintScriptValue.StringLiteral -> Success(Literal(newType.concatString(chr)))
                 }
             }
             else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
@@ -73,8 +74,8 @@ internal class TokenBuilder {
             is Identifier -> Success(Identifier(type.name + chr))
             is Literal -> {
                 when (val newType = type.value) {
-                    is NumberLiteral -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
-                    is StringLiteral -> Success(Literal(newType.concatString(chr)))
+                    is PrintScriptValue.NumberLiteral -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
+                    is PrintScriptValue.StringLiteral -> Success(Literal(newType.concatString(chr)))
                 }
             }
             else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
@@ -87,14 +88,14 @@ internal class TokenBuilder {
         return Success(
             Token(
             type!!,
-            Position(0,0),
+                Position(0, 0),
             Position(0,0)
         ))
     }
 
     private fun isStringLiteralAndDoesNotEnd(type: TokenType?): Boolean {
         val value = (type as? Literal)?.value
-        if (value is StringLiteral) {
+        if (value is PrintScriptValue.StringLiteral) {
             val str = value.value
             if (str[str.length - 1] != '"' || str[str.length - 1] != '\'') {
                 return true

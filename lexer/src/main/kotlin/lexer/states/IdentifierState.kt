@@ -1,7 +1,7 @@
 package lexer.states
 
-import Either
-import Success
+import domain.Either
+import domain.Success
 import lexer.LexerError
 
 internal class IdentifierState : State {
