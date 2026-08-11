@@ -11,7 +11,7 @@ internal object Start : State {
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
         return when (val t = token.type) {
             is Call -> Success(CallSeen(t.type) to ASTBuilder.CallBuilder(t.type.toString()))
-            is ASTIdentifier -> Success(AssignmentIdSeen(ASTIdentifier(t.name)) to ASTBuilder.AssignmentBuilder(ASTIdentifier(t.name)))
+            is Identifier -> Success(AssignmentIdSeen(ASTIdentifier(t.name)) to ASTBuilder.AssignmentBuilder(ASTIdentifier(t.name)))
             LET -> Success(LetSeen to ASTBuilder.DeclarationBuilder())
             else -> Failure(SINTAX_ERROR("Unexpected token"))
         }
@@ -23,7 +23,7 @@ internal object Start : State {
 internal object LetSeen : State {
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
         return when (val t = token.type) {
-            is ASTIdentifier -> {
+            is Identifier -> {
                 val b = builder as ASTBuilder.DeclarationBuilder
                 Success(DeclarationIdSeen(ASTIdentifier(t.name)) to b.copy(id = ASTIdentifier(t.name)))
             }
@@ -44,7 +44,7 @@ internal data class DeclarationIdSeen(val id: ASTIdentifier) : State {
 internal data class DeclarationColonSeen(val id: ASTIdentifier) : State {
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
         return when (val t = token.type) {
-            is ASTDataType -> {
+            is DataType -> {
                 val b = builder as ASTBuilder.DeclarationBuilder
                 val type = ASTDataType(t.type)
                 Success(DeclarationTypeSeen(id, type) to b.copy(type = type))
@@ -59,7 +59,7 @@ internal data class DeclarationTypeSeen(val id: ASTIdentifier, val type: ASTData
         return when (token.type) {
             ASSIGN -> Success(ExpressionPending(id) to builder)
             SEMICOLON -> Success(StatementComplete to builder)
-            else -> Failure(SINTAX_ERROR("Unresolved reference"))
+            else -> Failure(SINTAX_ERROR("Expected '=' or ';' after type declaration"))
         }
     }
 }
@@ -93,7 +93,7 @@ internal data class ExpressionPending(
                     }
                 }
             }
-            is Literal, is ASTIdentifier, is Operator ->
+            is Literal, is Identifier, is Operator ->
                 Success(copy(tokens = tokens + token) to builder)
             else -> Failure(SINTAX_ERROR("Unexpected token in expression"))
         }
