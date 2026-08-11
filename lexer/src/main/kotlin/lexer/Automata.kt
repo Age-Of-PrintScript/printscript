@@ -5,13 +5,14 @@ import Failure
 import Success
 import Token
 import lexer.states.Done
+import lexer.states.InitialState
 import lexer.states.Next
 import lexer.states.State
 import lexer.states.StateResult
 import kotlin.text.iterator
 
 internal class Automata {
-    private var state: State = _root_ide_package_.lexer.states.InitialState()
+    private var state: State = InitialState()
     private val builder: TokenBuilder = TokenBuilder()
 
     fun tokenize(source: String): Either<LexerError, List<Token>> {
