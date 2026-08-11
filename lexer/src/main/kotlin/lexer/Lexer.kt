@@ -1,5 +1,8 @@
 package lexer
 
+import Either
+import TokenList
+
 interface Lexer {
     fun tokenize(source: String): Either<LexerError, TokenList>
 }

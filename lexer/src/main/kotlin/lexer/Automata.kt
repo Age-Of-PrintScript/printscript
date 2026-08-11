@@ -1,7 +1,9 @@
 package lexer
 
+import Either
 import Failure
 import Success
+import Token
 import lexer.states.Done
 import lexer.states.Next
 import lexer.states.State

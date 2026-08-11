@@ -3,11 +3,12 @@ package lexer.states
 import Either
 import Failure
 import Success
+import lexer.LexerError
 
 // el lexer solo falla si aparece una palabra que no reconoce en su vocabulario
 
 internal class IntegerState : State {
-    override fun consume(chr: Char): Either<lexer.LexerError, StateResult> {
+    override fun consume(chr: Char): Either<LexerError, StateResult> {
         return when {
             chr.isDigit() -> Success(Next(this))
             chr == '.' -> Success(Next(DecimalPointState()))
@@ -17,14 +18,14 @@ internal class IntegerState : State {
 }
 
 internal class DecimalPointState: State {
-    override fun consume(chr: Char): Either<lexer.LexerError, StateResult> {
+    override fun consume(chr: Char): Either<LexerError, StateResult> {
         if (chr.isDigit()) return Success(Next(DecimalState()))
-        return Failure(_root_ide_package_.lexer.LexerError.LEXICAL_ERROR)
+        return Failure(LexerError.UNRESOLVED_REFERENCE)
     }
 }
 
 internal class DecimalState: State {
-    override fun consume(chr: Char): Either<lexer.LexerError, StateResult> {
+    override fun consume(chr: Char): Either<LexerError, StateResult> {
         if (chr.isDigit()) return Success(Next(DecimalState()))
         return Success(Done)
     }

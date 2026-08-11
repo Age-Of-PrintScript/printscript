@@ -1,4 +1,5 @@
 package lexer
+import Error
 
 enum class LexerError(val mensaje: String): Error {
     UNRESOLVED_REFERENCE("Unresolved reference"),
