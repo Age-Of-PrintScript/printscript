@@ -1,3 +1,5 @@
+package lexer
+
 interface Lexer {
     fun tokenize(source: String): Either<LexerError, TokenList>
 }

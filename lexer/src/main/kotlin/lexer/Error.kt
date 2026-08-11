@@ -1,3 +1,5 @@
+package lexer
+
 enum class LexerError(val mensaje: String): Error {
     UNRESOLVED_REFERENCE("Unresolved reference"),
     INVALID_CHARACTER("Invalid character"),

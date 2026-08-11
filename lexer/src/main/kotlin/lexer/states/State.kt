@@ -1,3 +1,8 @@
+package lexer.states
+
+import Either
+import lexer.LexerError
+
 internal interface State {
     fun consume(chr: Char): Either<LexerError, StateResult>
 }

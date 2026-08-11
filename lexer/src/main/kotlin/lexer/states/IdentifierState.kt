@@ -1,12 +1,8 @@
-package states
+package lexer.states
 
-import Done
 import Either
-import LexerError
-import Next
-import State
-import StateResult
 import Success
+import lexer.LexerError
 
 internal class IdentifierState : State {
     override fun consume(chr: Char): Either<LexerError, StateResult> {

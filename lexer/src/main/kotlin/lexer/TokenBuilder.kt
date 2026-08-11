@@ -1,4 +1,18 @@
+package lexer
+
+import ASSIGN
+import COLON
+import Either
+import Failure
+import Identifier
+import Literal
+import Operator
+import Position
 import PrintScriptValue.*
+import SEMICOLON
+import Success
+import Token
+import TokenType
 
 internal class TokenBuilder {
     private var type: TokenType? = null
@@ -70,7 +84,8 @@ internal class TokenBuilder {
     fun build(): Either<LexerError, Token> {
         if (type == null) return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
         if (isStringLiteralAndDoesNotEnd(type)) return Failure(LexerError.UNTERMINATED_STRING)
-        return Success(Token (
+        return Success(
+            Token(
             type!!,
             Position(0,0),
             Position(0,0)

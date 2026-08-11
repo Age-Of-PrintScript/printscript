@@ -1,16 +1,11 @@
-package states
+package lexer.states
 
-import Done
 import Either
 import Failure
-import LexerError
-import Next
-import State
-import StateResult
 import Success
 
 internal class InitialState: State {
-    override fun consume(chr: Char): Either<LexerError, StateResult> {
+    override fun consume(chr: Char): Either<lexer.LexerError, StateResult> {
         return when {
             chr.isDigit() -> Success(Next(IntegerState()))
             chr.isLetter() -> Success(Next(IdentifierState()))
@@ -25,7 +20,7 @@ internal class InitialState: State {
             chr == '/' -> Success(Done)
             chr == '(' -> Success(Done)
             chr == ')' -> Success(Done)
-            else -> Failure(LexerError.LEXICAL_ERROR)
+            else -> Failure(_root_ide_package_.lexer.LexerError.LEXICAL_ERROR)
         }
     }
 }
