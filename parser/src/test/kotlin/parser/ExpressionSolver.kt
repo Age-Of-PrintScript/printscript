@@ -4,7 +4,7 @@ import ast.Expression
 import domain.PrintScriptOperator
 import domain.PrintScriptValue
 
-internal class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sirve para expresiones sin variables
+internal class ExpressionSolver {
 
     internal fun solve(expression: Expression): Number = when (expression) {
             is Expression.Literal ->  {
