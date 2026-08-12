@@ -5,8 +5,10 @@ import ast.Expression
 import ast.ExpressionSolver
 import domain.Either
 import ast.Program
+import domain.Failure
 import domain.PrintScriptFunctions
 import domain.PrintScriptValue
+import domain.Success
 
 interface Interpreter {
     fun execute(program: Program): Either<RuntimeError, ExecutionResult>
@@ -32,17 +34,24 @@ class InterpreterImpl: Interpreter {
         runtimeEvents: RuntimeEvents
     ): Either<RuntimeError, ExecutionResult> {
         val asts = program.trees
-        var runtimeEvents = runtimeEvents
-        var runtimeEnvironment = runtimeEnvironment
+        var events = runtimeEvents
+        var environment = runtimeEnvironment
         for(ast in asts) {
             when(ast){
                 is AST.Assignment -> {
                     val newValue = solve_expression(ast.value)
+                    when(newValue){
+                        is Failure -> TODO()
+                        is Success -> {
+                            val result = environment.change_variable(ast.id.name, newValue.value)
+                        }
+                    }
+
                 }
                 is AST.Call -> {
                     when(val function = ast.functionName){
                         PrintScriptFunctions.PRINTLN -> {
-                            runtimeEvents = add_print_event(runtimeEvents, function.name)
+                            events = add_print_event(events, function.name)
                         }
                     }
                 }
