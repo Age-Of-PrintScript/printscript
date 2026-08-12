@@ -39,9 +39,8 @@ class InterpreterImpl: Interpreter {
         for(ast in asts) {
             when(ast){
                 is AST.Assignment -> {
-                    val newValue = solve_expression(ast.value)
-                    when(newValue){
-                        is Failure -> TODO()
+                    when(val newValue = solve_expression(ast.value)){
+                        is Failure -> return Failure(newValue.value)
                         is Success -> {
                             val result = environment.change_variable(ast.id.name, newValue.value)
                         }
@@ -57,12 +56,16 @@ class InterpreterImpl: Interpreter {
                 }
                 is AST.Declaration ->{
                     if(ast.value != null){
-                        val value = solve_expression(ast.value!!)
+                        when(val value = solve_expression(ast.value!!)){
+                            is Failure -> return Failure(value.value)
+                            is Success -> TODO()
+                        }
                     }
 
                 }
             }
         }
+        TODO()
     }
     private fun solve_expression(expression: Expression): Either<RuntimeError, PrintScriptValue> {
         val res = expressionSolver.solve(expression)
