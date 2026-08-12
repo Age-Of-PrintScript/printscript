@@ -2,6 +2,7 @@ package interpreter
 
 import domain.Either
 import domain.Failure
+import domain.PrintScriptType
 import domain.PrintScriptValue
 import domain.Success
 
@@ -32,6 +33,7 @@ data class RuntimeEnvironment(
     }
     fun change_variable(id: String, value: PrintScriptValue): Either<RuntimeError, RuntimeEnvironment> {
         if(!variableMap.containsKey(id)) return Failure(RuntimeError.VARIABLE_DOESNT_EXIST)
+        if(variableMap.get(id)!!.getType() != value.getType()) return Failure(RuntimeError.VARIABLE_DOESNT_EXIST)
         return Success(RuntimeEnvironment(
             variableMap
             .toMutableMap()
