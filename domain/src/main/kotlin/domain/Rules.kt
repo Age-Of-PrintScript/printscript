@@ -10,6 +10,7 @@ enum class PrintScriptType{
     NUMBER,
     STRING
 }
+
 sealed interface PrintScriptValue{
     data class NumberLiteral(val value: Number): PrintScriptValue
     data class StringLiteral(val value: String): PrintScriptValue
