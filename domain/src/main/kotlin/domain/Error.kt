@@ -1,4 +1,3 @@
 package domain
 
-interface Error {
-}
+interface Error

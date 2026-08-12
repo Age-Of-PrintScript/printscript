@@ -11,22 +11,8 @@ enum class PrintScriptType{
     STRING
 }
 sealed interface PrintScriptValue{
-    data class NumberLiteral(val value: Number): PrintScriptValue {
-        fun concatNumber(num: Number): NumberLiteral {
-            val newValue = (value.toDouble() * 10 + num.toDouble()) as Number
-            return NumberLiteral(newValue)
-        }
-        fun concatNumber(chr: Char): NumberLiteral {
-            val num = chr.digitToInt()
-            return concatNumber(num)
-        }
-    }
-    data class StringLiteral(val value: String): PrintScriptValue {
-        fun concatString(chr: Char): StringLiteral {
-            val newValue = value + chr.toString()
-            return StringLiteral(newValue)
-        }
-    }
+    data class NumberLiteral(val value: Number): PrintScriptValue
+    data class StringLiteral(val value: String): PrintScriptValue
 }
 
 /**
