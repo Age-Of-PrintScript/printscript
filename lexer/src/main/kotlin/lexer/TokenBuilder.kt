@@ -19,6 +19,7 @@ internal class TokenBuilder {
     private var type: TokenType? = null
 
     fun addChar(chr: Char): Either<LexerError, Unit> {
+        val tokenMap = createSymbolTokenMap()
         when {
             chr.isDigit() -> {
                 if (type == null) type = Literal(PrintScriptValue.NumberLiteral(chr.digitToInt()))
@@ -42,16 +43,11 @@ internal class TokenBuilder {
             }
             chr == '\'' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
             chr == '"' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
-            chr == ':' -> type = COLON
-            chr == ';' -> type = SEMICOLON
-            chr == '=' -> type = ASSIGN
-            chr == '+' -> type = Operator(PrintScriptOperator.SUM)
-            chr == '-' -> type = Operator(PrintScriptOperator.SUBTRACT)
-            chr == '*' -> type = Operator(PrintScriptOperator.MULTIPLY)
-            chr == '/' -> type = Operator(PrintScriptOperator.DIVIDE)
-            chr == '(' -> type = Operator(PrintScriptOperator.OPEN_PARENTHESIS)
-            chr == ')' -> type = Operator(PrintScriptOperator.CLOSE_PARENTHESIS)
-            else -> return Failure(LexerError.INVALID_CHARACTER)
+            else -> {
+                val symbol = chr.toString()
+                if (tokenMap.containsKey(symbol)) type = tokenMap.getValue(symbol)
+                return Failure(LexerError.INVALID_CHARACTER)
+            }
         }
         return Success(Unit)
     }

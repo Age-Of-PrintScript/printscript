@@ -4,24 +4,21 @@ import domain.Either
 import domain.Failure
 import domain.Success
 import lexer.LexerError
+import lexer.createSymbolStateMap
 
 internal class InitialState: State {
     override fun consume(chr: Char): Either<LexerError, StateResult> {
+        val stateMap = createSymbolStateMap()
         return when {
             chr.isDigit() -> Success(Next(IntegerState()))
             chr.isLetter() -> Success(Next(IdentifierState()))
             chr == '\'' -> Success(Next(SingleQuoteStringState()))
             chr == '"' -> Success(Next(DoubleQuoteStringState()))
-            chr == ':' -> Success(Done)
-            chr == ';' -> Success(Done)
-            chr == '=' -> Success(Done)
-            chr == '+' -> Success(Done)
-            chr == '-' -> Success(Done)
-            chr == '*' -> Success(Done)
-            chr == '/' -> Success(Done)
-            chr == '(' -> Success(Done)
-            chr == ')' -> Success(Done)
-            else -> Failure(LexerError.INVALID_CHARACTER)
+            else -> {
+                val symbol = chr.toString()
+                if (stateMap.containsKey(symbol)) Success(stateMap.getValue(symbol))
+                else Failure(LexerError.INVALID_CHARACTER)
+            }
         }
     }
 }

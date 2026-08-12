@@ -6,12 +6,12 @@ package domain
  * last updated: 6/8/26
  */
 
-enum class PrintScriptType{
+enum class PrintScriptType {
     NUMBER,
     STRING
 }
 
-sealed interface PrintScriptValue{
+sealed interface PrintScriptValue {
     data class NumberLiteral(val value: Number): PrintScriptValue
     data class StringLiteral(val value: String): PrintScriptValue
 }
@@ -35,6 +35,18 @@ val factorSeparators = listOf(PrintScriptOperator.MULTIPLY, PrintScriptOperator.
  * last updated: 6/8/26
  */
 
-enum class PrintScriptFunctions{
+enum class PrintScriptFunctions {
     PRINTLN
+}
+
+enum class PrintScriptSymbols(val symbol: String) {
+    SUM("+"),
+    SUBTRACT("-"),
+    MULTIPLY("*"),
+    DIVIDE("/"),
+    COLON(":"),
+    SEMICOLON(";"),
+    ASSIGN("="),
+    OPEN_PARENTHESIS("("),
+    CLOSE_PARENTHESIS(")"),
 }
