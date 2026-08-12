@@ -61,8 +61,8 @@ internal class TokenBuilder {
             is Identifier -> Success(Identifier(type.name + chr))
             is Literal -> {
                 when (val newType = type.value) {
-                    is PrintScriptValue.NumberLiteral -> Success(Literal(newType.concatNumber(chr)))
-                    is PrintScriptValue.StringLiteral -> Success(Literal(newType.concatString(chr)))
+                    is PrintScriptValue.NumberLiteral -> Success(Literal(concatNumbers(newType, chr)))
+                    is PrintScriptValue.StringLiteral -> Success(Literal(concatStrings(newType, chr)))
                 }
             }
             else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
@@ -75,7 +75,7 @@ internal class TokenBuilder {
             is Literal -> {
                 when (val newType = type.value) {
                     is PrintScriptValue.NumberLiteral -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
-                    is PrintScriptValue.StringLiteral -> Success(Literal(newType.concatString(chr)))
+                    is PrintScriptValue.StringLiteral -> Success(Literal(concatStrings(newType, chr)))
                 }
             }
             else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
@@ -83,13 +83,20 @@ internal class TokenBuilder {
     }
 
     fun build(): Either<LexerError, Token> {
-        if (type == null) return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
+        var finishedType = type ?: return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
+
+        if (finishedType is Identifier) {
+            if (Lexicon.KEYWORDS.contains(finishedType.name)) {
+                finishedType = Lexicon.KEYWORDS[finishedType.name]!!
+            }
+        }
         return Success(
             Token(
-            type!!,
+                finishedType,
                 Position(0, 0),
-            Position(0,0)
-        ))
+                Position(0,0)
+            )
+        )
     }
 
     fun reset() {

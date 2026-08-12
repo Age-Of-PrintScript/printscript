@@ -8,10 +8,10 @@ interface Lexer {
 }
 
 internal class LexerImpl : Lexer {
-    private val automata = Automata()
+    private val stateMachine = LexerStateMachine()
 
     override fun tokenize(source: String): Either<LexerError, TokenList> {
-        return automata.tokenize(source)
+        return stateMachine.tokenize(source)
     }
 }
 
