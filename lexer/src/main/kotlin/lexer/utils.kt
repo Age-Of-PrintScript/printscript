@@ -19,7 +19,7 @@ object Lexicon {
 }
 
 fun concatNumbers(a: NumberLiteral, b: Char): NumberLiteral {
-    val newValue = (a.value.toDouble() * 10 + b.digitToInt()) as Number
+    val newValue = a.value.toDouble() * 10 + b.digitToInt()
     return NumberLiteral(newValue)
 }
 
