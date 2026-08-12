@@ -12,7 +12,7 @@ import tokens.Operator
 import tokens.Token
 
 internal class ExpressionParser {
-    fun parseExpression(expression: List<Token>): Either<ParsingError, Expression> {
+    fun parseExpression(expression: List<Token>): Either<SyntaxError, Expression> {
         val result = parseExpressionRecursive(expression);
         return Success(result.value)
     }
