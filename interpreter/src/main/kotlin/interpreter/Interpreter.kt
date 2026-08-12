@@ -6,6 +6,7 @@ import ast.ExpressionSolver
 import domain.Either
 import ast.Program
 import domain.PrintScriptFunctions
+import domain.PrintScriptValue
 
 interface Interpreter {
     fun execute(program: Program): Either<RuntimeError, ExecutionResult>
@@ -46,15 +47,17 @@ class InterpreterImpl: Interpreter {
                     }
                 }
                 is AST.Declaration ->{
+                    if(ast.value != null){
+                        val value = solve_expression(ast.value!!)
+                    }
 
                 }
             }
         }
     }
-    private fun solve_expression(expression: Expression): Either<ExpressionSolver, ExecutionResult> {
+    private fun solve_expression(expression: Expression): Either<RuntimeError, PrintScriptValue> {
         val res = expressionSolver.solve(expression)
-
-
+        TODO()
     }
     private fun add_print_event(
         events: RuntimeEvents,
