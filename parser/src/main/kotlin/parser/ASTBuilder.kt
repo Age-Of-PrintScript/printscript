@@ -10,10 +10,10 @@ import ast.ASTIdentifier
 import ast.Expression
 
 internal sealed interface ASTBuilder {
-    fun build(): Either<SYNTAX_ERROR, AST>
+    fun build(): Either<SyntaxError, AST>
     object EmptyBuilder : ASTBuilder{
-        override fun build(): Either<SYNTAX_ERROR, AST> {
-            return Failure(SYNTAX_ERROR("Unexpected token"))
+        override fun build(): Either<SyntaxError, AST> {
+            return Failure(SyntaxError.INVALID_TOKEN)
         }
     }
 
@@ -22,9 +22,9 @@ internal sealed interface ASTBuilder {
         val type: ASTDataType? = null,
         val value: Expression? = null
     ) : ASTBuilder {
-        override fun build(): Either<SYNTAX_ERROR, AST> {
-            val safeId = id ?: return Failure(SYNTAX_ERROR("Missing identifier in declaration"))
-            val safeType = type ?: return Failure(SYNTAX_ERROR("Missing type in declaration"))
+        override fun build(): Either<SyntaxError, AST> {
+            val safeId = id ?: return Failure(SyntaxError.MISSING_IDENTIFIER)
+            val safeType = type ?: return Failure(SyntaxError.MISSING_TYPE_IN_DECLARATION)
             return Success(AST.Declaration(safeId, safeType, value))
         }
     }
@@ -33,9 +33,9 @@ internal sealed interface ASTBuilder {
         val id: ASTIdentifier? = null,
         val value: Expression? = null
     ) : ASTBuilder {
-        override fun build(): Either<SYNTAX_ERROR, AST> {
-            val safeId = id ?: return Failure(SYNTAX_ERROR("Missing identifier in assignment"))
-            val safeValue = value ?: return Failure(SYNTAX_ERROR("Missing value in assignment"))
+        override fun build(): Either<SyntaxError, AST> {
+            val safeId = id ?: return Failure(SyntaxError.MISSING_IDENTIFIER)
+            val safeValue = value ?: return Failure(SyntaxError.INCOMPLETE_STATEMENT)
             return Success(AST.Assignment(safeId, safeValue))
         }
     }
@@ -43,8 +43,8 @@ internal sealed interface ASTBuilder {
     data class CallBuilder(
         val functionName: PrintScriptFunctions? = null
     ) : ASTBuilder {
-        override fun build(): Either<SYNTAX_ERROR, AST> {
-            val safeName = functionName ?: return Failure(SYNTAX_ERROR("Missing function name in call"))
+        override fun build(): Either<SyntaxError, AST> {
+            val safeName = functionName ?: return Failure(SyntaxError.MISSING_FUNCTION_NAME)
             return Success(AST.Call(safeName))
         }
     }

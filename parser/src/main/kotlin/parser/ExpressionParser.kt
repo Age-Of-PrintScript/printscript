@@ -13,8 +13,7 @@ import tokens.Operator
 import tokens.Token
 
 internal class ExpressionParser {
-
-    fun parseExpression(expression: List<Token>): Either<ParsingError, Expression> {
+    fun parseExpression(expression: List<Token>): Either<SyntaxError, Expression> {
         return when (val result = parseExpressionRecursive(expression)) {
             is Success -> Success(result.value.parsedResult)
             is Failure -> Failure(result.value)
@@ -24,35 +23,35 @@ internal class ExpressionParser {
     private data class ParsedResult<Expression>(val parsedResult: Expression, val nextPosition: Int)
 
 
-    private fun parseExpressionRecursive(tokens: List<Token>): Either<ParsingError, ParsedResult<Expression>> {
+    private fun parseExpressionRecursive(tokens: List<Token>): Either<SyntaxError, ParsedResult<Expression>> {
         return when (val term = parseTerm(tokens, 0)) {
             is Success -> parseExpressionRec(tokens, term.value.nextPosition, term.value.parsedResult) // Quedo muy raro el nombre
             is Failure -> Failure(term.value)
         }
     }
 
-    private fun parseTerm(tokens: List<Token>, position: Int): Either<ParsingError, ParsedResult<Expression>> {
+    private fun parseTerm(tokens: List<Token>, position: Int): Either<SyntaxError, ParsedResult<Expression>> {
         return when (val factor = parseFactor(tokens, position)){
             is Success -> parseTermRec(tokens, factor.value.nextPosition, factor.value.parsedResult)
             is Failure -> Failure(factor.value)
         }
     }
 
-    private fun parseFactor(tokens: List<Token>, position: Int): Either<ParsingError, ParsedResult<Expression>> {
+    private fun parseFactor(tokens: List<Token>, position: Int): Either<SyntaxError, ParsedResult<Expression>> {
         val token = tokens.getOrNull(position)
-            ?: return Failure(SYNTAX_ERROR("token expected, but list ended abruptly")) // Si llegue aca y la lista termino, la expresión no tiene sentido.
+            ?: return Failure(SyntaxError.INCOMPLETE_STATEMENT) // Si llegue aca y la lista termino, la expresión no tiene sentido.
 
         val expression = when (val type = token.type) {
             is Literal -> Expression.Literal(type.value)
             is Identifier -> Expression.Variable(type.name)
-            else -> return Failure(SYNTAX_ERROR("number or variable was expected, got this type: $type instead in position $position")) // Si hay un tokenType que no es de los dos de arriba, la expresión no tiene sentido.
+            else -> return Failure(SyntaxError.WRONG_TOKEN_TYPE) // Si hay un tokenType que no es de los dos de arriba, la expresión no tiene sentido.
         }
         return Success(ParsedResult(expression, position + 1)) // Sigo con mi lista
     }
 
 // métodos auxiliares recursivos
 
-    private tailrec fun parseExpressionRec(tokens: List<Token>, position: Int, left: Expression): Either<ParsingError, ParsedResult<Expression>> {
+    private tailrec fun parseExpressionRec(tokens: List<Token>, position: Int, left: Expression): Either<SyntaxError, ParsedResult<Expression>> {
         val operator = currentOperator(tokens, position, termSeparators)
             ?: return Success(ParsedResult(left, position)) // Si es nulo, no estoy en el medio de una expresión. Me quedo con lo de la izquierda.
 
@@ -62,7 +61,7 @@ internal class ExpressionParser {
         }
     }
 
-    private tailrec fun parseTermRec(tokens: List<Token>, position: Int, left: Expression): Either<ParsingError, ParsedResult<Expression>> {
+    private tailrec fun parseTermRec(tokens: List<Token>, position: Int, left: Expression): Either<SyntaxError, ParsedResult<Expression>> {
         val operator = currentOperator(tokens, position, factorSeparators)
             ?: return Success(ParsedResult(left, position)) // Si es nulo, no estoy en el medio de un termino. Me quedo con lo de la izquierda.
 
