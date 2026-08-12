@@ -1,6 +1,8 @@
 package interpreter
 
 import ast.AST
+import ast.Expression
+import ast.ExpressionSolver
 import domain.Either
 import ast.Program
 import domain.PrintScriptFunctions
@@ -11,6 +13,7 @@ interface Interpreter {
 }
 
 class InterpreterImpl: Interpreter {
+    val expressionSolver = ExpressionSolver()
     override fun execute(program: Program): Either<RuntimeError, ExecutionResult> {
         return execute(program, RuntimeEnvironment(emptyMap()), RuntimeEvents(emptyList()))
     }
@@ -33,7 +36,7 @@ class InterpreterImpl: Interpreter {
         for(ast in asts) {
             when(ast){
                 is AST.Assignment -> {
-
+                    val newValue = solve_expression(ast.value)
                 }
                 is AST.Call -> {
                     when(val function = ast.functionName){
@@ -48,11 +51,15 @@ class InterpreterImpl: Interpreter {
             }
         }
     }
-}
+    private fun solve_expression(expression: Expression): Either<ExpressionSolver, ExecutionResult> {
+        val res = expressionSolver.solve(expression)
 
-private fun add_print_event(
-    events: RuntimeEvents,
-    message: String
-): RuntimeEvents {
-    return events.add_event(PrintEvent(message));
+
+    }
+    private fun add_print_event(
+        events: RuntimeEvents,
+        message: String
+    ): RuntimeEvents {
+        return events.add_event(PrintEvent(message));
+    }
 }

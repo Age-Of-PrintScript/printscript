@@ -1,12 +1,10 @@
-package parser
+package ast
 
-import ast.Expression
 import domain.PrintScriptOperator
 import domain.PrintScriptValue
 
-internal class ExpressionSolver {
-
-    internal fun solve(expression: Expression): Number = when (expression) {
+class ExpressionSolver {
+    fun solve(expression: Expression): Number = when (expression) {
             is Expression.Literal ->  {
                 when (val scriptValue = expression.value){
                     is PrintScriptValue.NumberLiteral -> scriptValue.value
@@ -16,8 +14,6 @@ internal class ExpressionSolver {
             is Expression.Variable -> throw IllegalArgumentException("Unexpected expression")
             is Expression.Operation -> solveOperation(expression)
             }
-
-
     private fun solveOperation(operation: Expression.Operation): Number {
         val left = solve(operation.left).toDouble()
         val right = solve(operation.right).toDouble()
@@ -30,7 +26,5 @@ internal class ExpressionSolver {
             PrintScriptOperator.OPEN_PARENTHESIS -> TODO()
             PrintScriptOperator.CLOSE_PARENTHESIS -> TODO()
         }
-
     }
-
 }
