@@ -1,3 +1,5 @@
+package domain
+
 sealed interface Either<L, R>
 
 data class Failure<L, R>(val value: L) : Either<L, R>

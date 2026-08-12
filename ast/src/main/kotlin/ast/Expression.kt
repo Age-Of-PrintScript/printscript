@@ -1,3 +1,7 @@
+package ast
+
+import domain.PrintScriptOperator
+import domain.PrintScriptValue
 
 sealed interface Expression{
     data class Literal(val value: PrintScriptValue): Expression

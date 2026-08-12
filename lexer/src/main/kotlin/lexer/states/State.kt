@@ -1,6 +1,6 @@
 package lexer.states
 
-import Either
+import domain.Either
 import lexer.LexerError
 
 internal interface State {

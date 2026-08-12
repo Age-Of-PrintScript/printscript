@@ -1,7 +1,7 @@
 package lexer
 
-import Either
-import TokenList
+import domain.Either
+import tokens.TokenList
 
 interface Lexer {
     fun tokenize(source: String): Either<LexerError, TokenList>

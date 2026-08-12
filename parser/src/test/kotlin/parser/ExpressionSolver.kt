@@ -1,3 +1,8 @@
+package parser
+
+import ast.Expression
+import domain.PrintScriptOperator
+import domain.PrintScriptValue
 
 internal class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sirve para expresiones sin variables
 
@@ -22,6 +27,8 @@ internal class ExpressionSolver { //clase auxiliar para hacer tests mas faciles.
             PrintScriptOperator.SUBTRACT -> left - right
             PrintScriptOperator.MULTIPLY -> left * right
             PrintScriptOperator.DIVIDE -> left / right
+            PrintScriptOperator.OPEN_PARENTHESIS -> TODO()
+            PrintScriptOperator.CLOSE_PARENTHESIS -> TODO()
         }
 
     }

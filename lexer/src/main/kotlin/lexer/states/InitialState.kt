@@ -1,8 +1,8 @@
 package lexer.states
 
-import Either
-import Failure
-import Success
+import domain.Either
+import domain.Failure
+import domain.Success
 import lexer.LexerError
 
 internal class InitialState: State {

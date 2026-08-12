@@ -1,5 +1,5 @@
 package lexer
-import Error
+import domain.Error
 
 enum class LexerError(val mensaje: String): Error {
     UNRESOLVED_REFERENCE("Unresolved reference"),

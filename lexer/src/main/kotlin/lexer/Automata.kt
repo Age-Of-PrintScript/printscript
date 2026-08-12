@@ -1,14 +1,14 @@
 package lexer
 
-import Either
-import Failure
-import Success
-import Token
+import domain.Either
+import domain.Failure
+import domain.Success
 import lexer.states.Done
 import lexer.states.InitialState
 import lexer.states.Next
 import lexer.states.State
 import lexer.states.StateResult
+import tokens.Token
 import kotlin.text.iterator
 
 internal class Automata {

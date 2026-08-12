@@ -1,8 +1,8 @@
 package lexer.states
 
-import Either
-import Failure
-import Success
+import domain.Either
+import domain.Failure
+import domain.Success
 import lexer.LexerError
 
 // el lexer solo falla si aparece una palabra que no reconoce en su vocabulario

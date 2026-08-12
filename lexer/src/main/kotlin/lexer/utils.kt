@@ -1,9 +1,11 @@
 package lexer
 
-import Call
-import DataType
-import LET
-import TokenType
+import domain.PrintScriptFunctions
+import domain.PrintScriptType
+import tokens.Call
+import tokens.DataType
+import tokens.LET
+import tokens.TokenType
 
 object Lexicon {
     val KEYWORDS: Map<String, TokenType> = mapOf(
