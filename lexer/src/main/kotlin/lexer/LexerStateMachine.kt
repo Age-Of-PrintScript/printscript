@@ -22,16 +22,21 @@ internal class LexerStateMachine {
             when (result) {
                 is Failure -> return Failure(result.value)
                 is Success -> {
-                    builder.addChar(chr)
-                    when (result.value) {
-                        is Next -> state = (result.value as Next).state
-                        is Done -> {
-                            val newToken = builder.build()
-                            when (newToken) {
-                                is Failure -> return Failure(newToken.value)
-                                is Success -> {
-                                    tokenList.add(newToken.value)
-                                    builder.reset()
+                    val r = builder.addChar(chr)
+                    when (r) {
+                        is Failure -> return Failure(r.value)
+                        is Success -> {
+                            when (result.value) {
+                                is Next -> state = (result.value as Next).state
+                                is Done -> {
+                                    val newToken = builder.build()
+                                    when (newToken) {
+                                        is Failure -> return Failure(newToken.value)
+                                        is Success -> {
+                                            tokenList.add(newToken.value)
+                                            builder.reset()
+                                        }
+                                    }
                                 }
                             }
                         }

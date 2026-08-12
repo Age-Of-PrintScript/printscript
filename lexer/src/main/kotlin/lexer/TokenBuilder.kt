@@ -83,17 +83,11 @@ internal class TokenBuilder {
     }
 
     fun build(): Either<LexerError, Token> {
-        val finishedType = type ?: return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
+        var finishedType = type ?: return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
 
         if (finishedType is Identifier) {
             if (Lexicon.KEYWORDS.contains(finishedType.name)) {
-                return Success(
-                    Token(
-                        Lexicon.KEYWORDS[finishedType.name]!!,
-                        Position(0, 0),
-                        Position(0,0)
-                    )
-                )
+                finishedType = Lexicon.KEYWORDS[finishedType.name]!!
             }
         }
         return Success(
