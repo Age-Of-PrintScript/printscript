@@ -3,6 +3,8 @@ package lexer
 import domain.PrintScriptValue.StringLiteral
 import domain.PrintScriptValue.NumberLiteral
 
+
+//TODO MEJORAR PARA QUE ACEPTE "."
 internal fun concatNumbers(a: NumberLiteral, b: Char): NumberLiteral {
     val newValue = a.value.toDouble() * 10 + b.digitToInt()
     return NumberLiteral(newValue)

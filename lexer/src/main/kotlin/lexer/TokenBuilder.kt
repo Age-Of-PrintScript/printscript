@@ -42,6 +42,10 @@ internal class TokenBuilder {
                     }
                 }
             }
+            chr == '.' -> {
+                if (type == null) return Failure(LexerError.INVALID_CHARACTER)
+                updateTypeWithNumber(type, chr)
+            }
             chr == '\'' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
             chr == '"' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
             chr.isWhitespace() -> type = WHITESPACE
