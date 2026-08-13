@@ -2,6 +2,7 @@ package lexer
 
 import domain.Either
 import domain.Failure
+import domain.PrintScriptSymbols
 import domain.Success
 import lexer.states.Done
 import lexer.states.InitialState
@@ -45,7 +46,11 @@ internal class LexerStateMachine {
                                     state = InitialState()
                                 }
                             }
-                            TODO()
+                            if(PrintScriptSymbols.entries.map { it.symbol }.contains(chr)) {
+                                builder.addChar(chr)
+                            }else{
+                                i++;
+                            }
                         }
                     }
 

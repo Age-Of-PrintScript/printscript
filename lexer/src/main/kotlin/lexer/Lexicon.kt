@@ -44,8 +44,9 @@ internal fun createSymbolTokenMap(): Map<Char, TokenType> {
             PrintScriptSymbols.COLON -> tokenMap[symbol.symbol] = COLON
             PrintScriptSymbols.SEMICOLON -> tokenMap[symbol.symbol] = SEMICOLON
             PrintScriptSymbols.ASSIGN -> tokenMap[symbol.symbol] = ASSIGN
-            PrintScriptSymbols.OPEN_PARENTHESIS -> TODO("Esperando la PR de Nacho")
-            PrintScriptSymbols.CLOSE_PARENTHESIS -> TODO("Esperando la PR de Nacho")
+            //TODO Esperando la pr de nacho
+            PrintScriptSymbols.OPEN_PARENTHESIS -> continue
+            PrintScriptSymbols.CLOSE_PARENTHESIS -> continue
         }
     }
     return tokenMap.toMap()

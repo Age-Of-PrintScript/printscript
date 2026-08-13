@@ -8,6 +8,8 @@ import lexer.LexerError
 // el lexer solo falla si aparece una palabra que no reconoce en su vocabulario
 
 internal class IntegerState : State {
+    override fun canConsume(chr: Char): Boolean = chr.isDigit() || chr == '.'
+
     override fun consume(chr: Char): Either<LexerError, StateResult> {
         return when {
             chr.isDigit() -> Success(Next(this))
@@ -18,6 +20,8 @@ internal class IntegerState : State {
 }
 
 internal class DecimalPointState: State {
+    override fun canConsume(chr: Char): Boolean = chr.isDigit()
+
     override fun consume(chr: Char): Either<LexerError, StateResult> {
         if (chr.isDigit()) return Success(Next(DecimalState()))
         return Failure(LexerError.UNRESOLVED_REFERENCE)
@@ -25,6 +29,8 @@ internal class DecimalPointState: State {
 }
 
 internal class DecimalState: State {
+    override fun canConsume(chr: Char): Boolean = chr.isDigit()
+
     override fun consume(chr: Char): Either<LexerError, StateResult> {
         if (chr.isDigit()) return Success(Next(DecimalState()))
         return Success(Done)
