@@ -44,8 +44,7 @@ internal class TokenBuilder {
             chr == '\'' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
             chr == '"' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
             else -> {
-                val symbol = chr.toString()
-                if (tokenMap.containsKey(symbol)) type = tokenMap.getValue(symbol)
+                if (tokenMap.containsKey(chr)) type = tokenMap.getValue(chr)
                 else return Failure(LexerError.INVALID_CHARACTER)
             }
         }

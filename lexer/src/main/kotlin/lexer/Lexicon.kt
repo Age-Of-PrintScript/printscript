@@ -33,8 +33,8 @@ internal fun createSymbolKeywordMap(): Map<String, TokenType> {
     return keywordMap.toMap()
 }
 
-internal fun createSymbolTokenMap(): Map<String, TokenType> {
-    val tokenMap = mutableMapOf<String, TokenType>()
+internal fun createSymbolTokenMap(): Map<Char, TokenType> {
+    val tokenMap = mutableMapOf<Char, TokenType>()
     for (symbol in PrintScriptSymbols.entries) {
         when (symbol) {
             PrintScriptSymbols.SUM -> tokenMap[symbol.symbol] = Operator(PrintScriptOperator.SUM)
@@ -51,8 +51,8 @@ internal fun createSymbolTokenMap(): Map<String, TokenType> {
     return tokenMap.toMap()
 }
 
-internal fun createSymbolStateMap(): Map<String, StateResult> {
-    val stateMap = mutableMapOf<String, StateResult>()
+internal fun createSymbolStateMap(): Map<Char, StateResult> {
+    val stateMap = mutableMapOf<Char, StateResult>()
     for (symbol in PrintScriptSymbols.entries) {
         when (symbol) {
             PrintScriptSymbols.SUM -> stateMap[symbol.symbol] = Done

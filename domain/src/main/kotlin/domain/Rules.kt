@@ -24,16 +24,16 @@ enum class PrintScriptFunctions:Keyword {
     PRINTLN
 }
 
-enum class PrintScriptSymbols(val symbol: String) {
-    SUM("+"),
-    SUBTRACT("-"),
-    MULTIPLY("*"),
-    DIVIDE("/"),
-    COLON(":"),
-    SEMICOLON(";"),
-    ASSIGN("="),
-    OPEN_PARENTHESIS("("),
-    CLOSE_PARENTHESIS(")"),
+enum class PrintScriptSymbols(val symbol: Char) {
+    SUM('+'),
+    SUBTRACT('-'),
+    MULTIPLY('*'),
+    DIVIDE('/'),
+    COLON(':'),
+    SEMICOLON(';'),
+    ASSIGN('='),
+    OPEN_PARENTHESIS('('),
+    CLOSE_PARENTHESIS(')'),
 }
 
 enum class PrintScriptReservedWords: Keyword {

@@ -16,8 +16,7 @@ internal class InitialState: State {
             chr == '\'' -> Success(Next(SingleQuoteStringState()))
             chr == '"' -> Success(Next(DoubleQuoteStringState()))
             else -> {
-                val symbol = chr.toString()
-                if (stateMap.containsKey(symbol)) Success(stateMap.getValue(symbol))
+                if (stateMap.containsKey(chr)) Success(stateMap.getValue(chr))
                 else Failure(LexerError.INVALID_CHARACTER)
             }
         }
