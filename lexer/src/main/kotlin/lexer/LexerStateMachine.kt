@@ -46,7 +46,7 @@ internal class LexerStateMachine {
                 }
             }
         }
-        return Success(tokenList.filter { it != WHITESPACE })
+        return Success(tokenList.filter { it.type != WHITESPACE })
 
     }
 

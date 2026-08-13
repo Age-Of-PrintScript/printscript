@@ -5,7 +5,6 @@ import domain.Position
 import domain.PrintScriptType
 import domain.PrintScriptValue
 import domain.Success
-import jdk.internal.vm.vector.VectorSupport.test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -40,7 +39,7 @@ class TestLexer {
 
     private fun assertCorrectSource(input: String, expected: List<Token>){
         val result = lexer.tokenize(input)
-        assertTrue(result is Success, "Tokenization wasn't successful ${(result as Failure).value}")
+        assertTrue(result is Success, "Tokenization wasn't successful")
         val givenTokens = (result as Success<LexerError, List<Token>>).value
         assertEqualTokenList(expected, givenTokens)
     }

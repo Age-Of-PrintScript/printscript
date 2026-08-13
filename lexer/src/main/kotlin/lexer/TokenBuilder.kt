@@ -14,6 +14,7 @@ import tokens.Operator
 import tokens.SEMICOLON
 import tokens.Token
 import tokens.TokenType
+import tokens.WHITESPACE
 
 internal class TokenBuilder {
     private var type: TokenType? = null
@@ -43,6 +44,7 @@ internal class TokenBuilder {
             }
             chr == '\'' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
             chr == '"' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
+            chr.isWhitespace() -> type = WHITESPACE
             else -> {
                 if (tokenMap.containsKey(chr)) type = tokenMap.getValue(chr)
                 else return Failure(LexerError.INVALID_CHARACTER)
