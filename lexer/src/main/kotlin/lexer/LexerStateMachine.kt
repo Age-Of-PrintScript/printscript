@@ -8,7 +8,6 @@ import lexer.states.InitialState
 import lexer.states.Next
 import lexer.states.State
 import tokens.Token
-import kotlin.text.iterator
 
 internal class LexerStateMachine {
     private var state: State = InitialState()
@@ -17,30 +16,40 @@ internal class LexerStateMachine {
     fun tokenize(source: String): Either<LexerError, List<Token>> {
         val tokenList = mutableListOf<Token>()
 
-        for (chr in source) {
+        var i = 0;
+
+        while (i < source.length) {
+            val chr = source[i]
             val result = state.consume(chr)
             when (result) {
                 is Failure -> return Failure(result.value)
                 is Success -> {
-                    val r = builder.addChar(chr)
-                    when (r) {
-                        is Failure -> return Failure(r.value)
-                        is Success -> {
-                            when (result.value) {
-                                is Next -> state = (result.value as Next).state
-                                is Done -> {
-                                    val newToken = builder.build()
-                                    when (newToken) {
-                                        is Failure -> return Failure(newToken.value)
-                                        is Success -> {
-                                            tokenList.add(newToken.value)
-                                            builder.reset()
-                                        }
-                                    }
+                    when (result.value) {
+                        is Next -> {
+                            val r = builder.addChar(chr)
+                            when (r) {
+                                is Success -> {
+                                    state = (result.value as Next).state
+                                    i++
                                 }
+                                is Failure -> return Failure(r.value)
                             }
                         }
+                        is Done -> {
+                            val newToken = builder.build()
+                            when (newToken) {
+                                is Failure -> return Failure(newToken.value)
+                                is Success -> {
+                                    tokenList.add(newToken.value)
+                                    builder.reset()
+                                    state = InitialState()
+                                }
+                            }
+                            TODO()
+                        }
                     }
+
+
                 }
             }
         }
