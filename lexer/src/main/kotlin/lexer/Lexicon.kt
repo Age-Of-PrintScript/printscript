@@ -6,8 +6,8 @@ import domain.PrintScriptReservedWords
 import domain.PrintScriptSymbols
 import domain.PrintScriptType
 import domain.keywordRegistry
-import lexer.states.Done
-import lexer.states.StateResult
+import lexer.states.FinalState
+import lexer.states.State
 import tokens.ASSIGN
 import tokens.COLON
 import tokens.Call
@@ -52,19 +52,19 @@ internal fun createSymbolTokenMap(): Map<Char, TokenType> {
     return tokenMap.toMap()
 }
 
-internal fun createSymbolStateMap(): Map<Char, StateResult> {
-    val stateMap = mutableMapOf<Char, StateResult>()
+internal fun createSymbolStateMap(): Map<Char, State> {
+    val stateMap = mutableMapOf<Char, State>()
     for (symbol in PrintScriptSymbols.entries) {
         when (symbol) {
-            PrintScriptSymbols.SUM -> stateMap[symbol.symbol] = Done
-            PrintScriptSymbols.SUBTRACT -> stateMap[symbol.symbol] = Done
-            PrintScriptSymbols.MULTIPLY -> stateMap[symbol.symbol] = Done
-            PrintScriptSymbols.DIVIDE -> stateMap[symbol.symbol] = Done
-            PrintScriptSymbols.COLON -> stateMap[symbol.symbol] = Done
-            PrintScriptSymbols.SEMICOLON -> stateMap[symbol.symbol] = Done
-            PrintScriptSymbols.ASSIGN -> stateMap[symbol.symbol] = Done
-            PrintScriptSymbols.OPEN_PARENTHESIS -> stateMap[symbol.symbol] = Done
-            PrintScriptSymbols.CLOSE_PARENTHESIS -> stateMap[symbol.symbol] = Done
+            PrintScriptSymbols.SUM -> stateMap[symbol.symbol] = FinalState()
+            PrintScriptSymbols.SUBTRACT -> stateMap[symbol.symbol] = FinalState()
+            PrintScriptSymbols.MULTIPLY -> stateMap[symbol.symbol] = FinalState()
+            PrintScriptSymbols.DIVIDE -> stateMap[symbol.symbol] = FinalState()
+            PrintScriptSymbols.COLON -> stateMap[symbol.symbol] = FinalState()
+            PrintScriptSymbols.SEMICOLON -> stateMap[symbol.symbol] = FinalState()
+            PrintScriptSymbols.ASSIGN -> stateMap[symbol.symbol] = FinalState()
+            PrintScriptSymbols.OPEN_PARENTHESIS -> stateMap[symbol.symbol] = FinalState()
+            PrintScriptSymbols.CLOSE_PARENTHESIS -> stateMap[symbol.symbol] = FinalState()
         }
     }
     return stateMap.toMap()
