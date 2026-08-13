@@ -21,8 +21,7 @@ internal class InitialState: State {
         return when {
             chr.isDigit() -> Success(IntegerState())
             chr.isLetter() -> Success(IdentifierState())
-            chr == '\'' -> Success(SingleQuoteStringState())
-            chr == '"' -> Success(EndStringLiteralState())
+            chr == '\'' || chr == '"' -> Success(StringState(chr))
             chr.isWhitespace() -> Success(WhiteSpaceState())
             else -> {
                 if (stateMap.containsKey(chr)) Success(stateMap.getValue(chr))
