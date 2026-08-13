@@ -17,9 +17,9 @@ import tokens.TokenType
 
 internal class TokenBuilder {
     private var type: TokenType? = null
+    private val tokenMap = createSymbolTokenMap()
 
     fun addChar(chr: Char): Either<LexerError, Unit> {
-        val tokenMap = createSymbolTokenMap()
         when {
             chr.isDigit() -> {
                 if (type == null) type = Literal(PrintScriptValue.NumberLiteral(chr.digitToInt()))
@@ -46,7 +46,7 @@ internal class TokenBuilder {
             else -> {
                 val symbol = chr.toString()
                 if (tokenMap.containsKey(symbol)) type = tokenMap.getValue(symbol)
-                return Failure(LexerError.INVALID_CHARACTER)
+                else return Failure(LexerError.INVALID_CHARACTER)
             }
         }
         return Success(Unit)

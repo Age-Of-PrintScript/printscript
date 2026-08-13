@@ -7,8 +7,9 @@ import lexer.LexerError
 import lexer.createSymbolStateMap
 
 internal class InitialState: State {
+    private val stateMap = createSymbolStateMap()
+
     override fun consume(chr: Char): Either<LexerError, StateResult> {
-        val stateMap = createSymbolStateMap()
         return when {
             chr.isDigit() -> Success(Next(IntegerState()))
             chr.isLetter() -> Success(Next(IdentifierState()))
