@@ -18,6 +18,7 @@ object LET: TokenType
 object COLON: TokenType
 object SEMICOLON: TokenType
 object ASSIGN: TokenType
+object WHITESPACE: TokenType
 
 data class Operator(val operator: PrintScriptOperator): TokenType
 

@@ -17,12 +17,13 @@ internal class InitialState: State {
                 chr.isWhitespace()
     }
 
-    override fun consume(chr: Char): Either<LexerError, StateResult> {
+    override fun consume(chr: Char): Either<LexerError, State> {
         return when {
-            chr.isDigit() -> Success(Next(IntegerState()))
-            chr.isLetter() -> Success(Next(IdentifierState()))
-            chr == '\'' -> Success(Next(SingleQuoteStringState()))
-            chr == '"' -> Success(Next(DoubleQuoteStringState()))
+            chr.isDigit() -> Success(IntegerState())
+            chr.isLetter() -> Success(IdentifierState())
+            chr == '\'' -> Success(SingleQuoteStringState())
+            chr == '"' -> Success(EndStringLiteralState())
+            chr.isWhitespace() -> Success(WhiteSpaceState())
             else -> {
                 if (stateMap.containsKey(chr)) Success(stateMap.getValue(chr))
                 else Failure(LexerError.INVALID_CHARACTER)
