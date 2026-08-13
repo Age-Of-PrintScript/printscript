@@ -1,12 +1,8 @@
 package domain
 
-/**
- * # PRINTSCRIPT DATATYPES
- * These are the supported datatypes in printscript
- * last updated: 6/8/26
- */
+sealed interface Keyword
 
-enum class PrintScriptType {
+enum class PrintScriptType:Keyword {
     NUMBER,
     STRING
 }
@@ -16,26 +12,15 @@ sealed interface PrintScriptValue {
     data class StringLiteral(val value: String): PrintScriptValue
 }
 
-/**
- * # PRINTSCRIPT OPERATIONS
- * * These are the supported operations in printscript
- * last updated: 6/8/26
- */
-
 enum class PrintScriptOperator {
     SUM, SUBTRACT, MULTIPLY, DIVIDE, OPEN_PARENTHESIS, CLOSE_PARENTHESIS
 }
+
 val termSeparators = listOf(PrintScriptOperator.SUM, PrintScriptOperator.SUBTRACT)
+
 val factorSeparators = listOf(PrintScriptOperator.MULTIPLY, PrintScriptOperator.DIVIDE)
 
-
-/**
- * # PRINTSCRIPT OPERATIONS
- * * This is the only built-in function in printscript
- * last updated: 6/8/26
- */
-
-enum class PrintScriptFunctions {
+enum class PrintScriptFunctions:Keyword {
     PRINTLN
 }
 
@@ -50,3 +35,9 @@ enum class PrintScriptSymbols(val symbol: String) {
     OPEN_PARENTHESIS("("),
     CLOSE_PARENTHESIS(")"),
 }
+
+enum class PrintScriptReservedWords: Keyword {
+    LET
+}
+
+val keywordRegistry: List<Keyword> = PrintScriptFunctions.entries + PrintScriptReservedWords.entries + PrintScriptType.entries

@@ -82,10 +82,11 @@ internal class TokenBuilder {
         var finishedType = type ?: return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
 
         if (finishedType is Identifier) {
-            if (Lexicon.KEYWORDS.contains(finishedType.name)) {
-                finishedType = Lexicon.KEYWORDS[finishedType.name]!!
-            }
+            val keywordMap = createSymbolKeywordMap()
+            if (keywordMap.contains(finishedType.name))
+                finishedType = keywordMap.getValue(finishedType.name)
         }
+
         return Success(
             Token(
                 finishedType,
