@@ -17,6 +17,7 @@ import tokens.TokenType
 
 internal class TokenBuilder {
     private var type: TokenType? = null
+    private val tokenMap = createSymbolTokenMap()
 
     fun addChar(chr: Char): Either<LexerError, Unit> {
         when {
@@ -42,16 +43,10 @@ internal class TokenBuilder {
             }
             chr == '\'' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
             chr == '"' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
-            chr == ':' -> type = COLON
-            chr == ';' -> type = SEMICOLON
-            chr == '=' -> type = ASSIGN
-            chr == '+' -> type = Operator(PrintScriptOperator.SUM)
-            chr == '-' -> type = Operator(PrintScriptOperator.SUBTRACT)
-            chr == '*' -> type = Operator(PrintScriptOperator.MULTIPLY)
-            chr == '/' -> type = Operator(PrintScriptOperator.DIVIDE)
-            chr == '(' -> type = Operator(PrintScriptOperator.OPEN_PARENTHESIS)
-            chr == ')' -> type = Operator(PrintScriptOperator.CLOSE_PARENTHESIS)
-            else -> return Failure(LexerError.INVALID_CHARACTER)
+            else -> {
+                if (tokenMap.containsKey(chr)) type = tokenMap.getValue(chr)
+                else return Failure(LexerError.INVALID_CHARACTER)
+            }
         }
         return Success(Unit)
     }
@@ -86,10 +81,11 @@ internal class TokenBuilder {
         var finishedType = type ?: return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
 
         if (finishedType is Identifier) {
-            if (Lexicon.KEYWORDS.contains(finishedType.name)) {
-                finishedType = Lexicon.KEYWORDS[finishedType.name]!!
-            }
+            val keywordMap = createSymbolKeywordMap()
+            if (keywordMap.contains(finishedType.name))
+                finishedType = keywordMap.getValue(finishedType.name)
         }
+
         return Success(
             Token(
                 finishedType,
