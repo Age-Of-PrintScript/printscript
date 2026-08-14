@@ -48,7 +48,13 @@ internal class TokenBuilder {
             }
             chr == '\'' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
             chr == '"' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
-            chr.isWhitespace() -> type = WHITESPACE
+            chr.isWhitespace() -> {
+                type = if (type is Literal && (type as Literal).value is PrintScriptValue.StringLiteral) {
+                    Literal(concatStrings((type as Literal).value as PrintScriptValue.StringLiteral, chr))
+                } else {
+                    WHITESPACE
+                }
+            }
             else -> {
                 if (tokenMap.containsKey(chr)) type = tokenMap.getValue(chr)
                 else return Failure(LexerError.INVALID_CHARACTER)
