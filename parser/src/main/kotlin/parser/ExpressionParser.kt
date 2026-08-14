@@ -13,6 +13,7 @@ import tokens.Literal
 import tokens.OpenParenthesis
 import tokens.Operator
 import tokens.Token
+import java.util.Optional
 
 internal class ExpressionParser {
     
@@ -78,20 +79,20 @@ internal class ExpressionParser {
 
     private tailrec fun separateExpression(tokens: List<Token>, position: Int, left: Expression): Either<SyntaxError, ParsedResult<Expression>> {
         val operator = currentOperator(tokens, position, termSeparators)
-            ?: return Success(ParsedResult(left, position)) // Si es nulo, no estoy en el medio de una expresión. Me quedo con lo de la izquierda.
+            if(operator.isEmpty) return Success(ParsedResult(left, position)) // Si es empty, no estoy en el medio de una expresión. Me quedo con lo de la izquierda.
 
         return when (val right = parseTerm(tokens, position + 1)) { //obtengo el otro miembro de la expresión
-            is Success -> separateExpression(tokens, right.value.nextPosition, Expression.Operation(left, right.value.parsedResult, operator))
+            is Success -> separateExpression(tokens, right.value.nextPosition, Expression.Operation(left, right.value.parsedResult, operator.get()))
             is Failure -> Failure(right.value)
         }
     }
 
     private tailrec fun separateTerm(tokens: List<Token>, position: Int, left: Expression): Either<SyntaxError, ParsedResult<Expression>> {
         val operator = currentOperator(tokens, position, factorSeparators)
-            ?: return Success(ParsedResult(left, position)) // Si es nulo, no estoy en el medio de un termino. Me quedo con lo de la izquierda.
+            if(operator.isEmpty) return Success(ParsedResult(left, position)) // Si es empty, no estoy en el medio de un termino. Me quedo con lo de la izquierda.
 
-        return when (val right = parseFactor(tokens, position + 1)){ //obtengo el otro miembro del termino
-            is Success -> separateTerm(tokens, right.value.nextPosition, Expression.Operation(left, right.value.parsedResult, operator))
+        return when (val right = parseFactor(tokens, position + 1)){ //obtengo el otro miembro del término
+            is Success -> separateTerm(tokens, right.value.nextPosition, Expression.Operation(left, right.value.parsedResult, operator.get()))
             is Failure -> Failure(right.value)
         }
     }
@@ -101,9 +102,12 @@ internal class ExpressionParser {
      * Si el token en esa posición no es un operador, o es un operador que no está en la lista que le pasaste, o la posición está fuera de rango — devuelve null en cualquiera de esos casos. (muy feo)
      **/
 
-    private fun currentOperator(tokens: List<Token>, position: Int, operators: List<PrintScriptOperator>): PrintScriptOperator? {
+    private fun currentOperator(tokens: List<Token>, position: Int, operators: List<PrintScriptOperator>): Optional<PrintScriptOperator> {
         val type = tokens.getOrNull(position)?.type
-        return if (type is Operator && type.operator in operators) type.operator else null
+        return if (type is Operator && type.operator in operators) Optional.of( type.operator) else Optional.empty()
     }
 
 }
+
+
+

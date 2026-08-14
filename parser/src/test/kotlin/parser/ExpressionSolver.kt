@@ -151,32 +151,6 @@ internal class ExpressionSolver { //clase auxiliar para hacer tests mas faciles.
 
 
 
-    /*
-    * Manejo de operaciones básicas
-    * */
 
-    //String
-
-    private fun handleStringSum(left: String, right: String): PrintScriptValue{
-        return PrintScriptValue.StringLiteral(left + right)
-    }
-
-    //Number
-
-    private fun handleNumberSum(left: Number, right: Number): PrintScriptValue{
-        return PrintScriptValue.NumberLiteral(left.toDouble() + right.toDouble())
-    }
-
-    private fun handleNumberSubtract(left: Number, right: Number): PrintScriptValue{
-        return PrintScriptValue.NumberLiteral(left.toDouble() - right.toDouble())
-    }
-
-    private fun handleNumberProduct(left: Number, right: Number): PrintScriptValue{
-        return PrintScriptValue.NumberLiteral(left.toDouble() * right.toDouble())
-    }
-
-    private fun handleNumberDivide(left: Number, right: Number): PrintScriptValue{
-        return PrintScriptValue.NumberLiteral(left.toDouble() / right.toDouble())
-    }
 
 }
