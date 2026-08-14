@@ -13,7 +13,7 @@ sealed interface PrintScriptValue {
 }
 
 enum class PrintScriptOperator {
-    SUM, SUBTRACT, MULTIPLY, DIVIDE, OPEN_PARENTHESIS, CLOSE_PARENTHESIS
+    SUM, SUBTRACT, MULTIPLY, DIVIDE
 }
 
 val termSeparators = listOf(PrintScriptOperator.SUM, PrintScriptOperator.SUBTRACT)
