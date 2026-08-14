@@ -19,6 +19,9 @@ object COLON: TokenType
 object SEMICOLON: TokenType
 object ASSIGN: TokenType
 
+object OpenParenthesis: TokenType
+object ClosedParenthesis: TokenType
+
 data class Operator(val operator: PrintScriptOperator): TokenType
 
 //Nombre de variable

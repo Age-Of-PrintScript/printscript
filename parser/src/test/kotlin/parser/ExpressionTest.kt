@@ -1,8 +1,11 @@
 package parser
 
 import ast.Expression
+import domain.Either
+import domain.Failure
 import domain.PrintScriptOperator
 import domain.PrintScriptValue
+import domain.Success
 import kotlin.test.assertEquals
 import kotlin.test.Test
 
@@ -13,8 +16,22 @@ class ExpressionTest {
     private val solver = ExpressionSolver()
 
 
-    private fun assertExpressionEquals(expression: Expression, expectedValue: Number) {
-        assertEquals(expectedValue.toDouble(), solver.solve(expression))
+    private fun assertExpressionEquals(
+        expression: Expression,
+        expectedValue: Number,
+        values: Map<String, PrintScriptValue> = emptyMap()
+    ):Either<String, PrintScriptValue> {
+        when (val result = solver.solve(expression, values)) {
+            is Success -> {
+                val value = result.value
+                if (value !is PrintScriptValue.NumberLiteral) {
+                    return Failure("NumberLiteral Expected, got $value instead")
+                }
+                assertEquals(expectedValue.toDouble(), value.value.toDouble())
+            }
+            is Failure -> return Failure("Se esperaba un resultado exitoso, pero fallo con: ${result.value}")
+        }
+        return Failure("something went wrong")
     }
 
 
