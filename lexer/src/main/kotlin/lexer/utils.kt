@@ -2,6 +2,8 @@ package lexer
 
 import domain.PrintScriptValue.StringLiteral
 import domain.PrintScriptValue.NumberLiteral
+import tokens.Literal
+import tokens.TokenType
 
 
 //TODO MEJORAR PARA QUE ACEPTE "."
@@ -14,3 +16,9 @@ internal fun concatStrings(a: StringLiteral, b: Char): StringLiteral {
     val newValue = a.value + b.toString()
     return StringLiteral(newValue)
 }
+
+internal fun isStringType(type: TokenType?): Boolean =
+    type is Literal && type.value is StringLiteral
+
+internal fun charIsNotQuote(chr: Char): Boolean =
+    chr != '\'' && chr != '"'

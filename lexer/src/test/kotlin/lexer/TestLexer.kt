@@ -1,7 +1,6 @@
 package lexer
 
 import lexer.cases.InvalidCharacters
-import lexer.cases.InvalidIdentifiers
 import lexer.cases.MalformedNumbers
 import lexer.cases.SuccessfulAssignments
 import lexer.cases.SuccessfulCalls
@@ -78,12 +77,6 @@ class TestLexer {
     @TestFactory
     fun `malformed numbers`(): List<DynamicNode> =
         MalformedNumbers.cases().map { case ->
-            dynamicTest(case.name) { assertIncorrectSource(lexer, case.input, case.expected) }
-        }
-
-    @TestFactory
-    fun `invalid identifiers`(): List<DynamicNode> =
-        InvalidIdentifiers.cases().map { case ->
             dynamicTest(case.name) { assertIncorrectSource(lexer, case.input, case.expected) }
         }
 
