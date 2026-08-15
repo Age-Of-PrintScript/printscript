@@ -1,6 +1,5 @@
 package lexer.cases
 
-import domain.PrintScriptOperator
 import domain.PrintScriptType
 import domain.PrintScriptValue
 import lexer.SuccessCase
