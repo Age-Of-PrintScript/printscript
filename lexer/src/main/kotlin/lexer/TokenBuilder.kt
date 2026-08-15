@@ -38,8 +38,11 @@ internal class TokenBuilder {
                 if (type == null) return Failure(LexerError.INVALID_CHARACTER)
                 updateTypeWithNumber(type, chr)
             }
-            chr == '\'' -> type = type ?: Literal(StringLiteral(""))
-            chr == '"' -> type = type ?: Literal(StringLiteral(""))
+            chr == '\'' || chr == '"'-> {
+                if(type == null) type = Literal(StringLiteral(chr.toString()))
+                else if(isStringType(type)) return handleStringLiteral(type, chr)
+                else return Failure(LexerError.INVALID_CHARACTER)
+            }
             chr.isWhitespace() -> type = WHITESPACE
             else -> {
                 if (tokenMap.containsKey(chr)) type = tokenMap.getValue(chr)
@@ -92,6 +95,17 @@ internal class TokenBuilder {
             val keywordMap = createSymbolKeywordMap()
             if (keywordMap.contains(finishedType.name))
                 finishedType = keywordMap.getValue(finishedType.name)
+        }
+        if(isStringType(finishedType)) {
+            val lit = (finishedType as Literal)
+            val str = lit.value as StringLiteral
+            val last = str.value.last()
+            //El type solo es asignado string type si arranca con comillas
+            if(charIsNotQuote(last)){
+                return Failure(LexerError.UNTERMINATED_STRING)
+            }else{
+                finishedType = Literal(StringLiteral(str.value.substring(1, str.value.length - 1)))
+            }
         }
 
         return Success(

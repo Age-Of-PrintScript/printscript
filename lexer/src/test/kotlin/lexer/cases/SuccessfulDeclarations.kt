@@ -124,5 +124,18 @@ object SuccessfulDeclarations {
                 Identifier("x2"),
                 SEMICOLON
             )
+        ),
+        SuccessCase(
+            "declaration with string with single quote inside",
+            "let x1: string = \"let's move\";",
+            listOf(
+                LET,
+                Identifier("x1"),
+                COLON,
+                DataType(PrintScriptType.STRING),
+                ASSIGN,
+                Literal(PrintScriptValue.StringLiteral("let's move")),
+                SEMICOLON
+            )
         )
 )}
