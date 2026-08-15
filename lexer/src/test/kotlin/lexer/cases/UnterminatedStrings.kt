@@ -12,7 +12,7 @@ object UnterminatedStrings {
         ),
         FailureCase(
             "unterminated multiline string",
-            "let x: string = \"hola\nmundo",
+            "let x: string = \"hola\n mundo;",
             LexerError.UNTERMINATED_STRING
         )
     )

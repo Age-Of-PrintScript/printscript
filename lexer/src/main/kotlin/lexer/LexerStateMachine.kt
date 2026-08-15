@@ -14,7 +14,11 @@ internal class LexerStateMachine {
     private val builder: TokenBuilder = TokenBuilder()
 
     fun tokenize(source: String): Either<LexerError, TokenList> {
+        state = InitialState()
+        builder.reset()
+
         val tokenList = mutableListOf<Token>()
+
         for(i in source.indices) {
             val chr = source[i]
             val result = state.consume(chr)
