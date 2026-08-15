@@ -11,8 +11,10 @@ import lexer.states.State
 import tokens.ASSIGN
 import tokens.COLON
 import tokens.Call
+import tokens.ClosedParenthesis
 import tokens.DataType
 import tokens.LET
+import tokens.OpenParenthesis
 import tokens.Operator
 import tokens.SEMICOLON
 import tokens.TokenType
@@ -44,9 +46,8 @@ internal fun createSymbolTokenMap(): Map<Char, TokenType> {
             PrintScriptSymbols.COLON -> tokenMap[symbol.symbol] = COLON
             PrintScriptSymbols.SEMICOLON -> tokenMap[symbol.symbol] = SEMICOLON
             PrintScriptSymbols.ASSIGN -> tokenMap[symbol.symbol] = ASSIGN
-            //TODO Esperando la pr de nacho
-            PrintScriptSymbols.OPEN_PARENTHESIS -> continue
-            PrintScriptSymbols.CLOSE_PARENTHESIS -> continue
+            PrintScriptSymbols.OPEN_PARENTHESIS -> tokenMap[symbol.symbol] = OpenParenthesis
+            PrintScriptSymbols.CLOSE_PARENTHESIS -> tokenMap[symbol.symbol] = ClosedParenthesis
         }
     }
     return tokenMap.toMap()
