@@ -35,14 +35,14 @@ class InterpreterImpl: Interpreter {
     ): Either<RuntimeError, ExecutionResult> {
         val asts = program.trees
         var events = runtimeEvents
-        var environment = runtimeEnvironment
+        var env = runtimeEnvironment
         for(ast in asts) {
             when(ast){
                 is AST.Assignment -> {
-                    when(val newValue = solve_expression(ast.value)){
+                    when(val newValue = solve_expression(ast.value, env)){
                         is Failure -> return Failure(newValue.value)
                         is Success -> {
-                            val result = environment.change_variable(ast.id.name, newValue.value)
+                            val result = env.change_variable(ast.id.name, newValue.value)
                         }
                     }
 
@@ -56,7 +56,7 @@ class InterpreterImpl: Interpreter {
                 }
                 is AST.Declaration ->{
                     if(ast.value != null){
-                        when(val value = solve_expression(ast.value!!)){
+                        when(val value = solve_expression(ast.value!!, env)){
                             is Failure -> return Failure(value.value)
                             is Success -> TODO()
                         }
@@ -67,8 +67,8 @@ class InterpreterImpl: Interpreter {
         }
         TODO()
     }
-    private fun solve_expression(expression: Expression): Either<RuntimeError, PrintScriptValue> {
-        val res = expressionSolver.solve(expression)
+    private fun solve_expression(expression: Expression, env: RuntimeEnvironment): Either<RuntimeError, PrintScriptValue> {
+        val res = expressionSolver.solve(expression, env.variableMap)
         TODO()
     }
     private fun add_print_event(

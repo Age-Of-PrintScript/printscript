@@ -9,7 +9,7 @@ import ast.AST
 import tokens.TokenList
 
 internal class ParserStateMachine {
-    fun parse(tokens: TokenList, expressionParser: ExpressionParser): Either<ParsingError, Program> {
+    fun parse(tokens: TokenList, expressionParser: ExpressionParser): Either<SyntaxError, Program> {
         var state: State = Start
         var builder: ASTBuilder = ASTBuilder.EmptyBuilder
         val trees = mutableListOf<AST>()
@@ -38,9 +38,9 @@ internal class ParserStateMachine {
         state: State,
         trees: List<AST>,
         tokens: TokenList
-    ): Either<ParsingError, Program> {
+    ): Either<SyntaxError, Program> {
         if (state != Start) {
-            return Failure(SYNTAX_ERROR("Unexpected end of input, incomplete statement"))
+            return Failure(SyntaxError.INCOMPLETE_STATEMENT)
         }
         return Success(
             Program(

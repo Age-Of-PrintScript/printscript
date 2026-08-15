@@ -6,13 +6,11 @@ import domain.PrintScriptOperator
 import domain.PrintScriptType
 import domain.PrintScriptValue
 
-
 data class Token(
     val type: TokenType,
     val start: Position,
     val end: Position
 )
-
 
 sealed interface TokenType {}
 
@@ -20,6 +18,10 @@ object LET: TokenType
 object COLON: TokenType
 object SEMICOLON: TokenType
 object ASSIGN: TokenType
+object WHITESPACE: TokenType
+
+object OpenParenthesis: TokenType
+object ClosedParenthesis: TokenType
 
 data class Operator(val operator: PrintScriptOperator): TokenType
 
@@ -34,7 +36,6 @@ data class DataType(val type: PrintScriptType): TokenType
 
 //llamado a una funcion
 data class Call(val type: PrintScriptFunctions): TokenType
-
 
 typealias TokenList = List<Token>
 

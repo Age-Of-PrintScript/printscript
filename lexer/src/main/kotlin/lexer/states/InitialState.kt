@@ -4,24 +4,29 @@ import domain.Either
 import domain.Failure
 import domain.Success
 import lexer.LexerError
+import lexer.createSymbolStateMap
 
 internal class InitialState: State {
-    override fun consume(chr: Char): Either<LexerError, StateResult> {
+    private val stateMap = createSymbolStateMap()
+    override fun canConsume(chr: Char): Boolean {
+        return chr.isDigit() ||
+                chr.isLetter() ||
+                chr == '\'' ||
+                chr == '"' ||
+                stateMap.containsKey(chr) ||
+                chr.isWhitespace()
+    }
+
+    override fun consume(chr: Char): Either<LexerError, State> {
         return when {
-            chr.isDigit() -> Success(Next(IntegerState()))
-            chr.isLetter() -> Success(Next(IdentifierState()))
-            chr == '\'' -> Success(Next(SingleQuoteStringState()))
-            chr == '"' -> Success(Next(DoubleQuoteStringState()))
-            chr == ':' -> Success(Done)
-            chr == ';' -> Success(Done)
-            chr == '=' -> Success(Done)
-            chr == '+' -> Success(Done)
-            chr == '-' -> Success(Done)
-            chr == '*' -> Success(Done)
-            chr == '/' -> Success(Done)
-            chr == '(' -> Success(Done)
-            chr == ')' -> Success(Done)
-            else -> Failure(LexerError.INVALID_CHARACTER)
+            chr.isDigit() -> Success(IntegerState())
+            chr.isLetter() -> Success(IdentifierState())
+            chr == '\'' || chr == '"' -> Success(StringState(chr))
+            chr.isWhitespace() -> Success(WhiteSpaceState())
+            else -> {
+                if (stateMap.containsKey(chr)) Success(stateMap.getValue(chr))
+                else Failure(LexerError.INVALID_CHARACTER)
+            }
         }
     }
 }

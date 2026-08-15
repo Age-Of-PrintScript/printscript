@@ -22,18 +22,18 @@ internal typealias ConsumeResult = Pair<State, ASTBuilder>
 
 
 internal interface State {
-    fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult>
+    fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult>
 }
 
 // ---------- Start ----------
 
 internal object Start : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
+    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
         return when (val t = token.type) {
             is Call -> Success(CallSeen(t.type) to ASTBuilder.CallBuilder(t.type))
             is Identifier -> Success(AssignmentIdSeen(ASTIdentifier(t.name)) to ASTBuilder.AssignmentBuilder(ASTIdentifier(t.name)))
             LET -> Success(LetSeen to ASTBuilder.DeclarationBuilder())
-            else -> Failure(SYNTAX_ERROR("Unexpected token"))
+            else -> Failure(SyntaxError.INVALID_TOKEN)
         }
     }
 }
@@ -41,45 +41,45 @@ internal object Start : State {
 // ---------- Rama DECLARATION ----------
 
 internal object LetSeen : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
+    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
         return when (val t = token.type) {
             is Identifier -> {
                 val b = builder as ASTBuilder.DeclarationBuilder
                 Success(DeclarationIdSeen(ASTIdentifier(t.name)) to b.copy(id = ASTIdentifier(t.name)))
             }
-            else -> Failure(SYNTAX_ERROR("Identifier expected"))
+            else -> Failure(SyntaxError.MISSING_IDENTIFIER)
         }
     }
 }
 
 internal data class DeclarationIdSeen(val id: ASTIdentifier) : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
+    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
         return when (token.type) {
             COLON -> Success(DeclarationColonSeen(id) to builder)
-            else -> Failure(SYNTAX_ERROR("Missing colon"))
+            else -> Failure(SyntaxError.MISSING_COLON_IN_DECLARATION)
         }
     }
 }
 
 internal data class DeclarationColonSeen(val id: ASTIdentifier) : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
+    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
         return when (val t = token.type) {
             is DataType -> {
                 val b = builder as ASTBuilder.DeclarationBuilder
                 val type = ASTDataType(t.type)
                 Success(DeclarationTypeSeen(id, type) to b.copy(type = type))
             }
-            else -> Failure(SYNTAX_ERROR("Missing type declaration"))
+            else -> Failure(SyntaxError.MISSING_TYPE_IN_DECLARATION)
         }
     }
 }
 
 internal data class DeclarationTypeSeen(val id: ASTIdentifier, val type: ASTDataType) : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
+    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
         return when (token.type) {
             ASSIGN -> Success(ExpressionPending(id) to builder)
             SEMICOLON -> Success(StatementComplete to builder)
-            else -> Failure(SYNTAX_ERROR("Expected '=' or ';' after type declaration"))
+            else -> Failure(SyntaxError.INVALID_TOKEN_AFTER_TYPE)
         }
     }
 }
@@ -87,10 +87,10 @@ internal data class DeclarationTypeSeen(val id: ASTIdentifier, val type: ASTData
 // ---------- Rama ASSIGNMENT ----------
 
 internal data class AssignmentIdSeen(val id: ASTIdentifier) : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
+    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
         return when (token.type) {
             ASSIGN -> Success(ExpressionPending(id) to builder)
-            else -> Failure(SYNTAX_ERROR("Expected assignment"))
+            else -> Failure(SyntaxError.MISSING_ASSIGNMENT_OPERATOR)
         }
     }
 }
@@ -101,7 +101,7 @@ internal data class ExpressionPending(
     val id: ASTIdentifier,
     val tokens: List<Token> = emptyList()
 ) : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
+    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
         return when (token.type) {
             SEMICOLON -> {
                 val result = expressionParser.parseExpression(tokens)
@@ -115,7 +115,7 @@ internal data class ExpressionPending(
             }
             is Literal, is Identifier, is Operator ->
                 Success(copy(tokens = tokens + token) to builder)
-            else -> Failure(SYNTAX_ERROR("Unexpected token in expression"))
+            else -> Failure(SyntaxError.INVALID_TOKEN)
         }
     }
 }
@@ -123,10 +123,10 @@ internal data class ExpressionPending(
 // ---------- Rama CALL ----------
 
 internal data class CallSeen(val function: PrintScriptFunctions) : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
+    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
         return when (token.type) {
             SEMICOLON -> Success(StatementComplete to builder)
-            else -> Failure(SYNTAX_ERROR("Expected semicolon after call"))
+            else -> Failure(SyntaxError.MISSING_SEMICOLON)
         }
     }
 }
@@ -134,8 +134,8 @@ internal data class CallSeen(val function: PrintScriptFunctions) : State {
 // ---------- Estado de aceptación ----------
 
 internal object StatementComplete : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<ParsingError, ConsumeResult> {
-        return Failure(SYNTAX_ERROR("Unexpected token after end of statement"))
+    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
+        return Failure(SyntaxError.UNEXPECTED_TOKEN_AFTER_STATEMENT)
     }
 }
 

@@ -14,7 +14,7 @@ data class ExecutionResult(
 
 
 data class RuntimeEnvironment(
-    private val variableMap: Map<String, PrintScriptValue>
+    val variableMap: Map<String, PrintScriptValue>
 ){
     fun add_variable(id: String, value: PrintScriptValue): Either<RuntimeError, RuntimeEnvironment> {
 
