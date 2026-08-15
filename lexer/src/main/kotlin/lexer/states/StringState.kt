@@ -1,23 +1,16 @@
 package lexer.states
 
 import domain.Either
+import domain.Failure
 import domain.Success
 import lexer.LexerError
 
-internal class DoubleQuoteStringState : State {
-    override fun consume(chr: Char): Either<LexerError, StateResult> {
-        return when {
-            chr == '"' -> Success(Done)
-            else -> Success(Next(this))
-        }
+
+internal class StringState(val quoteStyle: Char) : State {
+    override fun canConsume(chr: Char): Boolean = true
+    override fun consume(chr: Char): Either<LexerError, State> {
+        return if (chr == quoteStyle) Success(FinalState())
+        else Success(this)
     }
 }
 
-internal class SingleQuoteStringState : State {
-    override fun consume(chr: Char): Either<LexerError, StateResult> {
-        return when {
-            chr == '\'' -> Success(Done)
-            else -> Success(Next(this))
-        }
-    }
-}

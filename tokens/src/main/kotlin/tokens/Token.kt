@@ -18,6 +18,7 @@ object LET: TokenType
 object COLON: TokenType
 object SEMICOLON: TokenType
 object ASSIGN: TokenType
+object WHITESPACE: TokenType
 
 object OpenParenthesis: TokenType
 object ClosedParenthesis: TokenType
