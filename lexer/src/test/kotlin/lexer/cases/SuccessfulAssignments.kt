@@ -71,7 +71,18 @@ object SuccessfulAssignments {
                 Literal(PrintScriptValue.NumberLiteral(0)),
                 SEMICOLON
             )
+        ),
+        SuccessCase(
+            "number with decimal points",
+            "x = 5.5",
+            listOf(
+                Identifier("x"),
+                ASSIGN,
+                Literal(PrintScriptValue.NumberLiteral(5.5)),
+                SEMICOLON
+            )
         )
+
 
     )
 }
