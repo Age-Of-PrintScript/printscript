@@ -21,12 +21,20 @@ internal class TokenBuilder {
     private val tokenMap = createSymbolTokenMap()
 
     fun addChar(chr: Char): Either<LexerError, Unit> {
+        if(isStringType(type) && charIsNotQuote(chr)){
+            when(val result = updateTypeWithString(type, chr)){
+                is Failure -> return Failure(result.value)
+                is Success -> {
+                    type = result.value
+                    return Success(Unit)
+                }
+            }
+        }
         when {
             chr.isDigit() -> {
                 if (type == null) type = Literal(PrintScriptValue.NumberLiteral(chr.digitToInt()))
                 else {
-                    val newType = updateTypeWithNumber(type, chr)
-                    when (newType) {
+                    when (val newType = updateTypeWithNumber(type, chr)) {
                         is Success -> type = newType.value
                         is Failure -> return Failure(newType.value)
                     }
@@ -35,8 +43,7 @@ internal class TokenBuilder {
             chr.isLetter() -> {
                 if (type == null) type = Identifier(chr.toString())
                 else {
-                    val newType = updateTypeWithString(type, chr)
-                    when (newType) {
+                    when (val newType = updateTypeWithString(type, chr)) {
                         is Success -> type = newType.value
                         is Failure -> return Failure(newType.value)
                     }
@@ -48,13 +55,7 @@ internal class TokenBuilder {
             }
             chr == '\'' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
             chr == '"' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
-            chr.isWhitespace() -> {
-                type = if (type is Literal && (type as Literal).value is PrintScriptValue.StringLiteral) {
-                    Literal(concatStrings((type as Literal).value as PrintScriptValue.StringLiteral, chr))
-                } else {
-                    WHITESPACE
-                }
-            }
+            chr.isWhitespace() -> type = WHITESPACE
             else -> {
                 if (tokenMap.containsKey(chr)) type = tokenMap.getValue(chr)
                 else return Failure(LexerError.INVALID_CHARACTER)
@@ -62,6 +63,9 @@ internal class TokenBuilder {
         }
         return Success(Unit)
     }
+
+    private fun isStringType(type: TokenType?): Boolean =
+        type is Literal && type.value is PrintScriptValue.StringLiteral
 
     private fun updateTypeWithNumber(type: TokenType?, chr: Char): Either<LexerError, TokenType> {
         return when (type) {
@@ -75,6 +79,9 @@ internal class TokenBuilder {
             else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
         }
     }
+
+    private fun charIsNotQuote(chr: Char): Boolean =
+        chr != '\'' && chr != '"'
 
     private fun updateTypeWithString(type: TokenType?, chr: Char): Either<LexerError, TokenType> {
         return when (type) {

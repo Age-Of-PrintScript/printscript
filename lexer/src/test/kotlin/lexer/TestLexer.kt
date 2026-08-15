@@ -32,7 +32,9 @@ class TestLexer {
     @TestFactory
     fun `successful declarations`(): List<DynamicNode> =
         SuccessfulDeclarations.cases().map { case ->
-            dynamicTest(case.name) { assertCorrectSource(lexer, case.input, case.expected) }
+            dynamicTest(case.name) {
+                assertCorrectSource(lexer, case.input, case.expected)
+            }
         }
 
     @TestFactory
@@ -62,7 +64,9 @@ class TestLexer {
     @TestFactory
     fun `unterminated strings`(): List<DynamicNode> =
         UnterminatedStrings.cases().map { case ->
-            dynamicTest(case.name) { assertIncorrectSource(lexer, case.input, case.expected) }
+            dynamicTest(case.name) {
+                assertIncorrectSource(lexer, case.input, case.expected)
+            }
         }
 
     @TestFactory
