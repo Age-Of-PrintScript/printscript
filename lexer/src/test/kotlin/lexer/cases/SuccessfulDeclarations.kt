@@ -112,6 +112,18 @@ object SuccessfulDeclarations {
                 Literal(PrintScriptValue.StringLiteral("Hello")),
                 SEMICOLON,
             )
+        ),
+        SuccessCase(
+            "declaration with identifier value",
+            "let x1: number = x2;",
+            listOf(
+                LET,
+                Identifier("x1"),
+                COLON,
+                DataType(PrintScriptType.NUMBER),
+                ASSIGN,
+                Identifier("x2"),
+                SEMICOLON
+            )
         )
-
 )}

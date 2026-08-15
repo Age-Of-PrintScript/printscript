@@ -32,6 +32,41 @@ object SuccessfulCalls {
                 ClosedParenthesis,
                 SEMICOLON
             )
+        ),
+        SuccessCase(
+            "println call with identifier",
+            "println(x);",
+            listOf(
+                Call(PrintScriptFunctions.PRINTLN),
+                OpenParenthesis,
+                Identifier("x"),
+                ClosedParenthesis,
+                SEMICOLON
+            )
+        ),
+        SuccessCase(
+            "println call with string",
+            "println(\"texto\");",
+            listOf(
+                Call(PrintScriptFunctions.PRINTLN),
+                OpenParenthesis,
+                Literal(PrintScriptValue.StringLiteral("texto")),
+                ClosedParenthesis,
+                SEMICOLON
+            )
+        ),
+        SuccessCase(
+            "println call with expression",
+            "println(5 + 2);",
+            listOf(
+                Call(PrintScriptFunctions.PRINTLN),
+                OpenParenthesis,
+                Literal(PrintScriptValue.NumberLiteral(5)),
+                Operator(PrintScriptOperator.SUM),
+                Literal(PrintScriptValue.NumberLiteral(2)),
+                ClosedParenthesis,
+                SEMICOLON
+            )
         )
     )
 }

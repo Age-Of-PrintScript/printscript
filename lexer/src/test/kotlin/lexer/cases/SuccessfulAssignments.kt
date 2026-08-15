@@ -23,18 +23,6 @@ object SuccessfulAssignments {
             )
         ),
         SuccessCase(
-            "number assignment with expression",
-            "x = 5 + 2;",
-            listOf(
-                Identifier("x"),
-                ASSIGN,
-                Literal(PrintScriptValue.NumberLiteral(5)),
-                Operator(PrintScriptOperator.SUM),
-                Literal(PrintScriptValue.NumberLiteral(2)),
-                SEMICOLON
-            )
-        ),
-        SuccessCase(
             "string that looks like number",
             "x = \"5\";",
             listOf(

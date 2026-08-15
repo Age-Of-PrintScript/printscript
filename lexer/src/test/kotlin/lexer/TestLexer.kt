@@ -10,6 +10,8 @@ import domain.Success
 import lexer.cases.SuccessfulAssignments
 import lexer.cases.SuccessfulCalls
 import lexer.cases.SuccessfulDeclarations
+import lexer.cases.SuccessfulEdgeCases
+import lexer.cases.SuccessfulExpressions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DynamicNode
@@ -59,6 +61,18 @@ class TestLexer {
     @TestFactory
     fun `successful calls`(): List<DynamicNode> =
         SuccessfulCalls.cases().map { case ->
+            dynamicTest(case.name) { assertCorrectSource(lexer, case.input, case.expected) }
+        }
+
+    @TestFactory
+    fun `successful expressions`(): List<DynamicNode> =
+        SuccessfulExpressions.cases().map { case ->
+            dynamicTest(case.name) { assertCorrectSource(lexer, case.input, case.expected) }
+        }
+
+    @TestFactory
+    fun `successful edge cases`(): List<DynamicNode> =
+        SuccessfulEdgeCases.cases().map { case ->
             dynamicTest(case.name) { assertCorrectSource(lexer, case.input, case.expected) }
         }
 
