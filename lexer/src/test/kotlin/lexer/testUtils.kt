@@ -22,7 +22,7 @@ internal fun assertEqualTokenList(expected: List<Token>, actual: List<Token>){
 }
 internal fun assertIncorrectSource(lexer: Lexer, input: String, expected: LexerError){
     val result = lexer.tokenize(input)
-    assertTrue(result is Failure)
+    assertTrue(result is Failure, "Tokenization shouldn't have succeeded")
     assertEquals(expected, (result as Failure<LexerError, List<Token>>).value)
 }
 internal fun createTokens(types: List<TokenType>): List<Token> {

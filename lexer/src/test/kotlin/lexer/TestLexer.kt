@@ -1,34 +1,17 @@
 package lexer
 
-import domain.Failure
-import domain.Position
-import domain.PrintScriptFunctions
-import domain.PrintScriptOperator
-import domain.PrintScriptType
-import domain.PrintScriptValue
-import domain.Success
+import lexer.cases.InvalidCharacters
+import lexer.cases.InvalidIdentifiers
+import lexer.cases.MalformedNumbers
 import lexer.cases.SuccessfulAssignments
 import lexer.cases.SuccessfulCalls
 import lexer.cases.SuccessfulDeclarations
 import lexer.cases.SuccessfulEdgeCases
 import lexer.cases.SuccessfulExpressions
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import lexer.cases.UnterminatedStrings
 import org.junit.jupiter.api.DynamicNode
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
-import tokens.ASSIGN
-import tokens.COLON
-import tokens.Call
-import tokens.ClosedParenthesis
-import tokens.DataType
-import tokens.Identifier
-import tokens.LET
-import tokens.Literal
-import tokens.OpenParenthesis
-import tokens.Operator
-import tokens.SEMICOLON
-import tokens.Token
 import tokens.TokenType
 
 data class SuccessCase(
@@ -74,6 +57,30 @@ class TestLexer {
     fun `successful edge cases`(): List<DynamicNode> =
         SuccessfulEdgeCases.cases().map { case ->
             dynamicTest(case.name) { assertCorrectSource(lexer, case.input, case.expected) }
+        }
+
+    @TestFactory
+    fun `unterminated strings`(): List<DynamicNode> =
+        UnterminatedStrings.cases().map { case ->
+            dynamicTest(case.name) { assertIncorrectSource(lexer, case.input, case.expected) }
+        }
+
+    @TestFactory
+    fun `invalid characters`(): List<DynamicNode> =
+        InvalidCharacters.cases().map { case ->
+            dynamicTest(case.name) { assertIncorrectSource(lexer, case.input, case.expected) }
+        }
+
+    @TestFactory
+    fun `malformed numbers`(): List<DynamicNode> =
+        MalformedNumbers.cases().map { case ->
+            dynamicTest(case.name) { assertIncorrectSource(lexer, case.input, case.expected) }
+        }
+
+    @TestFactory
+    fun `invalid identifiers`(): List<DynamicNode> =
+        InvalidIdentifiers.cases().map { case ->
+            dynamicTest(case.name) { assertIncorrectSource(lexer, case.input, case.expected) }
         }
 
 }
