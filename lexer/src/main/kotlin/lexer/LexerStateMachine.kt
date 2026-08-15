@@ -10,12 +10,10 @@ import tokens.TokenList
 import tokens.WHITESPACE
 
 internal class LexerStateMachine {
-    private var state: State = InitialState()
-    private val builder: TokenBuilder = TokenBuilder()
 
     fun tokenize(source: String): Either<LexerError, TokenList> {
-        state = InitialState()
-        builder.reset()
+        var state: State = InitialState()
+        val builder = TokenBuilder()
 
         val tokenList = mutableListOf<Token>()
 
