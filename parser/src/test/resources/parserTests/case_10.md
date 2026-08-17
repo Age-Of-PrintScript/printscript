@@ -1,0 +1,7 @@
+# Input
+CALL: PRINTLN
+SEMICOLON
+
+# Expected: SUCCESS
+CALL
+    PRINTLN
