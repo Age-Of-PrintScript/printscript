@@ -1,4 +1,4 @@
-package parser.states
+package parser.states.call_branch
 
 import domain.Either
 import domain.Failure
@@ -7,6 +7,8 @@ import domain.Success
 import parser.ASTBuilder
 import parser.ExpressionParser
 import parser.SyntaxError
+import parser.states.ConsumeResult
+import parser.states.State
 import tokens.ClosedParenthesis
 import tokens.Identifier
 import tokens.Literal
@@ -29,7 +31,7 @@ internal data class CallArgsPending(
                 when(val res = expressionParser.parseExpression(tokens)){
                     is Failure -> Failure(res.value)
                     is Success -> {
-                        val newBuilder = addExpressionToBuilder(builder, res.value)
+                        val newBuilder = builder.addExpression(res.value)
                         Success(CallArgsClosed(function) to newBuilder)
                     }
                 }

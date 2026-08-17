@@ -9,44 +9,38 @@ import ast.ASTDataType
 import ast.ASTIdentifier
 import ast.Expression
 
-internal sealed interface ASTBuilder {
-    fun build(): Either<SyntaxError, AST>
-    object EmptyBuilder : ASTBuilder{
-        override fun build(): Either<SyntaxError, AST> {
-            return Failure(SyntaxError.INVALID_TOKEN)
-        }
+enum class BuilderType { NONE, DECLARATION, ASSIGNMENT, CALL }
+
+data class ASTBuilder(
+    val type: BuilderType = BuilderType.NONE,
+    val id: ASTIdentifier? = null,
+    val dataType: ASTDataType? = null,
+    val functionName: PrintScriptFunctions? = null,
+    val value: Expression? = null,
+    val expressions: List<Expression> = emptyList()
+) {
+    fun addExpression(expr: Expression): ASTBuilder = when (type) {
+        BuilderType.ASSIGNMENT -> copy(value = expr)
+        BuilderType.DECLARATION -> copy(value = expr)
+        BuilderType.CALL -> copy(expressions = expressions + expr)
+        BuilderType.NONE -> this
     }
 
-    data class DeclarationBuilder(
-        val id: ASTIdentifier? = null,
-        val type: ASTDataType? = null,
-        val value: Expression? = null
-    ) : ASTBuilder {
-        override fun build(): Either<SyntaxError, AST> {
+    fun build(): Either<SyntaxError, AST> = when (type) {
+        BuilderType.NONE -> Failure(SyntaxError.INVALID_TOKEN)
+        BuilderType.DECLARATION -> {
             val safeId = id ?: return Failure(SyntaxError.MISSING_IDENTIFIER)
-            val safeType = type ?: return Failure(SyntaxError.MISSING_TYPE_IN_DECLARATION)
-            return Success(AST.Declaration(safeId, safeType, value))
+            val safeType = dataType ?: return Failure(SyntaxError.MISSING_TYPE_IN_DECLARATION)
+            Success(AST.Declaration(safeId, safeType, value))
         }
-    }
-
-    data class AssignmentBuilder(
-        val id: ASTIdentifier? = null,
-        val value: Expression? = null
-    ) : ASTBuilder {
-        override fun build(): Either<SyntaxError, AST> {
+        BuilderType.ASSIGNMENT -> {
             val safeId = id ?: return Failure(SyntaxError.MISSING_IDENTIFIER)
             val safeValue = value ?: return Failure(SyntaxError.INCOMPLETE_STATEMENT)
-            return Success(AST.Assignment(safeId, safeValue))
+            Success(AST.Assignment(safeId, safeValue))
         }
-    }
-
-    data class CallBuilder(
-        val functionName: PrintScriptFunctions? = null,
-        val expressions: List<Expression> = emptyList()
-    ) : ASTBuilder {
-        override fun build(): Either<SyntaxError, AST> {
+        BuilderType.CALL -> {
             val safeName = functionName ?: return Failure(SyntaxError.MISSING_FUNCTION_NAME)
-            return Success(AST.Call(safeName, expressions))
+            Success(AST.Call(safeName, expressions))
         }
     }
 }
