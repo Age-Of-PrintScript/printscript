@@ -23,17 +23,22 @@ internal data class ExpressionPending(
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
         return when (token.type) {
             SEMICOLON -> {
-                when(val result = expressionParser.parseExpression(tokens)){
-                    is Failure ->  Failure(result.value)
-                    is Success -> {
-                        val newBuilder = builder.addExpression(result.value)
-                        Success(StatementComplete to newBuilder)
-                    }
-                }
+                buildExpressionOnAst(expressionParser, builder)
             }
             is Literal, is Identifier, is Operator ->
                 Success(copy(tokens = tokens + token) to builder)
             else -> Failure(SyntaxError.INVALID_TOKEN)
+        }
+    }
+
+    private fun buildExpressionOnAst(
+        expressionParser: ExpressionParser,
+        builder: ASTBuilder
+    ): Either<SyntaxError, ConsumeResult> = when (val result = expressionParser.parseExpression(tokens)) {
+        is Failure -> Failure(result.value)
+        is Success -> {
+            val newBuilder = builder.addExpression(result.value)
+            Success(StatementComplete to newBuilder)
         }
     }
 }
