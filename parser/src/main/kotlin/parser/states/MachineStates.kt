@@ -89,8 +89,7 @@ internal data class ExpressionPending(
     override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
         return when (token.type) {
             SEMICOLON -> {
-                val result = expressionParser.parseExpression(tokens)
-                when(result){
+                when(val result = expressionParser.parseExpression(tokens)){
                     is Failure ->  Failure(result.value)
                     is Success -> {
                         val newBuilder = addExpressionToBuilder(builder, result.value)
@@ -122,6 +121,7 @@ internal fun addExpressionToBuilder(builder: ASTBuilder, value: Expression): AST
     return when(builder){
         is ASTBuilder.AssignmentBuilder -> ASTBuilder.AssignmentBuilder(builder.id, value)
         is ASTBuilder.DeclarationBuilder -> ASTBuilder.DeclarationBuilder(builder.id, builder.type, value)
+        is ASTBuilder.CallBuilder -> ASTBuilder.CallBuilder(builder.functionName, builder.expressions + value)
         else -> builder
     }
 }
