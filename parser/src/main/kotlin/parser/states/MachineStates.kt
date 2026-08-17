@@ -1,4 +1,4 @@
-package parser
+package parser.states
 
 import domain.Either
 import tokens.ASSIGN
@@ -6,37 +6,22 @@ import ast.ASTDataType
 import ast.ASTIdentifier
 import tokens.COLON
 import domain.Failure
-import domain.PrintScriptFunctions
-import tokens.LET
 import tokens.SEMICOLON
 import domain.Success
 import ast.Expression
-import tokens.Call
+import parser.ASTBuilder
+import parser.ExpressionParser
+import parser.SyntaxError
 import tokens.DataType
 import tokens.Identifier
 import tokens.Literal
 import tokens.Operator
 import tokens.Token
 
-internal typealias ConsumeResult = Pair<State, ASTBuilder>
 
 
-internal interface State {
-    fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult>
-}
 
-// ---------- Start ----------
 
-internal object Start : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
-        return when (val t = token.type) {
-            is Call -> Success(CallSeen(t.type) to ASTBuilder.CallBuilder(t.type))
-            is Identifier -> Success(AssignmentIdSeen(ASTIdentifier(t.name)) to ASTBuilder.AssignmentBuilder(ASTIdentifier(t.name)))
-            LET -> Success(LetSeen to ASTBuilder.DeclarationBuilder())
-            else -> Failure(SyntaxError.INVALID_TOKEN)
-        }
-    }
-}
 
 // ---------- Rama DECLARATION ----------
 
@@ -122,14 +107,7 @@ internal data class ExpressionPending(
 
 // ---------- Rama CALL ----------
 
-internal data class CallSeen(val function: PrintScriptFunctions) : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
-        return when (token.type) {
-            SEMICOLON -> Success(StatementComplete to builder)
-            else -> Failure(SyntaxError.MISSING_SEMICOLON)
-        }
-    }
-}
+
 
 // ---------- Estado de aceptación ----------
 
