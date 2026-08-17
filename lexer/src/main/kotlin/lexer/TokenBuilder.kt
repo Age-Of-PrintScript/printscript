@@ -3,28 +3,28 @@ package lexer
 import domain.Either
 import domain.Failure
 import domain.Position
-import domain.PrintScriptOperator
-import domain.PrintScriptValue
+import domain.PrintScriptValue.NumberLiteral
+import domain.PrintScriptValue.StringLiteral
 import domain.Success
-import tokens.ASSIGN
-import tokens.COLON
 import tokens.Identifier
 import tokens.Literal
-import tokens.Operator
-import tokens.SEMICOLON
 import tokens.Token
 import tokens.TokenType
+import tokens.WHITESPACE
 
 internal class TokenBuilder {
     private var type: TokenType? = null
+    private val tokenMap = createSymbolTokenMap()
 
     fun addChar(chr: Char): Either<LexerError, Unit> {
+        if(isStringType(type) && charIsNotQuote(chr)){
+            return handleStringLiteral(type, chr)
+        }
         when {
             chr.isDigit() -> {
-                if (type == null) type = Literal(PrintScriptValue.NumberLiteral(chr.digitToInt()))
+                if (type == null) type = Literal(NumberLiteral(chr.digitToInt()))
                 else {
-                    val newType = updateTypeWithNumber(type, chr)
-                    when (newType) {
+                    when (val newType = updateTypeWithNumber(type, chr)) {
                         is Success -> type = newType.value
                         is Failure -> return Failure(newType.value)
                     }
@@ -32,28 +32,34 @@ internal class TokenBuilder {
             }
             chr.isLetter() -> {
                 if (type == null) type = Identifier(chr.toString())
-                else {
-                    val newType = updateTypeWithString(type, chr)
-                    when (newType) {
-                        is Success -> type = newType.value
-                        is Failure -> return Failure(newType.value)
-                    }
-                }
+                else return handleStringLiteral(type, chr)
             }
-            chr == '\'' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
-            chr == '"' -> type = type ?: Literal(PrintScriptValue.StringLiteral(""))
-            chr == ':' -> type = COLON
-            chr == ';' -> type = SEMICOLON
-            chr == '=' -> type = ASSIGN
-            chr == '+' -> type = Operator(PrintScriptOperator.SUM)
-            chr == '-' -> type = Operator(PrintScriptOperator.SUBTRACT)
-            chr == '*' -> type = Operator(PrintScriptOperator.MULTIPLY)
-            chr == '/' -> type = Operator(PrintScriptOperator.DIVIDE)
-            chr == '(' -> type = Operator(PrintScriptOperator.OPEN_PARENTHESIS)
-            chr == ')' -> type = Operator(PrintScriptOperator.CLOSE_PARENTHESIS)
-            else -> return Failure(LexerError.INVALID_CHARACTER)
+            chr == '.' -> {
+                if (type == null) return Failure(LexerError.INVALID_CHARACTER)
+                updateTypeWithNumber(type, chr)
+            }
+            chr == '\'' || chr == '"'-> {
+                if(type == null) type = Literal(StringLiteral(chr.toString()))
+                else if(isStringType(type)) return handleStringLiteral(type, chr)
+                else return Failure(LexerError.INVALID_CHARACTER)
+            }
+            chr.isWhitespace() -> type = WHITESPACE
+            else -> {
+                if (tokenMap.containsKey(chr)) type = tokenMap.getValue(chr)
+                else return Failure(LexerError.INVALID_CHARACTER)
+            }
         }
         return Success(Unit)
+    }
+
+    private fun handleStringLiteral(type: TokenType?, chr: Char): Either<LexerError, Unit> {
+        when (val result = updateTypeWithString(type, chr)) {
+            is Failure -> return Failure(result.value)
+            is Success -> {
+                this.type = result.value
+                return Success(Unit)
+            }
+        }
     }
 
     private fun updateTypeWithNumber(type: TokenType?, chr: Char): Either<LexerError, TokenType> {
@@ -61,8 +67,8 @@ internal class TokenBuilder {
             is Identifier -> Success(Identifier(type.name + chr))
             is Literal -> {
                 when (val newType = type.value) {
-                    is PrintScriptValue.NumberLiteral -> Success(Literal(newType.concatNumber(chr)))
-                    is PrintScriptValue.StringLiteral -> Success(Literal(newType.concatString(chr)))
+                    is NumberLiteral -> Success(Literal(concatNumbers(newType, chr)))
+                    is StringLiteral -> Success(Literal(concatStrings(newType, chr)))
                 }
             }
             else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
@@ -74,8 +80,8 @@ internal class TokenBuilder {
             is Identifier -> Success(Identifier(type.name + chr))
             is Literal -> {
                 when (val newType = type.value) {
-                    is PrintScriptValue.NumberLiteral -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
-                    is PrintScriptValue.StringLiteral -> Success(Literal(newType.concatString(chr)))
+                    is NumberLiteral -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
+                    is StringLiteral -> Success(Literal(concatStrings(newType, chr)))
                 }
             }
             else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
@@ -83,13 +89,32 @@ internal class TokenBuilder {
     }
 
     fun build(): Either<LexerError, Token> {
-        if (type == null) return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
+        var finishedType = type ?: return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
+
+        if (finishedType is Identifier) {
+            val keywordMap = createSymbolKeywordMap()
+            if (keywordMap.contains(finishedType.name))
+                finishedType = keywordMap.getValue(finishedType.name)
+        }
+        if(isStringType(finishedType)) {
+            val lit = (finishedType as Literal)
+            val str = lit.value as StringLiteral
+            val last = str.value.last()
+            //El type solo es asignado string type si arranca con comillas
+            if(charIsNotQuote(last)){
+                return Failure(LexerError.UNTERMINATED_STRING)
+            }else{
+                finishedType = Literal(StringLiteral(str.value.substring(1, str.value.length - 1)))
+            }
+        }
+
         return Success(
             Token(
-            type!!,
+                finishedType,
                 Position(0, 0),
-            Position(0,0)
-        ))
+                Position(0,0)
+            )
+        )
     }
 
     fun reset() {
