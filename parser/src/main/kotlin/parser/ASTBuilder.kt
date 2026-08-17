@@ -41,11 +41,12 @@ internal sealed interface ASTBuilder {
     }
 
     data class CallBuilder(
-        val functionName: PrintScriptFunctions? = null
+        val functionName: PrintScriptFunctions? = null,
+        val expressions: List<Expression> = emptyList()
     ) : ASTBuilder {
         override fun build(): Either<SyntaxError, AST> {
             val safeName = functionName ?: return Failure(SyntaxError.MISSING_FUNCTION_NAME)
-            return Success(AST.Call(safeName))
+            return Success(AST.Call(safeName, expressions))
         }
     }
 }
