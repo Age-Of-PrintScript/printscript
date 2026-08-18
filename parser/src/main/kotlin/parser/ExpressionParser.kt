@@ -15,7 +15,7 @@ import tokens.Operator
 import tokens.Token
 import java.util.Optional
 
-internal class ExpressionParser {
+internal class  ExpressionParser {
     
     fun parseExpression(expression: List<Token>): Either<SyntaxError, Expression> {
         return when (val result = createExpressionTree(expression)) {

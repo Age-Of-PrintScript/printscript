@@ -43,7 +43,12 @@ class InterpreterImpl: Interpreter {
                     when(val newValue = solveExpression(ast.value, env)){
                         is Failure -> return Failure(newValue.value)
                         is Success -> {
-                            val result = env.changeVariable(ast.id.name, newValue.value)
+                            when(val changedEnvResult = env.changeVariable(ast.id.name, newValue.value)) {
+                                is Failure -> return Failure(changedEnvResult.value)
+                                is Success -> {
+                                    env = changedEnvResult.value
+                                }
+                            }
                         }
                     }
 
