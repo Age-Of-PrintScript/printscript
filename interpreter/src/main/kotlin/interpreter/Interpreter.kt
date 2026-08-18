@@ -103,13 +103,13 @@ class InterpreterImpl: Interpreter {
         }
 
 
-        //return when (expression) {
-          //  is Success -> Success(ExecutionResult(
-           // RuntimeEnvironment(variables),
+        return when (expression) {
+            is Success -> Success(ExecutionResult(
+            RuntimeEnvironment(variables),
             events
-            //))
-            //is Failure -> Failure(expression)
-        //}
+            ))
+            is Failure -> Failure(expression)
+        }
     }
 
 
