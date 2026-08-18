@@ -102,12 +102,11 @@ class InterpreterImpl: Interpreter {
         val result = solveExpression(expression, env)
 
 
-        if(ast.type.equals(TODO())){
+
+        if(!){
             return Failure(RuntimeError.VARIABLE_HAS_DIFFERENT_TYPE)
         }
-
-
-        return when (expression) {
+        return when (ExpressionSolver.) {
             is Success -> Success(ExecutionResult(
             RuntimeEnvironment(variables),
             events
@@ -115,19 +114,4 @@ class InterpreterImpl: Interpreter {
             is Failure -> Failure(expression)
         }
     }
-
-    private fun getScriptType(expression: Expression): Either<RuntimeError, PrintScriptType> {
-        return when (expression) {
-            is Expression.Literal -> when (expression.value) {
-                is String -> PrintScriptType.STRING
-                is PrintScriptValue.NumberLiteral -> PrintScriptType.NUMBER
-                else -> Failure(RuntimeError.VARIABLE_ALREADY_DEFINED) //TODO(arregla este manejo de error)
-            }
-            is Expression.Literal -> {
-                solveExpression(expression, )
-            }
-        }
-    }
-
-
 }
