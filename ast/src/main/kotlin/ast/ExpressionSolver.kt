@@ -16,13 +16,14 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
         values: Map<String, Optional<PrintScriptValue>>
     ): Either<String, PrintScriptValue> {
 
-        return when(expression){
-            is Expression.Literal ->  {
-               when(expression.value){
+        return when (expression) {
+            is Expression.Literal -> {
+                when (expression.value) {
                     is PrintScriptValue.NumberLiteral -> Success(expression.value)
                     is PrintScriptValue.StringLiteral -> Success(expression.value)
                 }
             }
+
             is Expression.Variable -> {
                 val optionalValue = values[expression.name]
                     ?: return Failure("variable is not defined")
@@ -33,13 +34,16 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
                     Failure("variable is not initialized")
                 }
             }
+
             is Expression.Operation -> solveOperation(expression, values)
-            }
+        }
     }
 
 
-    private fun solveOperation(operation: Expression.Operation,
-                              values :Map<String, Optional<PrintScriptValue>>):
+    private fun solveOperation(
+        operation: Expression.Operation,
+        values: Map<String, Optional<PrintScriptValue>>
+    ):
             Either<String, PrintScriptValue> {
 
         val left = solve(operation.left, values)
@@ -50,20 +54,42 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
 
         if (left is Success && right is Success) {
 
-            if (stringAndNumberInOperation(left.value, right.value)){
-                return when(operation.operator){
-                    PrintScriptOperator.SUM -> { handleStringAndNumberSum(left.value, right.value) }
-                    PrintScriptOperator.SUBTRACT ->{ Failure("cannot handle subtraction with different types") }
-                    PrintScriptOperator.MULTIPLY -> {Failure("cannot handle multiplication with different types") }
-                    PrintScriptOperator.DIVIDE ->{Failure("cannot handle division with different types") }
+            if (stringAndNumberInOperation(left.value, right.value)) {
+                return when (operation.operator) {
+                    PrintScriptOperator.SUM -> {
+                        handleStringAndNumberSum(left.value, right.value)
+                    }
+
+                    PrintScriptOperator.SUBTRACT -> {
+                        Failure("cannot handle subtraction with different types")
+                    }
+
+                    PrintScriptOperator.MULTIPLY -> {
+                        Failure("cannot handle multiplication with different types")
+                    }
+
+                    PrintScriptOperator.DIVIDE -> {
+                        Failure("cannot handle division with different types")
+                    }
                 }
             }
 
             return when (operation.operator) {
-                PrintScriptOperator.SUM -> { dispatchSumOperation(left.value, right.value) }
-                PrintScriptOperator.SUBTRACT ->{dispatchSubtractOperation(left.value, right.value)}
-                PrintScriptOperator.MULTIPLY -> {dispatchProductOperation(left.value, right.value)}
-                PrintScriptOperator.DIVIDE ->{dispatchDivisionOperation(left.value, right.value)}
+                PrintScriptOperator.SUM -> {
+                    dispatchSumOperation(left.value, right.value)
+                }
+
+                PrintScriptOperator.SUBTRACT -> {
+                    dispatchSubtractOperation(left.value, right.value)
+                }
+
+                PrintScriptOperator.MULTIPLY -> {
+                    dispatchProductOperation(left.value, right.value)
+                }
+
+                PrintScriptOperator.DIVIDE -> {
+                    dispatchDivisionOperation(left.value, right.value)
+                }
             }
         }
         return Failure("unreachable: left or right was neither Success nor Failure")
@@ -74,60 +100,84 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
     * Métodos auxiliares
     * */
 
-    private fun dispatchSumOperation(right: PrintScriptValue, left:PrintScriptValue): Either<String, PrintScriptValue>{
-        return when{
+    private fun dispatchSumOperation(
+        right: PrintScriptValue,
+        left: PrintScriptValue
+    ): Either<String, PrintScriptValue> {
+        return when {
             left is PrintScriptValue.NumberLiteral  //quedó horripilante
                     && right is PrintScriptValue.NumberLiteral -> Success(
                 handleNumberSum(
                     left.value,
-                    right.value)
+                    right.value
+                )
             )
+
             left is PrintScriptValue.StringLiteral
-                    && right is PrintScriptValue.StringLiteral  -> Success(
-                handleStringSum(left.value.toString(),
-                    right.value.toString()))
+                    && right is PrintScriptValue.StringLiteral -> Success(
+                handleStringSum(
+                    left.value.toString(),
+                    right.value.toString()
+                )
+            )
+
             else -> {
                 Failure("Something went wrong")
             }
         }
     }
 
-    private fun dispatchSubtractOperation(left: PrintScriptValue, right:PrintScriptValue): Either<String, PrintScriptValue>{
-        return when{
+    private fun dispatchSubtractOperation(
+        left: PrintScriptValue,
+        right: PrintScriptValue
+    ): Either<String, PrintScriptValue> {
+        return when {
             left is PrintScriptValue.NumberLiteral  //quedó horripilante
                     && right is PrintScriptValue.NumberLiteral -> Success(
                 handleNumberSubtract(
                     left.value,
-                    right.value)
+                    right.value
+                )
             )
+
             else -> {
                 Failure("cannot subtract Strings")
             }
         }
     }
 
-    private fun dispatchProductOperation(left: PrintScriptValue, right:PrintScriptValue): Either<String, PrintScriptValue>{
-        return when{
+    private fun dispatchProductOperation(
+        left: PrintScriptValue,
+        right: PrintScriptValue
+    ): Either<String, PrintScriptValue> {
+        return when {
             left is PrintScriptValue.NumberLiteral  //quedó horripilante
                     && right is PrintScriptValue.NumberLiteral -> Success(
                 handleNumberProduct(
                     left.value,
-                    right.value)
+                    right.value
+                )
             )
+
             else -> {
                 Failure("cannot multiply Strings")
             }
         }
     }
 
-    private fun dispatchDivisionOperation(left: PrintScriptValue, right:PrintScriptValue): Either<String, PrintScriptValue>{
-        return when{
+    private fun dispatchDivisionOperation(
+        left: PrintScriptValue,
+        right: PrintScriptValue
+    ): Either<String, PrintScriptValue> {
+        return when {
             left is PrintScriptValue.NumberLiteral  //quedó horripilante
                     && right is PrintScriptValue.NumberLiteral -> Success(
                 handleNumberDivide(
                     left.value,
-                    right.value)
+                    right.value
+                )
             )
+
             else -> {
                 Failure("cannot divide Strings")
             }
@@ -137,7 +187,7 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
     private fun stringAndNumberInOperation(
         left: PrintScriptValue,
         right: PrintScriptValue
-    ): Boolean{
+    ): Boolean {
         return !(left is PrintScriptValue.NumberLiteral && right is PrintScriptValue.NumberLiteral ||
                 left is PrintScriptValue.StringLiteral && right is PrintScriptValue.StringLiteral)
     }
@@ -146,7 +196,10 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
     * Manejo de operaciones con tipos distintos
     * */
 
-    private fun handleStringAndNumberSum(left: PrintScriptValue, right: PrintScriptValue): Either<String, PrintScriptValue> {
+    private fun handleStringAndNumberSum(
+        left: PrintScriptValue,
+        right: PrintScriptValue
+    ): Either<String, PrintScriptValue> {
         val leftText = when (left) {
             is PrintScriptValue.NumberLiteral -> left.value.toString()
             is PrintScriptValue.StringLiteral -> left.value
@@ -158,15 +211,12 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
         return Success(PrintScriptValue.StringLiteral(leftText + rightText))
     }
 
-    private fun getExpressionScriptType(expression: Expression, variables: Map<String, Optional<PrintScriptValue>>): Either<String, PrintScriptType>{
-
-        return when(val result = solve(expression, variables)){
-            is Success ->  when(result.value) {
-                is PrintScriptValue.NumberLiteral -> Success(PrintScriptType.NUMBER)
-                is PrintScriptValue.StringLiteral -> Success(PrintScriptType.STRING)
-            }
-            is Failure -> Failure(result.value) }
+    fun getExpressionScriptType(value: PrintScriptValue): Either<String, PrintScriptType>{
+        return when (value) {
+            is PrintScriptValue.NumberLiteral -> Success(PrintScriptType.NUMBER)
+            is PrintScriptValue.StringLiteral -> Success(PrintScriptType.STRING)
         }
-    }
+}
+}
 
 

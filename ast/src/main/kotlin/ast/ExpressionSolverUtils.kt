@@ -29,3 +29,4 @@ fun handleNumberProduct(left: Number, right: Number): PrintScriptValue{
 fun handleNumberDivide(left: Number, right: Number): PrintScriptValue{
     return PrintScriptValue.NumberLiteral(left.toDouble() / right.toDouble())
 }
+
