@@ -4,8 +4,7 @@ sealed interface Keyword
 
 enum class PrintScriptType:Keyword {
     NUMBER,
-    STRING,
-    NULL
+    STRING
 }
 
 sealed interface PrintScriptValue {
@@ -17,9 +16,7 @@ sealed interface PrintScriptValue {
     data class StringLiteral(val value: String): PrintScriptValue {
         override fun getType(): PrintScriptType = PrintScriptType.STRING
     }
-    data class NullLiteral(val nullLiteral: Unit): PrintScriptValue {
-        override fun getType(): PrintScriptType = PrintScriptType.NULL
-    }
+
 }
 
 enum class PrintScriptOperator {

@@ -86,13 +86,17 @@ class InterpreterImpl: Interpreter {
         val id = ast.id
         val expression = ast.value
 
-        if(variables.containsKey(id.toString())){
+        if(variables.containsKey(id.toString())){ // Estoy declarando una variable que ya está definida, error.
             return Failure(RuntimeError.VARIABLE_ALREADY_DEFINED)
         }
 
         if (expression == null) {
-            variables[id.toString()] = TODO()
-
+            variables[id.toString()] = Optional.empty()
+            return Success(
+                ExecutionResult
+                    (RuntimeEnvironment(
+                    variables),
+                    events))
         }
 
         val result = solveExpression(expression, env)
@@ -109,6 +113,19 @@ class InterpreterImpl: Interpreter {
             events
             ))
             is Failure -> Failure(expression)
+        }
+    }
+
+    private fun getScriptType(expression: Expression): Either<RuntimeError, PrintScriptType> {
+        return when (expression) {
+            is Expression.Literal -> when (expression.value) {
+                is String -> PrintScriptType.STRING
+                is PrintScriptValue.NumberLiteral -> PrintScriptType.NUMBER
+                else -> Failure(RuntimeError.VARIABLE_ALREADY_DEFINED) //TODO(arregla este manejo de error)
+            }
+            is Expression.Literal -> {
+                solveExpression(expression, )
+            }
         }
     }
 

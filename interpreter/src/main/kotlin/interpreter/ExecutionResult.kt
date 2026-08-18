@@ -4,6 +4,7 @@ import domain.Either
 import domain.Failure
 import domain.PrintScriptValue
 import domain.Success
+import java.util.Optional
 
 
 data class ExecutionResult(
@@ -13,7 +14,7 @@ data class ExecutionResult(
 
 
 data class RuntimeEnvironment(
-    val variableMap: Map<String, PrintScriptValue>
+    val variableMap: Map<String, Optional<PrintScriptValue>>
 ){
     fun add_variable(id: String, value: PrintScriptValue): Either<RuntimeError, RuntimeEnvironment> {
 
@@ -24,7 +25,7 @@ data class RuntimeEnvironment(
                 variableMap
                     .toMutableMap()
                     .apply {
-                        put(id, value)
+                        put(id, Optional.of(value))
                     }
                     .toMap()
             )
@@ -32,12 +33,13 @@ data class RuntimeEnvironment(
     }
     fun change_variable(id: String, value: PrintScriptValue): Either<RuntimeError, RuntimeEnvironment> {
         if(!variableMap.containsKey(id)) return Failure(RuntimeError.VARIABLE_DOESNT_EXIST)
-        if(variableMap.get(id)!!.getType() != value.getType()) return Failure(RuntimeError.VARIABLE_DOESNT_EXIST)
+
+        if(variableMap.get(id)!!.get().getType() != value.getType()) return Failure(RuntimeError.VARIABLE_DOESNT_EXIST)
         return Success(RuntimeEnvironment(
             variableMap
             .toMutableMap()
             .apply {
-                put(id, value)
+                put(id, Optional.of(value))
             }
             .toMap()
             )

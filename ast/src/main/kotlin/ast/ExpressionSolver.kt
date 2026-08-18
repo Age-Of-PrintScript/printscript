@@ -148,6 +148,8 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
         return Success(PrintScriptValue.StringLiteral(leftText + rightText))
     }
 
+    private fun getExpressionScriptType(expression: Expression): Either<SyntaxError, PrintScriptValue>{}
+
 
 
 
