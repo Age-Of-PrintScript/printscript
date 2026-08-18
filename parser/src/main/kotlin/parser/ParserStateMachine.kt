@@ -6,12 +6,15 @@ import domain.Position
 import ast.Program
 import domain.Success
 import ast.AST
+import parser.states.Start
+import parser.states.State
+import parser.states.StatementComplete
 import tokens.TokenList
 
 internal class ParserStateMachine {
     fun parse(tokens: TokenList, expressionParser: ExpressionParser): Either<SyntaxError, Program> {
         var state: State = Start
-        var builder: ASTBuilder = ASTBuilder.EmptyBuilder
+        var builder = ASTBuilder()
         val trees = mutableListOf<AST>()
 
         for(token in tokens){
@@ -27,7 +30,7 @@ internal class ParserStateMachine {
                             is Success -> trees.add(ast.value)
                         }
                         state = Start
-                        builder = ASTBuilder.EmptyBuilder
+                        builder = ASTBuilder()
                     }
                 }
             }

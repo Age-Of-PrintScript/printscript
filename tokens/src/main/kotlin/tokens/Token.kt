@@ -20,8 +20,8 @@ object SEMICOLON: TokenType
 object ASSIGN: TokenType
 object WHITESPACE: TokenType
 
-object OpenParenthesis: TokenType
-object ClosedParenthesis: TokenType
+object OPEN_PARENTHESIS: TokenType
+object CLOSED_PARENTHESIS: TokenType
 
 data class Operator(val operator: PrintScriptOperator): TokenType
 
