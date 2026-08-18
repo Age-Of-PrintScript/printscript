@@ -7,7 +7,6 @@ import domain.Either
 import ast.Program
 import domain.Failure
 import domain.PrintScriptFunctions
-import domain.PrintScriptType
 import domain.PrintScriptValue
 import domain.Success
 import java.util.Optional
@@ -44,7 +43,7 @@ class InterpreterImpl: Interpreter {
                     when(val newValue = solveExpression(ast.value, env)){
                         is Failure -> return Failure(newValue.value)
                         is Success -> {
-                            val result = env.change_variable(ast.id.name, newValue.value)
+                            val result = env.changeVariable(ast.id.name, newValue.value)
                         }
                     }
 
@@ -52,7 +51,7 @@ class InterpreterImpl: Interpreter {
                 is AST.Call -> {
                     when(val function = ast.functionName){
                         PrintScriptFunctions.PRINTLN -> {
-                            events = addPrintEvent(events, function.name)
+                            events = addPrintEvent(events, function.name) // edito los events
                         }
                     }
                 }
@@ -60,18 +59,28 @@ class InterpreterImpl: Interpreter {
                     if(ast.value != null){
                         when(val value = solveExpression(ast.value!!, env)){
                             is Failure -> return Failure(value.value)
-                            is Success -> TODO()
+                            is Success -> {
+                                val newEnv = updateEnvironmentWithNewDeclaration(env, ast)  // edito el environment
+                                when(newEnv){
+                                    is Failure -> return Failure(newEnv.value)
+                                    is Success -> {
+                                        env = newEnv.value
+                                    }
+                                }
+                            }
                         }
                     }
 
                 }
             }
         }
-        TODO()
+       return Success(ExecutionResult(env, events))
     }
     private fun solveExpression(expression: Expression, env: RuntimeEnvironment): Either<RuntimeError, PrintScriptValue> {
-        val res = expressionSolver.solve(expression, env.variableMap)
-        TODO()
+        return when (val res = expressionSolver.solve(expression, env.variableMap)) {
+            is Success -> Success(res.value)
+            is Failure-> Failure(RuntimeError.MATH_ERROR)
+        }
     }
     private fun addPrintEvent(
         events: RuntimeEvents,
@@ -80,38 +89,33 @@ class InterpreterImpl: Interpreter {
         return events.add_event(PrintEvent(message));
     }
 
-    private fun updateEnvironmentWithNewDeclaration(env: RuntimeEnvironment, events: RuntimeEvents, ast: AST.Declaration): Either<RuntimeError, ExecutionResult> {
+    private fun updateEnvironmentWithNewDeclaration(env: RuntimeEnvironment, ast: AST.Declaration): Either<RuntimeError, RuntimeEnvironment> {
 
         val variables = env.variableMap.toMutableMap()
         val id = ast.id
         val expression = ast.value
 
-        if(variables.containsKey(id.toString())){ // Estoy declarando una variable que ya está definida, error.
+        if(variables.containsKey(id.toString())){ // Estoy declarando una variable que ya está definida, error. Esto ya se hace en add_variable, habría que usar ese metodo.
             return Failure(RuntimeError.VARIABLE_ALREADY_DEFINED)
         }
 
         if (expression == null) {
             variables[id.toString()] = Optional.empty()
             return Success(
-                ExecutionResult
                     (RuntimeEnvironment(
-                    variables),
-                    events))
+                    variables)))
         }
 
-        val result = solveExpression(expression, env)
-
-
-
-        if(!){
-            return Failure(RuntimeError.VARIABLE_HAS_DIFFERENT_TYPE)
-        }
-        return when (ExpressionSolver.) {
-            is Success -> Success(ExecutionResult(
-            RuntimeEnvironment(variables),
-            events
-            ))
-            is Failure -> Failure(expression)
+        when(val result = solveExpression(expression, env)){
+            is Failure -> return Failure(result.value)
+            is Success -> {
+                val type = expressionSolver.getExpressionScriptType(result.value)
+                if (!type.equals(ast.value)){
+                    return Failure(RuntimeError.VARIABLE_HAS_DIFFERENT_TYPE)
+                }
+                variables[id.toString()] = Optional.of(result.value)
+                return Success(RuntimeEnvironment(variables))
+            }
         }
     }
 }

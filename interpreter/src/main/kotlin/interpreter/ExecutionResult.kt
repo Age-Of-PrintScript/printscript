@@ -31,7 +31,7 @@ data class RuntimeEnvironment(
             )
         )
     }
-    fun change_variable(id: String, value: PrintScriptValue): Either<RuntimeError, RuntimeEnvironment> {
+    fun changeVariable(id: String, value: PrintScriptValue): Either<RuntimeError, RuntimeEnvironment> {
         if(!variableMap.containsKey(id)) return Failure(RuntimeError.VARIABLE_DOESNT_EXIST)
 
         if(variableMap.get(id)!!.get().getType() != value.getType()) return Failure(RuntimeError.VARIABLE_DOESNT_EXIST)
