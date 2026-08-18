@@ -5,13 +5,14 @@ import domain.Failure
 import domain.Success
 import domain.PrintScriptOperator
 import domain.PrintScriptValue
+import java.util.Optional
 
 class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sirve para expresiones sin variables
 
 
     fun solve(
         expression: Expression,
-        values: Map<String, PrintScriptValue>
+        values: Map<String, Optional<PrintScriptValue>>
     ): Either<String, PrintScriptValue> {
 
         return when(expression){
@@ -21,15 +22,23 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
                     is PrintScriptValue.StringLiteral -> Success(expression.value)
                 }
             }
-            is Expression.Variable -> values[expression.name]?.let { Success(it) }
-                ?: Failure("variable is not defined")
+            is Expression.Variable -> {
+                val optionalValue = values[expression.name]
+                    ?: return Failure("variable is not defined")
+
+                if (optionalValue.isPresent) {
+                    Success(optionalValue.get())
+                } else {
+                    Failure("variable is not initialized")
+                }
+            }
             is Expression.Operation -> solveOperation(expression, values)
             }
     }
 
 
     private fun solveOperation(operation: Expression.Operation,
-                              values :Map<String, PrintScriptValue>):
+                              values :Map<String, Optional<PrintScriptValue>>):
             Either<String, PrintScriptValue> {
 
         val left = solve(operation.left, values)
@@ -148,7 +157,12 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
         return Success(PrintScriptValue.StringLiteral(leftText + rightText))
     }
 
-    private fun getExpressionScriptType(expression: Expression): Either<SyntaxError, PrintScriptValue>{}
+    private fun getExpressionScriptType(expression: Expression, variables: Map<String, Optional<PrintScriptValue>>): Either<String, PrintScriptValue>{
+        return when (solve(expression, variables)){
+            is Success ->
+            is Failure ->
+        }
+    }
 
 
 
