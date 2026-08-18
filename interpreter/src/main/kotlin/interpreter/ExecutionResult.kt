@@ -16,7 +16,7 @@ data class ExecutionResult(
 data class RuntimeEnvironment(
     val variableMap: Map<String, Optional<PrintScriptValue>>
 ){
-    fun add_variable(id: String, value: PrintScriptValue): Either<RuntimeError, RuntimeEnvironment> {
+    fun addVariable(id: String, value: PrintScriptValue): Either<RuntimeError, RuntimeEnvironment> {
 
         if(variableMap.containsKey(id)) return Failure(RuntimeError.VARIABLE_ALREADY_DEFINED)
 
@@ -48,6 +48,7 @@ data class RuntimeEnvironment(
 }
 
 data class RuntimeEvents(val events: List<Event>){
+
     fun add_event(event: Event): RuntimeEvents {
         return RuntimeEvents(events
             .toMutableList()

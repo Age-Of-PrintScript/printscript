@@ -7,9 +7,9 @@ import domain.Either
 import ast.Program
 import domain.Failure
 import domain.PrintScriptFunctions
+import domain.PrintScriptType
 import domain.PrintScriptValue
 import domain.Success
-import java.util.Optional
 
 interface Interpreter {
     fun execute(program: Program): Either<RuntimeError, ExecutionResult>
@@ -43,24 +43,29 @@ class InterpreterImpl: Interpreter {
                     when(val newValue = solveExpression(ast.value, env)){
                         is Failure -> return Failure(newValue.value)
                         is Success -> {
-                            val result = env.changeVariable(ast.id.name, newValue.value)
+                            when(val changedEnvResult = env.changeVariable(ast.id.name, newValue.value)) {
+                                is Failure -> return Failure(changedEnvResult.value)
+                                is Success -> {
+                                    env = changedEnvResult.value
+                                }
+                            }
                         }
                     }
 
                 }
                 is AST.Call -> {
-                    when(val function = ast.functionName){
+                    when(ast.functionName){
                         PrintScriptFunctions.PRINTLN -> {
-                            events = addPrintEvent(events, function.name) // edito los events
+                            events = addPrintEvent(events, ast.args.first().toString()) // edito los events
                         }
                     }
                 }
                 is AST.Declaration ->{
                     if(ast.value != null){
-                        when(val value = solveExpression(ast.value!!, env)){
-                            is Failure -> return Failure(value.value)
+                        when(val solvedResult = solveExpression(ast.value!!, env)){
+                            is Failure -> return Failure(solvedResult.value)
                             is Success -> {
-                                val newEnv = updateEnvironmentWithNewDeclaration(env, ast)  // edito el environment
+                                val newEnv = updateEnvironmentWithNewDeclaration(env, ast.id.name, ast.type.name, solvedResult.value)  // edito el environment
                                 when(newEnv){
                                     is Failure -> return Failure(newEnv.value)
                                     is Success -> {
@@ -86,36 +91,20 @@ class InterpreterImpl: Interpreter {
         events: RuntimeEvents,
         message: String
     ): RuntimeEvents {
-        return events.add_event(PrintEvent(message));
+        return events.add_event(PrintEvent(message))
     }
 
-    private fun updateEnvironmentWithNewDeclaration(env: RuntimeEnvironment, ast: AST.Declaration): Either<RuntimeError, RuntimeEnvironment> {
+    private fun updateEnvironmentWithNewDeclaration(
+        env: RuntimeEnvironment,
+        id: String,
+        type: PrintScriptType,
+        value: PrintScriptValue
+    ): Either<RuntimeError, RuntimeEnvironment> {
 
-        val variables = env.variableMap.toMutableMap()
-        val id = ast.id
-        val expression = ast.value
-
-        if(variables.containsKey(id.toString())){ // Estoy declarando una variable que ya está definida, error. Esto ya se hace en add_variable, habría que usar ese metodo.
-            return Failure(RuntimeError.VARIABLE_ALREADY_DEFINED)
-        }
-
-        if (expression == null) {
-            variables[id.toString()] = Optional.empty()
-            return Success(
-                    (RuntimeEnvironment(
-                    variables)))
-        }
-
-        when(val result = solveExpression(expression, env)){
-            is Failure -> return Failure(result.value)
-            is Success -> {
-                val type = expressionSolver.getExpressionScriptType(result.value)
-                if (!type.equals(ast.type.name)){
-                    return Failure(RuntimeError.VARIABLE_HAS_DIFFERENT_TYPE)
-                }
-                variables[id.toString()] = Optional.of(result.value)
-                return Success(RuntimeEnvironment(variables))
-            }
+        if(type != value.getType()){return Failure(RuntimeError.VARIABLE_HAS_DIFFERENT_TYPE)}
+        return when(val newEnv = env.addVariable(id, value)){
+            is Failure -> Failure(newEnv.value)
+            is Success -> Success(newEnv.value)
         }
     }
 }

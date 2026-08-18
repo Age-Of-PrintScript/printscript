@@ -15,4 +15,5 @@ enum class SyntaxError(val message: String): Error {
     UNEXPECTED_TOKEN_AFTER_STATEMENT("Unexpected token after end of statement, expected semicolon"),
     WRONG_TOKEN_TYPE("Number or variable was expected"),
     MISSING_CLOSING_PARENTHESIS("Missing closing parenthesis of expression"),
+    MISSING_FUNCTION_ARGUMENT("Missing function argument in call"),
 }
