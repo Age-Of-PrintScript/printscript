@@ -1,4 +1,4 @@
-package parser
+package parser.expressionSolver
 
 import ast.Expression
 import domain.Either

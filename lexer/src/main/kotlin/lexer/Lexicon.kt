@@ -11,10 +11,10 @@ import lexer.states.State
 import tokens.ASSIGN
 import tokens.COLON
 import tokens.Call
-import tokens.ClosedParenthesis
+import tokens.CLOSED_PARENTHESIS
 import tokens.DataType
 import tokens.LET
-import tokens.OpenParenthesis
+import tokens.OPEN_PARENTHESIS
 import tokens.Operator
 import tokens.SEMICOLON
 import tokens.TokenType
@@ -46,8 +46,8 @@ internal fun createSymbolTokenMap(): Map<Char, TokenType> {
             PrintScriptSymbols.COLON -> tokenMap[symbol.symbol] = COLON
             PrintScriptSymbols.SEMICOLON -> tokenMap[symbol.symbol] = SEMICOLON
             PrintScriptSymbols.ASSIGN -> tokenMap[symbol.symbol] = ASSIGN
-            PrintScriptSymbols.OPEN_PARENTHESIS -> tokenMap[symbol.symbol] = OpenParenthesis
-            PrintScriptSymbols.CLOSE_PARENTHESIS -> tokenMap[symbol.symbol] = ClosedParenthesis
+            PrintScriptSymbols.OPEN_PARENTHESIS -> tokenMap[symbol.symbol] = OPEN_PARENTHESIS
+            PrintScriptSymbols.CLOSE_PARENTHESIS -> tokenMap[symbol.symbol] = CLOSED_PARENTHESIS
         }
     }
     return tokenMap.toMap()
