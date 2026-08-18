@@ -4,6 +4,7 @@ import domain.Either
 import domain.Failure
 import domain.Success
 import domain.PrintScriptOperator
+import domain.PrintScriptType
 import domain.PrintScriptValue
 import java.util.Optional
 
@@ -157,15 +158,15 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
         return Success(PrintScriptValue.StringLiteral(leftText + rightText))
     }
 
-    private fun getExpressionScriptType(expression: Expression, variables: Map<String, Optional<PrintScriptValue>>): Either<String, PrintScriptValue>{
-        return when (solve(expression, variables)){
-            is Success ->
-            is Failure ->
+    private fun getExpressionScriptType(expression: Expression, variables: Map<String, Optional<PrintScriptValue>>): Either<String, PrintScriptType>{
+
+        return when(val result = solve(expression, variables)){
+            is Success ->  when(result.value) {
+                is PrintScriptValue.NumberLiteral -> Success(PrintScriptType.NUMBER)
+                is PrintScriptValue.StringLiteral -> Success(PrintScriptType.STRING)
+            }
+            is Failure -> Failure(result.value) }
         }
     }
 
 
-
-
-
-}
