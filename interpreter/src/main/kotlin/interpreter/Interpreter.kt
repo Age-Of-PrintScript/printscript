@@ -110,7 +110,7 @@ class InterpreterImpl: Interpreter {
             is Failure -> return Failure(result.value)
             is Success -> {
                 val type = expressionSolver.getExpressionScriptType(result.value)
-                if (!type.equals(ast.value)){
+                if (!type.equals(ast.type.name)){
                     return Failure(RuntimeError.VARIABLE_HAS_DIFFERENT_TYPE)
                 }
                 variables[id.toString()] = Optional.of(result.value)
