@@ -2,7 +2,6 @@ package interpreter
 
 import domain.Either
 import domain.Failure
-import domain.PrintScriptType
 import domain.PrintScriptValue
 import domain.Success
 
@@ -46,8 +45,8 @@ data class RuntimeEnvironment(
     }
 }
 
-data class RuntimeEvents(val events: List<Events>){
-    fun add_event(event: Events): RuntimeEvents {
+data class RuntimeEvents(val events: List<Event>){
+    fun add_event(event: Event): RuntimeEvents {
         return RuntimeEvents(events
             .toMutableList()
             .apply {
@@ -59,6 +58,6 @@ data class RuntimeEvents(val events: List<Events>){
 }
 
 
-sealed interface Events
-class PrintEvent(val message: String) : Events;
+sealed interface Event
+class PrintEvent(val message: String) : Event;
 
