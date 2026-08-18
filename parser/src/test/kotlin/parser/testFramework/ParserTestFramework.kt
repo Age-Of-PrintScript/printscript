@@ -13,6 +13,7 @@ import domain.Failure
 import domain.Success
 import parser.ParserImpl
 import parser.SyntaxError
+import kotlin.test.Test
 
 internal data class TestCase(
     val inputTokens: List<Token>,
@@ -31,6 +32,11 @@ internal class ParserFileTests {
                 }
             }
             .asStream()
+    }
+
+    @Test
+    fun runSingleTest() {
+        runOneTest(File("src/test/resources/parserTests/case_28.md"))
     }
 
     private fun runOneTest(file: File) {

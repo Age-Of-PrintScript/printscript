@@ -9,7 +9,7 @@ import parser.ExpressionParser
 import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
-import tokens.ClosedParenthesis
+import tokens.CLOSED_PARENTHESIS
 import tokens.Identifier
 import tokens.Literal
 import tokens.Operator
@@ -27,7 +27,7 @@ internal data class CallArgsPending(
         return when(token.type) {
             is Literal, is Identifier, is Operator ->
                 Success(copy(tokens = tokens + token) to builder)
-            is ClosedParenthesis ->{
+            is CLOSED_PARENTHESIS ->{
                 when(val res = expressionParser.parseExpression(tokens)){
                     is Failure -> Failure(res.value)
                     is Success -> {

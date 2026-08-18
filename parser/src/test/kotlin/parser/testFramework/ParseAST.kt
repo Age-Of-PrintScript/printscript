@@ -46,7 +46,8 @@ private fun parseAST(lines: List<Line>, index: Int): Pair<AST, Int> {
         }
         "CALL" -> {
             val functionName = PrintScriptFunctions.valueOf(getContent(lines, index + 1))
-            AST.Call(functionName) to index + 2
+            val (arg, next) = parseExpression(lines, index + 2)
+            AST.Call(functionName, listOf(arg)) to next
         }
         else -> throw IllegalArgumentException("AST desconocido: ${head.content}")
     }
