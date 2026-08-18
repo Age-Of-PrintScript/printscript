@@ -7,10 +7,10 @@ import ast.Expression
 import domain.Failure
 import domain.factorSeparators
 import domain.termSeparators
-import tokens.ClosedParenthesis
+import tokens.CLOSED_PARENTHESIS
 import tokens.Identifier
 import tokens.Literal
-import tokens.OpenParenthesis
+import tokens.OPEN_PARENTHESIS
 import tokens.Operator
 import tokens.Token
 import java.util.Optional
@@ -51,7 +51,7 @@ internal class ExpressionParser {
         return when (val type = token.type) {
             is Literal -> Success(ParsedResult(Expression.Literal(type.value), position + 1))
             is Identifier -> Success(ParsedResult(Expression.Variable(type.name), position + 1))
-            is OpenParenthesis -> parseParenthesisExpression(tokens, position + 1)
+            is OPEN_PARENTHESIS -> parseParenthesisExpression(tokens, position + 1)
             else -> Failure(SyntaxError.WRONG_TOKEN_TYPE) // Si hay un tokenType que no es de los dos de arriba, la expresión no tiene sentido.
         }
     }
@@ -71,7 +71,7 @@ internal class ExpressionParser {
         parsedExpression: ParsedResult<Expression>
     ): Either<SyntaxError, ParsedResult<Expression>> {
         return when (tokens.getOrNull(position)?.type) {
-            is ClosedParenthesis -> Success(ParsedResult(parsedExpression.parsedResult, position + 1))
+            is CLOSED_PARENTHESIS -> Success(ParsedResult(parsedExpression.parsedResult, position + 1))
             else -> Failure(SyntaxError.MISSING_CLOSING_PARENTHESIS)
         }
     }

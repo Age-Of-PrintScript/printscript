@@ -8,12 +8,12 @@ import domain.PrintScriptValue
 import tokens.ASSIGN
 import tokens.COLON
 import tokens.Call
-import tokens.ClosedParenthesis
+import tokens.CLOSED_PARENTHESIS
 import tokens.DataType
 import tokens.Identifier
 import tokens.LET
 import tokens.Literal
-import tokens.OpenParenthesis
+import tokens.OPEN_PARENTHESIS
 import tokens.Operator
 import tokens.SEMICOLON
 import tokens.Token
@@ -37,8 +37,8 @@ private fun parseTokenType(line: String): TokenType {
         "COLON" -> COLON
         "SEMICOLON" -> SEMICOLON
         "ASSIGN" -> ASSIGN
-        "OPEN_PARENTHESIS" -> OpenParenthesis
-        "CLOSE_PARENTHESIS" -> ClosedParenthesis
+        "OPEN_PARENTHESIS" -> OPEN_PARENTHESIS
+        "CLOSED_PARENTHESIS" -> CLOSED_PARENTHESIS
         "IDENTIFIER" -> Identifier(value!!)
         "TYPE" -> DataType(PrintScriptType.valueOf(value!!))
         "NUMBER LITERAL" -> Literal(PrintScriptValue.NumberLiteral(value!!.toDouble()))
