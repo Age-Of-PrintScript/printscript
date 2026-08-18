@@ -16,7 +16,7 @@ data class ExecutionResult(
 data class RuntimeEnvironment(
     val variableMap: Map<String, Optional<PrintScriptValue>>
 ){
-    fun add_variable(id: String, value: PrintScriptValue): Either<RuntimeError, RuntimeEnvironment> {
+    fun addVariable(id: String, value: PrintScriptValue): Either<RuntimeError, RuntimeEnvironment> {
 
         if(variableMap.containsKey(id)) return Failure(RuntimeError.VARIABLE_ALREADY_DEFINED)
 
