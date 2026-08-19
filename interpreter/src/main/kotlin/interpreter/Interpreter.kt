@@ -107,7 +107,7 @@ class InterpreterImpl: Interpreter {
         events: RuntimeEvents,
         message: String
     ): RuntimeEvents {
-        return events.add_event(PrintEvent(message))
+        return events.addEvent(PrintEvent(message))
     }
 
     private fun updateEnvironmentWithNewDeclaration(

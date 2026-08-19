@@ -4,11 +4,10 @@ import domain.Either
 import domain.Failure
 import domain.Success
 import domain.PrintScriptOperator
-import domain.PrintScriptType
 import domain.PrintScriptValue
 import java.util.Optional
 
-class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sirve para expresiones sin variables
+class ExpressionSolver {
 
 
     fun solve(
@@ -101,23 +100,22 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
     * */
 
     private fun dispatchSumOperation(
-        right: PrintScriptValue,
-        left: PrintScriptValue
+        left: PrintScriptValue,
+        right: PrintScriptValue
     ): Either<String, PrintScriptValue> {
-        return when {
-            left is PrintScriptValue.NumberLiteral  //quedó horripilante
-                    && right is PrintScriptValue.NumberLiteral -> Success(
+        return when (left
+        ) {
+            is PrintScriptValue.NumberLiteral if right is PrintScriptValue.NumberLiteral -> Success(
                 handleNumberSum(
                     left.value,
                     right.value
                 )
             )
 
-            left is PrintScriptValue.StringLiteral
-                    && right is PrintScriptValue.StringLiteral -> Success(
+            is PrintScriptValue.StringLiteral if right is PrintScriptValue.StringLiteral -> Success(
                 handleStringSum(
-                    left.value.toString(),
-                    right.value.toString()
+                    left.value,
+                    right.value
                 )
             )
 
@@ -210,13 +208,6 @@ class ExpressionSolver { //clase auxiliar para hacer tests mas faciles. Solo sir
         }
         return Success(PrintScriptValue.StringLiteral(leftText + rightText))
     }
-
-    fun getExpressionScriptType(value: PrintScriptValue): Either<String, PrintScriptType>{
-        return when (value) {
-            is PrintScriptValue.NumberLiteral -> Success(PrintScriptType.NUMBER)
-            is PrintScriptValue.StringLiteral -> Success(PrintScriptType.STRING)
-        }
-}
 }
 
 

@@ -49,7 +49,7 @@ data class RuntimeEnvironment(
 
 data class RuntimeEvents(val events: List<Event>){
 
-    fun add_event(event: Event): RuntimeEvents {
+    fun addEvent(event: Event): RuntimeEvents {
         return RuntimeEvents(events
             .toMutableList()
             .apply {
@@ -62,5 +62,5 @@ data class RuntimeEvents(val events: List<Event>){
 
 
 sealed interface Event
-class PrintEvent(val message: String) : Event;
+class PrintEvent(val message: String) : Event
 
