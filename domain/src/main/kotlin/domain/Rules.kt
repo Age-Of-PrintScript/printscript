@@ -16,7 +16,6 @@ sealed interface PrintScriptValue {
     data class StringLiteral(val value: String): PrintScriptValue {
         override fun getType(): PrintScriptType = PrintScriptType.STRING
     }
-
 }
 
 enum class PrintScriptOperator {

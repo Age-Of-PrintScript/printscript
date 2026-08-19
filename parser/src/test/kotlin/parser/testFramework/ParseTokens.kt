@@ -41,8 +41,7 @@ private fun parseTokenType(line: String): TokenType {
         "CLOSED_PARENTHESIS" -> CLOSED_PARENTHESIS
         "IDENTIFIER" -> Identifier(value!!)
         "TYPE" -> DataType(PrintScriptType.valueOf(value!!))
-        "NUMBER LITERAL" -> Literal(PrintScriptValue.NumberLiteral(value!!.toDouble()))
-        "STRING LITERAL" -> Literal(PrintScriptValue.StringLiteral(value!!))
+        "LITERAL" -> Literal(value!!)
         "OPERATOR" -> Operator(PrintScriptOperator.valueOf(value!!))
         "CALL" -> Call(PrintScriptFunctions.valueOf(value!!))
         else -> throw IllegalArgumentException("Tag de token desconocido: $tag en línea: $line")

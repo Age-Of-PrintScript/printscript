@@ -12,6 +12,7 @@ import parser.states.ConsumeResult
 import parser.states.State
 import parser.states.StatementComplete
 import tokens.CLOSED_PARENTHESIS
+import tokens.OPEN_PARENTHESIS
 import tokens.Identifier
 import tokens.Literal
 import tokens.Operator
@@ -26,7 +27,7 @@ internal data class ExpressionPending(
             SEMICOLON -> {
                 buildExpressionOnAst(expressionParser, builder)
             }
-            is Literal, is Identifier, is Operator, is tokens.OPEN_PARENTHESIS, is CLOSED_PARENTHESIS ->
+            is Literal, is Identifier, is Operator, is OPEN_PARENTHESIS, is CLOSED_PARENTHESIS ->
                 Success(copy(tokens = tokens + token) to builder)
             else -> Failure(SyntaxError.INVALID_TOKEN)
         }

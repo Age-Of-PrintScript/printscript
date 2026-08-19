@@ -36,7 +36,7 @@ internal class ParserFileTests {
 
     @Test
     fun runSingleTest() {
-        runOneTest(File("src/test/resources/parserTests/case_16.md"))
+        runOneTest(File("src/test/resources/parserTests/case_1.md"))
     }
 
     private fun runOneTest(file: File) {

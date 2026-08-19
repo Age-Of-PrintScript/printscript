@@ -8,6 +8,9 @@ import ast.AST
 import ast.ASTDataType
 import ast.ASTIdentifier
 import ast.Expression
+import domain.PrintScriptType
+import domain.PrintScriptValue.NumberLiteral
+import domain.PrintScriptValue.StringLiteral
 
 enum class BuilderType { NONE, DECLARATION, ASSIGNMENT, CALL }
 
@@ -42,5 +45,6 @@ data class ASTBuilder(
             val safeName = functionName ?: return Failure(SyntaxError.MISSING_FUNCTION_NAME)
             Success(AST.Call(safeName, expressions))
         }
+
     }
 }
