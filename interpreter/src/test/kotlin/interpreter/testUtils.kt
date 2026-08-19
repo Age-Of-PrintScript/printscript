@@ -19,3 +19,17 @@ internal fun assertEnvWithVariable(
     assertEquals(type,envType)
     assertEquals(value, envValue)
 }
+
+internal fun assertPrintEventExists(
+    events: RuntimeEvents,
+    message: String,
+){
+    val eventList = events.events
+    var containsPrintEvent = false;
+    for(event in eventList) {
+        if((event as PrintEvent).message.equals(message)){
+            containsPrintEvent = true
+        }
+    }
+    assertTrue(containsPrintEvent)
+}
