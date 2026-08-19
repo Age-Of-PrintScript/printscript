@@ -8,8 +8,15 @@ enum class PrintScriptType:Keyword {
 }
 
 sealed interface PrintScriptValue {
-    data class NumberLiteral(val value: Number): PrintScriptValue
-    data class StringLiteral(val value: String): PrintScriptValue
+    fun getType(): PrintScriptType
+    data class NumberLiteral(val value: Number): PrintScriptValue {
+        override fun getType(): PrintScriptType = PrintScriptType.NUMBER
+    }
+
+    data class StringLiteral(val value: String): PrintScriptValue {
+        override fun getType(): PrintScriptType = PrintScriptType.STRING
+    }
+
 }
 
 enum class PrintScriptOperator {

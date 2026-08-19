@@ -3,9 +3,11 @@ package parser.expressionSolver
 import ast.Expression
 import domain.Either
 import domain.Failure
+import ast.ExpressionSolver
 import domain.PrintScriptOperator
 import domain.PrintScriptValue
 import domain.Success
+import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.Test
 
@@ -19,7 +21,7 @@ class ExpressionTest {
     private fun assertExpressionEquals(
         expression: Expression,
         expectedValue: Number,
-        values: Map<String, PrintScriptValue> = emptyMap()
+        values: Map<String, Optional<PrintScriptValue>> = emptyMap()
     ):Either<String, PrintScriptValue> {
         when (val result = solver.solve(expression, values)) {
             is Success -> {

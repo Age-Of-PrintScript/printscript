@@ -1,4 +1,5 @@
-package parser.expressionSolver
+package ast
+
 
 import domain.PrintScriptValue
 
@@ -8,24 +9,25 @@ import domain.PrintScriptValue
 
 //String
 
- fun handleStringSum(left: String, right: String): PrintScriptValue{
+fun handleStringSum(left: String, right: String): PrintScriptValue{
     return PrintScriptValue.StringLiteral(left + right)
 }
 
 //Number
 
- fun handleNumberSum(left: Number, right: Number): PrintScriptValue{
+fun handleNumberSum(left: Number, right: Number): PrintScriptValue{
     return PrintScriptValue.NumberLiteral(left.toDouble() + right.toDouble())
 }
 
- fun handleNumberSubtract(left: Number, right: Number): PrintScriptValue{
+fun handleNumberSubtract(left: Number, right: Number): PrintScriptValue{
     return PrintScriptValue.NumberLiteral(left.toDouble() - right.toDouble())
 }
 
- fun handleNumberProduct(left: Number, right: Number): PrintScriptValue{
+fun handleNumberProduct(left: Number, right: Number): PrintScriptValue{
     return PrintScriptValue.NumberLiteral(left.toDouble() * right.toDouble())
 }
 
- fun handleNumberDivide(left: Number, right: Number): PrintScriptValue{
+fun handleNumberDivide(left: Number, right: Number): PrintScriptValue{
     return PrintScriptValue.NumberLiteral(left.toDouble() / right.toDouble())
 }
+
