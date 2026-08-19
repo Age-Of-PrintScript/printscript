@@ -85,7 +85,11 @@ class InterpreterImpl: Interpreter {
                         }
                     }
                     else{
-                        env.addVariable(ast.id.name, Optional.empty())
+                        val newEnv = env.addVariable(ast.id.name, Optional.empty())
+                        when(newEnv){
+                            is Failure -> return Failure(newEnv.value)
+                            is Success -> {env = newEnv.value}
+                        }
                     }
 
                 }
