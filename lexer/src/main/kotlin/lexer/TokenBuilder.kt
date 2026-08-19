@@ -17,44 +17,45 @@ internal class TokenBuilder {
     private val tokenMap = createSymbolTokenMap()
 
     fun addChar(chr: Char): Either<LexerError, Unit> {
-        // esto puede ser que se rompa xq antes checkeaba si el type era un String Literal y ahora
-        // como maximo se puede checkear si es un Literal
-        if (type is Literal && charIsNotQuote(chr)) {
-            val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
-            type = newType
+        if (type is Literal && !charIsQuote(chr)) {
+            type = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
         }
-        when {
-            chr.isDigit() -> {
-                type =
-                    if (type == null) Literal(chr.toString())
-                    else
-                        updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
-            }
-            chr.isLetter() -> {
-                type =
-                    if (type == null) Identifier(chr.toString())
-                    else
-                        updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
-            }
-            chr == '.' -> {
-                if (type == null || type is Identifier) return Failure(LexerError.INVALID_CHARACTER)
-                else
-                    type = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+        else {
+            when {
+                chr.isDigit() -> {
+                    type =
+                        if (type == null) Literal(chr.toString())
+                        else
+                            updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                }
 
-            }
-            chr == '\'' || chr == '"'-> {
-                type =
-                    if (type == null) Literal(chr.toString())
-                    // este tambien checkeaba si era un string literal
-                    else if (type is Literal)
-                        updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                chr.isLetter() -> {
+                    type =
+                        if (type == null) Identifier(chr.toString())
+                        else
+                            updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                }
 
-                else return Failure(LexerError.INVALID_CHARACTER)
-            }
-            chr.isWhitespace() -> type = WHITESPACE
-            else -> {
-                if (tokenMap.containsKey(chr)) type = tokenMap.getValue(chr)
-                else return Failure(LexerError.INVALID_CHARACTER)
+                chr == '.' -> {
+                    if (type is Literal)
+                        type = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                    else return Failure(LexerError.INVALID_CHARACTER)
+                }
+
+                chr == '\'' || chr == '"' -> {
+                    type =
+                        if (type == null) Literal(chr.toString())
+                        else if (type is Literal)
+                            updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                        else return Failure(LexerError.INVALID_CHARACTER)
+                }
+
+                chr.isWhitespace() -> type = WHITESPACE
+
+                else -> {
+                    if (tokenMap.containsKey(chr)) type = tokenMap.getValue(chr)
+                    else return Failure(LexerError.INVALID_CHARACTER)
+                }
             }
         }
         return Success(Unit)
@@ -79,10 +80,12 @@ internal class TokenBuilder {
 
         if (finishedType is Literal) {
             val str = finishedType.value
-            val last = str.last()
             //El type solo es asignado string type si arranca con comillas
-            if (charIsNotQuote(last)) return Failure(LexerError.UNTERMINATED_STRING)
-            else finishedType = Literal(str.substring(1, str.length - 1))
+            if (str.isNotEmpty() && charIsQuote(str.first())) {
+                val last = str.last()
+                if (!charIsQuote(last)) return Failure(LexerError.UNTERMINATED_STRING)
+                else finishedType = Literal(str.substring(1, str.length - 1))
+            }
         }
 
         return Success(

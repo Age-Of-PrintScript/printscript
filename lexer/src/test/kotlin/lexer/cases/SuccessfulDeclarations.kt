@@ -22,7 +22,7 @@ object SuccessfulDeclarations {
                 COLON,
                 DataType(PrintScriptType.NUMBER),
                 ASSIGN,
-                Literal(PrintScriptValue.NumberLiteral(5)),
+                Literal("5"),
                 SEMICOLON
             )
         ),
@@ -35,7 +35,7 @@ object SuccessfulDeclarations {
                 COLON,
                 DataType(PrintScriptType.STRING),
                 ASSIGN,
-                Literal(PrintScriptValue.StringLiteral("Hello")),
+                Literal("Hello"),
                 SEMICOLON
             )
         ),
@@ -48,7 +48,7 @@ object SuccessfulDeclarations {
                 COLON,
                 DataType(PrintScriptType.STRING),
                 ASSIGN,
-                Literal(PrintScriptValue.StringLiteral("")),
+                Literal(""),
                 SEMICOLON
             )
         ),
@@ -61,7 +61,7 @@ object SuccessfulDeclarations {
                 COLON,
                 DataType(PrintScriptType.STRING),
                 ASSIGN,
-                Literal(PrintScriptValue.StringLiteral("hola mundo")),
+                Literal("hola mundo"),
                 SEMICOLON
             )
         ),
@@ -74,7 +74,7 @@ object SuccessfulDeclarations {
                 COLON,
                 DataType(PrintScriptType.NUMBER),
                 ASSIGN,
-                Literal(PrintScriptValue.NumberLiteral(5)),
+                Literal("5"),
                 SEMICOLON
             )
         ),
@@ -87,7 +87,7 @@ object SuccessfulDeclarations {
                 COLON,
                 DataType(PrintScriptType.NUMBER),
                 ASSIGN,
-                Literal(PrintScriptValue.NumberLiteral(5)),
+                Literal("5"),
                 SEMICOLON
             )
         ),
@@ -101,14 +101,14 @@ object SuccessfulDeclarations {
                 COLON,
                 DataType(PrintScriptType.NUMBER),
                 ASSIGN,
-                Literal(PrintScriptValue.NumberLiteral(5)),
+                Literal("5"),
                 SEMICOLON,
                 LET,
                 Identifier("y"),
                 COLON,
                 DataType(PrintScriptType.STRING),
                 ASSIGN,
-                Literal(PrintScriptValue.StringLiteral("Hello")),
+                Literal("Hello"),
                 SEMICOLON,
             )
         ),
@@ -134,8 +134,9 @@ object SuccessfulDeclarations {
                 COLON,
                 DataType(PrintScriptType.STRING),
                 ASSIGN,
-                Literal(PrintScriptValue.StringLiteral("let's move")),
+                Literal("let's move"),
                 SEMICOLON
             )
         )
-)}
+    )
+}

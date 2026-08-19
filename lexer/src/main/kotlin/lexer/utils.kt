@@ -1,4 +1,4 @@
 package lexer
 
-internal fun charIsNotQuote(chr: Char): Boolean =
-    chr != '\'' && chr != '"'
+internal fun charIsQuote(chr: Char): Boolean =
+    chr == '\'' || chr == '"'
