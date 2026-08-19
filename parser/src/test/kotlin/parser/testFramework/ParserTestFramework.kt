@@ -36,7 +36,7 @@ internal class ParserFileTests {
 
     @Test
     fun runSingleTest() {
-        runOneTest(File("src/test/resources/parserTests/case_28.md"))
+        runOneTest(File("src/test/resources/parserTests/case_16.md"))
     }
 
     private fun runOneTest(file: File) {
@@ -56,7 +56,6 @@ internal class ParserFileTests {
         // a complete key would be "Expected: SUCCESS" or "Expected: FAILURE"
         val expectedKey = getCompleteKey(sections, "Expected")
         val expectedResult = sections.getValue(expectedKey)
-
         val expected: Either<SyntaxError, List<AST>> =
             when (val status = getStatus(expectedKey)) {
                 "SUCCESS" -> Success(parseExpectedTrees(expectedResult))

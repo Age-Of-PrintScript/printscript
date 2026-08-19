@@ -3,6 +3,7 @@ package lexer
 import domain.Either
 import domain.Failure
 import domain.Success
+import domain.getOrReturn
 import lexer.states.InitialState
 import lexer.states.State
 import tokens.Token
@@ -19,37 +20,29 @@ internal class LexerStateMachine {
 
         for(i in source.indices) {
             val chr = source[i]
+
             val result = state.consume(chr)
-            when (result) {
-                is Failure -> return Failure(result.value)
-                is Success -> {
-                    when(val appendResult = builder.addChar(chr)){
-                        is Failure -> return Failure(appendResult.value)
-                        is Success -> {
-                            state = result.value
+            val newState = result.getOrReturn { return Failure(it) }
 
-                            val isLastChar = i == source.length - 1
-                            val nextChar = if (!isLastChar) source[i + 1] else null
+            builder.addChar(chr).getOrReturn { return Failure(it) }
+            state = newState
 
-                            val shouldCloseToken = nextChar == null || !state.canConsume(nextChar)
+            val shouldCloseToken = cannotConsumeNextChar(i, source, state)
 
-                            if (shouldCloseToken) {
-                                when(val buildResult= builder.build()){
-                                    is Failure -> return Failure(buildResult.value)
-                                    is Success -> {
-                                        tokenList.add(buildResult.value)
-                                        builder.reset()
-                                        state = InitialState()
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            if (shouldCloseToken) {
+                val token = builder.build().getOrReturn { return Failure(it) }
+                tokenList.add(token)
+                builder.reset()
+                state = InitialState()
             }
         }
         return Success(tokenList.filter { it.type != WHITESPACE })
+    }
 
+    private fun cannotConsumeNextChar(i: Int, source: String, state: State): Boolean {
+        val isLastChar = (i == source.length - 1)
+        val nextChar = if (!isLastChar) source[i + 1] else null
+        return nextChar == null || !state.canConsume(nextChar)
     }
 
 }
