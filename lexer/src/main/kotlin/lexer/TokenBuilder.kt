@@ -3,9 +3,9 @@ package lexer
 import domain.Either
 import domain.Failure
 import domain.Position
-import domain.PrintScriptValue.NumberLiteral
 import domain.PrintScriptValue.StringLiteral
 import domain.Success
+import domain.getOrReturn
 import tokens.Identifier
 import tokens.Literal
 import tokens.Token
@@ -17,30 +17,41 @@ internal class TokenBuilder {
     private val tokenMap = createSymbolTokenMap()
 
     fun addChar(chr: Char): Either<LexerError, Unit> {
-        if(isStringType(type) && charIsNotQuote(chr)){
-            return handleStringLiteral(type, chr)
+        // esto puede ser que se rompa xq antes checkeaba si el type era un String Literal y ahora
+        // como maximo se puede checkear si es un Literal
+        if (type is Literal && charIsNotQuote(chr)) {
+            val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+            type = newType
         }
         when {
             chr.isDigit() -> {
-                if (type == null) type = Literal(NumberLiteral(chr.digitToInt()))
+                if (type == null) type = Literal(chr.toString())
                 else {
-                    when (val newType = updateTypeWithNumber(type, chr)) {
-                        is Success -> type = newType.value
-                        is Failure -> return Failure(newType.value)
-                    }
+                    val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                    type = newType
                 }
             }
             chr.isLetter() -> {
                 if (type == null) type = Identifier(chr.toString())
-                else return handleStringLiteral(type, chr)
+                else {
+                    val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                    type = newType
+                }
             }
             chr == '.' -> {
-                if (type == null) return Failure(LexerError.INVALID_CHARACTER)
-                updateTypeWithNumber(type, chr)
+                if (type == null || type is Identifier) return Failure(LexerError.INVALID_CHARACTER)
+                else {
+                    val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                    type = newType
+                }
             }
             chr == '\'' || chr == '"'-> {
-                if(type == null) type = Literal(StringLiteral(chr.toString()))
-                else if(isStringType(type)) return handleStringLiteral(type, chr)
+                if (type == null) type = Literal(chr.toString())
+                // este tambien checkeaba si era un string literal
+                else if (type is Literal) {
+                    val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                    type = newType
+                }
                 else return Failure(LexerError.INVALID_CHARACTER)
             }
             chr.isWhitespace() -> type = WHITESPACE
@@ -52,38 +63,10 @@ internal class TokenBuilder {
         return Success(Unit)
     }
 
-    private fun handleStringLiteral(type: TokenType?, chr: Char): Either<LexerError, Unit> {
-        when (val result = updateTypeWithString(type, chr)) {
-            is Failure -> return Failure(result.value)
-            is Success -> {
-                this.type = result.value
-                return Success(Unit)
-            }
-        }
-    }
-
-    private fun updateTypeWithNumber(type: TokenType?, chr: Char): Either<LexerError, TokenType> {
+    private fun updateTypeWithLiteral(type: TokenType?, chr: Char): Either<LexerError, TokenType> {
         return when (type) {
             is Identifier -> Success(Identifier(type.name + chr))
-            is Literal -> {
-                when (val newType = type.value) {
-                    is NumberLiteral -> Success(Literal(concatNumbers(newType, chr)))
-                    is StringLiteral -> Success(Literal(concatStrings(newType, chr)))
-                }
-            }
-            else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
-        }
-    }
-
-    private fun updateTypeWithString(type: TokenType?, chr: Char): Either<LexerError, TokenType> {
-        return when (type) {
-            is Identifier -> Success(Identifier(type.name + chr))
-            is Literal -> {
-                when (val newType = type.value) {
-                    is NumberLiteral -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
-                    is StringLiteral -> Success(Literal(concatStrings(newType, chr)))
-                }
-            }
+            is Literal ->  Success(Literal(type.value + chr))
             else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
         }
     }
@@ -96,16 +79,13 @@ internal class TokenBuilder {
             if (keywordMap.contains(finishedType.name))
                 finishedType = keywordMap.getValue(finishedType.name)
         }
-        if(isStringType(finishedType)) {
-            val lit = (finishedType as Literal)
-            val str = lit.value as StringLiteral
-            val last = str.value.last()
+
+        if (finishedType is Literal) {
+            val str = finishedType.value
+            val last = str.last()
             //El type solo es asignado string type si arranca con comillas
-            if(charIsNotQuote(last)){
-                return Failure(LexerError.UNTERMINATED_STRING)
-            }else{
-                finishedType = Literal(StringLiteral(str.value.substring(1, str.value.length - 1)))
-            }
+            if (charIsNotQuote(last)) return Failure(LexerError.UNTERMINATED_STRING)
+            else finishedType = Literal(str.substring(1, str.length - 1))
         }
 
         return Success(
