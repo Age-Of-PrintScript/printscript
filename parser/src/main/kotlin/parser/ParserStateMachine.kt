@@ -6,6 +6,7 @@ import domain.Position
 import ast.Program
 import domain.Success
 import ast.AST
+import domain.getOrReturn
 import parser.states.Start
 import parser.states.State
 import parser.states.StatementComplete
@@ -19,24 +20,21 @@ internal class ParserStateMachine {
 
         for(token in tokens){
             val result = state.consume(token, builder, expressionParser)
-            when(result){
-                is Failure -> return Failure(result.value)
-                is Success -> {
-                    state = result.value.first
-                    builder = result.value.second
-                    if (state == StatementComplete) {
-                        when (val ast = builder.build()) {
-                            is Failure -> return Failure(ast.value)
-                            is Success -> trees.add(ast.value)
-                        }
-                        state = Start
-                        builder = ASTBuilder()
-                    }
-                }
+
+            val pair = result.getOrReturn { return Failure(it) }
+            state = pair.first
+            builder = pair.second
+
+            if (state == StatementComplete) {
+                val ast = builder.build().getOrReturn { return Failure(it) }
+                trees.add(ast)
+                state = Start
+                builder = ASTBuilder()
             }
         }
         return finalizeParsing(state, trees, tokens)
     }
+
     private fun finalizeParsing(
         state: State,
         trees: List<AST>,
