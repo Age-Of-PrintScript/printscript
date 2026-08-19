@@ -25,33 +25,30 @@ internal class TokenBuilder {
         }
         when {
             chr.isDigit() -> {
-                if (type == null) type = Literal(chr.toString())
-                else {
-                    val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
-                    type = newType
-                }
+                type =
+                    if (type == null) Literal(chr.toString())
+                    else
+                        updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
             }
             chr.isLetter() -> {
-                if (type == null) type = Identifier(chr.toString())
-                else {
-                    val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
-                    type = newType
-                }
+                type =
+                    if (type == null) Identifier(chr.toString())
+                    else
+                        updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
             }
             chr == '.' -> {
                 if (type == null || type is Identifier) return Failure(LexerError.INVALID_CHARACTER)
-                else {
-                    val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
-                    type = newType
-                }
+                else
+                    type = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+
             }
             chr == '\'' || chr == '"'-> {
-                if (type == null) type = Literal(chr.toString())
-                // este tambien checkeaba si era un string literal
-                else if (type is Literal) {
-                    val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
-                    type = newType
-                }
+                type =
+                    if (type == null) Literal(chr.toString())
+                    // este tambien checkeaba si era un string literal
+                    else if (type is Literal)
+                        updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+
                 else return Failure(LexerError.INVALID_CHARACTER)
             }
             chr.isWhitespace() -> type = WHITESPACE
