@@ -6,5 +6,6 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    implementation(project(":ast"))
+    api(project(":ast"))
+    testImplementation(kotlin("test"))
 }
