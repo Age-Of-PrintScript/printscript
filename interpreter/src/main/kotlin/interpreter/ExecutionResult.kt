@@ -16,7 +16,7 @@ data class ExecutionResult(
 data class RuntimeEnvironment(
     val variableMap: Map<String, Optional<PrintScriptValue>>
 ){
-    fun addVariable(id: String, value: PrintScriptValue): Either<RuntimeError, RuntimeEnvironment> {
+    fun addVariable(id: String, value: Optional<PrintScriptValue>): Either<RuntimeError, RuntimeEnvironment> {
 
         if(variableMap.containsKey(id)) return Failure(RuntimeError.VARIABLE_ALREADY_DEFINED)
 
@@ -25,7 +25,7 @@ data class RuntimeEnvironment(
                 variableMap
                     .toMutableMap()
                     .apply {
-                        put(id, Optional.of(value))
+                        put(id, value)
                     }
                     .toMap()
             )
