@@ -7,7 +7,7 @@ interface Lexer {
     fun tokenize(source: String): Either<LexerError, TokenList>
 }
 
-internal class LexerImpl : Lexer {
+class LexerImpl : Lexer {
     private val stateMachine = LexerStateMachine()
 
     override fun tokenize(source: String): Either<LexerError, TokenList> {
