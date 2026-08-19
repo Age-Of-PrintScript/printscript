@@ -10,6 +10,7 @@ import domain.PrintScriptFunctions
 import domain.PrintScriptType
 import domain.PrintScriptValue
 import domain.Success
+import java.util.Optional
 
 interface Interpreter {
     fun execute(program: Program): Either<RuntimeError, ExecutionResult>
@@ -56,7 +57,15 @@ class InterpreterImpl: Interpreter {
                 is AST.Call -> {
                     when(ast.functionName){
                         PrintScriptFunctions.PRINTLN -> {
-                            events = addPrintEvent(events, ast.args.first().toString()) // edito los events
+                            val solvedResult= solveExpression(ast.args.first(), env)
+                            when(solvedResult){
+                                is Failure -> return Failure(solvedResult.value)
+                                is Success -> {
+                                    events = addPrintEvent(events, solvedResult.value.toString())
+
+                                }
+                            }
+                             // edito los events
                         }
                     }
                 }
@@ -74,6 +83,9 @@ class InterpreterImpl: Interpreter {
                                 }
                             }
                         }
+                    }
+                    else{
+                        env.addVariable(ast.id.name, Optional.empty())
                     }
 
                 }
@@ -102,7 +114,7 @@ class InterpreterImpl: Interpreter {
     ): Either<RuntimeError, RuntimeEnvironment> {
 
         if(type != value.getType()){return Failure(RuntimeError.VARIABLE_HAS_DIFFERENT_TYPE)}
-        return when(val newEnv = env.addVariable(id, value)){
+        return when(val newEnv = env.addVariable(id, Optional.of(value))){
             is Failure -> Failure(newEnv.value)
             is Success -> Success(newEnv.value)
         }
