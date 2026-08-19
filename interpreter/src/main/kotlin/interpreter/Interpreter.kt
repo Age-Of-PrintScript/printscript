@@ -61,8 +61,7 @@ class InterpreterImpl: Interpreter {
                             when(solvedResult){
                                 is Failure -> return Failure(solvedResult.value)
                                 is Success -> {
-                                    events = addPrintEvent(events, solvedResult.value.toString())
-
+                                    events = addPrintEvent(events, valueToString(solvedResult.value))
                                 }
                             }
                              // edito los events
@@ -85,7 +84,7 @@ class InterpreterImpl: Interpreter {
                         }
                     }
                     else{
-                        val newEnv = env.addVariable(ast.id.name, Optional.empty())
+                        val newEnv = env.addVariable(ast.id.name, ast.type.name,Optional.empty())
                         when(newEnv){
                             is Failure -> return Failure(newEnv.value)
                             is Success -> {env = newEnv.value}
@@ -98,7 +97,7 @@ class InterpreterImpl: Interpreter {
        return Success(ExecutionResult(env, events))
     }
     private fun solveExpression(expression: Expression, env: RuntimeEnvironment): Either<RuntimeError, PrintScriptValue> {
-        return when (val res = expressionSolver.solve(expression, env.variableMap)) {
+        return when (val res = expressionSolver.solve(expression, env.getVariableMapWithValues())) {
             is Success -> Success(res.value)
             is Failure-> Failure(RuntimeError.MATH_ERROR)
         }
@@ -118,9 +117,15 @@ class InterpreterImpl: Interpreter {
     ): Either<RuntimeError, RuntimeEnvironment> {
 
         if(type != value.getType()){return Failure(RuntimeError.VARIABLE_HAS_DIFFERENT_TYPE)}
-        return when(val newEnv = env.addVariable(id, Optional.of(value))){
+        return when(val newEnv = env.addVariable(id, type, Optional.of(value))){
             is Failure -> Failure(newEnv.value)
             is Success -> Success(newEnv.value)
+        }
+    }
+    private fun valueToString(value: PrintScriptValue): String {
+        return when(value){
+            is PrintScriptValue.NumberLiteral -> value.value.toString()
+            is PrintScriptValue.StringLiteral -> value.value
         }
     }
 }
