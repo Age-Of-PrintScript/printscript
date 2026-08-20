@@ -32,7 +32,7 @@ internal class ParserStateMachine {
                 builder = ASTBuilder()
             }
         }
-        return finalizeParsing(state, trees, tokens)
+        return finalizeParsing(state, trees.toList(), tokens)
     }
 
     private fun finalizeParsing(
@@ -40,14 +40,20 @@ internal class ParserStateMachine {
         trees: List<AST>,
         tokens: TokenList
     ): Either<SyntaxError, Program> {
-        if (state != Start) {
-            return Failure(SyntaxError.INCOMPLETE_STATEMENT)
-        }
+        if (state != Start) return Failure(SyntaxError.INCOMPLETE_STATEMENT)
+
         return Success(
             Program(
-            trees,
-            if(tokens.isNotEmpty()) tokens.first().start else Position(0, 0),
-            if(tokens.isNotEmpty()) tokens.last().end else Position(0, 0)
-        ))
+                trees,
+                getInitialPosition(tokens),
+                getFinalPosition(tokens)
+            )
+        )
     }
+
+    private fun getFinalPosition(tokens: TokenList): Position =
+        if (tokens.isNotEmpty()) tokens.last().end else Position(0, 0)
+
+    private fun getInitialPosition(tokens: TokenList): Position =
+        if (tokens.isNotEmpty()) tokens.first().start else Position(0, 0)
 }

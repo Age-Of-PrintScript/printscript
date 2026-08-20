@@ -72,9 +72,10 @@ internal class ExpressionParser {
         }
     }
 
-    private fun parseParenthesisExpression(tokens: List<Token>,
-                                           position: Int):
-            Either<SyntaxError, ParsedResult<Expression>> {
+    private fun parseParenthesisExpression(
+        tokens: List<Token>,
+        position: Int
+    ): Either<SyntaxError, ParsedResult<Expression>> {
         return when (val expression = createExpressionTree(tokens.subList(position, tokens.size))) {
             is Success -> checkClosingParenthesis(tokens, position + expression.value.nextPosition, expression.value)
             is Failure -> expression
