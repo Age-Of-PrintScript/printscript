@@ -24,7 +24,7 @@ internal class LexerStateMachine {
             val result = state.consume(chr)
             val newState = result.getOrReturn { return Failure(it) }
 
-            builder.addChar(chr).getOrReturn { return Failure(it) }
+            builder = builder.addChar(chr).getOrReturn { return Failure(it) }
             state = newState
 
             val shouldCloseToken = cannotConsumeNextChar(i, source, state)

@@ -38,14 +38,6 @@ internal data class TokenBuilder(
                 return Success(copy(type = newType))
             }
 
-            chr == '.' -> {
-                if (type is Literal) {
-                    val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
-                    return Success(copy(type = newType))
-                }
-                return Failure(LexerError.INVALID_CHARACTER)
-            }
-
             chr == '\'' || chr == '"' -> {
                 val newType = when (type) {
                     is Literal -> updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
@@ -56,12 +48,14 @@ internal data class TokenBuilder(
                 return Success(copy(type = newType))
             }
 
+            chr == '.' -> return Failure(LexerError.INVALID_CHARACTER)
+
             chr.isWhitespace() -> return Success(copy(type = WHITESPACE))
 
             else -> {
-                if (tokenMap.containsKey(chr))
-                    return Success(copy(type = tokenMap.getValue(chr)))
-                else return Failure(LexerError.INVALID_CHARACTER)
+                return if (tokenMap.containsKey(chr))
+                    Success(copy(type = tokenMap.getValue(chr)))
+                else Failure(LexerError.INVALID_CHARACTER)
             }
         }
     }
