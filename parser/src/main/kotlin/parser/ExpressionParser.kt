@@ -5,6 +5,8 @@ import domain.PrintScriptOperator
 import domain.Success
 import ast.Expression
 import domain.Failure
+import domain.PrintScriptValue.NumberLiteral
+import domain.PrintScriptValue.StringLiteral
 import domain.factorSeparators
 import domain.termSeparators
 import tokens.CLOSED_PARENTHESIS
@@ -49,16 +51,31 @@ internal class ExpressionParser {
             ?: return Failure(SyntaxError.INCOMPLETE_STATEMENT) // Si llegue aca y la lista termino, la expresión no tiene sentido.
 
         return when (val type = token.type) {
-            is Literal -> Success(ParsedResult(Expression.Literal(type.value), position + 1))
+            is Literal -> {
+                val number = type.value.toDoubleOrNull()
+                if (number != null) {
+                    Success(ParsedResult(
+                        Expression.Literal(NumberLiteral(number)),
+                        position + 1
+                    ))
+                }
+                else {
+                    Success(ParsedResult(
+                        Expression.Literal(StringLiteral(type.value)),
+                        position + 1
+                    ))
+                }
+            }
             is Identifier -> Success(ParsedResult(Expression.Variable(type.name), position + 1))
             is OPEN_PARENTHESIS -> parseParenthesisExpression(tokens, position + 1)
             else -> Failure(SyntaxError.WRONG_TOKEN_TYPE) // Si hay un tokenType que no es de los dos de arriba, la expresión no tiene sentido.
         }
     }
 
-    private fun parseParenthesisExpression(tokens: List<Token>,
-                                           position: Int):
-            Either<SyntaxError, ParsedResult<Expression>> {
+    private fun parseParenthesisExpression(
+        tokens: List<Token>,
+        position: Int
+    ): Either<SyntaxError, ParsedResult<Expression>> {
         return when (val expression = createExpressionTree(tokens.subList(position, tokens.size))) {
             is Success -> checkClosingParenthesis(tokens, position + expression.value.nextPosition, expression.value)
             is Failure -> expression

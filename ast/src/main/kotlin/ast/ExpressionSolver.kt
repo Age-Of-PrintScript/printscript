@@ -4,8 +4,12 @@ import domain.Either
 import domain.Failure
 import domain.Success
 import domain.PrintScriptOperator
+import domain.PrintScriptValue.NumberLiteral
+import domain.PrintScriptValue.StringLiteral
 import domain.PrintScriptValue
 import java.util.Optional
+import ast.Expression.Literal
+import ast.Expression.Operation
 
 class ExpressionSolver {
 
@@ -16,10 +20,10 @@ class ExpressionSolver {
     ): Either<String, PrintScriptValue> {
 
         return when (expression) {
-            is Expression.Literal -> {
+            is Literal -> {
                 when (expression.value) {
-                    is PrintScriptValue.NumberLiteral -> Success(expression.value)
-                    is PrintScriptValue.StringLiteral -> Success(expression.value)
+                    is NumberLiteral -> Success(expression.value)
+                    is StringLiteral -> Success(expression.value)
                 }
             }
 
@@ -34,13 +38,13 @@ class ExpressionSolver {
                 }
             }
 
-            is Expression.Operation -> solveOperation(expression, values)
+            is Operation -> solveOperation(expression, values)
         }
     }
 
 
     private fun solveOperation(
-        operation: Expression.Operation,
+        operation: Operation,
         values: Map<String, Optional<PrintScriptValue>>
     ):
             Either<String, PrintScriptValue> {
@@ -105,14 +109,14 @@ class ExpressionSolver {
     ): Either<String, PrintScriptValue> {
         return when (left
         ) {
-            is PrintScriptValue.NumberLiteral if right is PrintScriptValue.NumberLiteral -> Success(
+            is NumberLiteral if right is NumberLiteral -> Success(
                 handleNumberSum(
                     left.value,
                     right.value
                 )
             )
 
-            is PrintScriptValue.StringLiteral if right is PrintScriptValue.StringLiteral -> Success(
+            is StringLiteral if right is StringLiteral -> Success(
                 handleStringSum(
                     left.value,
                     right.value
@@ -130,8 +134,8 @@ class ExpressionSolver {
         right: PrintScriptValue
     ): Either<String, PrintScriptValue> {
         return when {
-            left is PrintScriptValue.NumberLiteral  //quedó horripilante
-                    && right is PrintScriptValue.NumberLiteral -> Success(
+            left is NumberLiteral  //quedó horripilante
+                    && right is NumberLiteral -> Success(
                 handleNumberSubtract(
                     left.value,
                     right.value
@@ -149,8 +153,8 @@ class ExpressionSolver {
         right: PrintScriptValue
     ): Either<String, PrintScriptValue> {
         return when {
-            left is PrintScriptValue.NumberLiteral  //quedó horripilante
-                    && right is PrintScriptValue.NumberLiteral -> Success(
+            left is NumberLiteral  //quedó horripilante
+                    && right is NumberLiteral -> Success(
                 handleNumberProduct(
                     left.value,
                     right.value
@@ -168,8 +172,8 @@ class ExpressionSolver {
         right: PrintScriptValue
     ): Either<String, PrintScriptValue> {
         return when {
-            left is PrintScriptValue.NumberLiteral  //quedó horripilante
-                    && right is PrintScriptValue.NumberLiteral -> Success(
+            left is NumberLiteral  //quedó horripilante
+                    && right is NumberLiteral -> Success(
                 handleNumberDivide(
                     left.value,
                     right.value
@@ -186,8 +190,8 @@ class ExpressionSolver {
         left: PrintScriptValue,
         right: PrintScriptValue
     ): Boolean {
-        return !(left is PrintScriptValue.NumberLiteral && right is PrintScriptValue.NumberLiteral ||
-                left is PrintScriptValue.StringLiteral && right is PrintScriptValue.StringLiteral)
+        return !(left is NumberLiteral && right is NumberLiteral ||
+                left is StringLiteral && right is StringLiteral)
     }
 
     /*
@@ -199,14 +203,14 @@ class ExpressionSolver {
         right: PrintScriptValue
     ): Either<String, PrintScriptValue> {
         val leftText = when (left) {
-            is PrintScriptValue.NumberLiteral -> left.value.toString()
-            is PrintScriptValue.StringLiteral -> left.value
+            is NumberLiteral -> left.value.toString()
+            is StringLiteral -> left.value
         }
         val rightText = when (right) {
-            is PrintScriptValue.NumberLiteral -> right.value.toString()
-            is PrintScriptValue.StringLiteral -> right.value
+            is NumberLiteral -> right.value.toString()
+            is StringLiteral -> right.value
         }
-        return Success(PrintScriptValue.StringLiteral(leftText + rightText))
+        return Success(StringLiteral(leftText + rightText))
     }
 }
 

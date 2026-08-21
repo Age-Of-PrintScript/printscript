@@ -21,7 +21,7 @@ object SuccessfulCalls {
             listOf(
                 Call(PrintScriptFunctions.PRINTLN),
                 OPEN_PARENTHESIS,
-                Literal(PrintScriptValue.NumberLiteral(5)),
+                Literal("5"),
                 CLOSED_PARENTHESIS,
                 SEMICOLON
             )
@@ -43,7 +43,7 @@ object SuccessfulCalls {
             listOf(
                 Call(PrintScriptFunctions.PRINTLN),
                 OPEN_PARENTHESIS,
-                Literal(PrintScriptValue.StringLiteral("texto")),
+                Literal("texto"),
                 CLOSED_PARENTHESIS,
                 SEMICOLON
             )
@@ -54,9 +54,9 @@ object SuccessfulCalls {
             listOf(
                 Call(PrintScriptFunctions.PRINTLN),
                 OPEN_PARENTHESIS,
-                Literal(PrintScriptValue.NumberLiteral(5)),
+                Literal("5"),
                 Operator(PrintScriptOperator.SUM),
-                Literal(PrintScriptValue.NumberLiteral(2)),
+                Literal("2"),
                 CLOSED_PARENTHESIS,
                 SEMICOLON
             )

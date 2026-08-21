@@ -18,7 +18,7 @@ object SuccessfulAssignments {
             listOf(
                 Identifier("x"),
                 ASSIGN,
-                Literal(PrintScriptValue.NumberLiteral(5)),
+                Literal("5"),
                 SEMICOLON
             )
         ),
@@ -28,7 +28,7 @@ object SuccessfulAssignments {
             listOf(
                 Identifier("x"),
                 ASSIGN,
-                Literal(PrintScriptValue.StringLiteral("5")),
+                Literal("5"),
                 SEMICOLON
             )
         ),
@@ -38,17 +38,18 @@ object SuccessfulAssignments {
             listOf(
                 Identifier("x"),
                 ASSIGN,
-                Literal(PrintScriptValue.StringLiteral("hola mundo;")),
+                Literal("hola mundo;"),
                 SEMICOLON
             )
         ),
+        // ahora el lexer no lo va a pasar a 123, eso lo va a hacer el parser
         SuccessCase(
             "number with 0s in the left",
             "x = 000123;",
             listOf(
                 Identifier("x"),
                 ASSIGN,
-                Literal(PrintScriptValue.NumberLiteral(123.0)),
+                Literal("000123"),
                 SEMICOLON
             )
         ),
@@ -58,7 +59,7 @@ object SuccessfulAssignments {
             listOf(
                 Identifier("x"),
                 ASSIGN,
-                Literal(PrintScriptValue.NumberLiteral(0)),
+                Literal("0"),
                 SEMICOLON
             )
         ),
@@ -68,21 +69,19 @@ object SuccessfulAssignments {
             listOf(
                 Identifier("m1Variable1234"),
                 ASSIGN,
-                Literal(PrintScriptValue.NumberLiteral(0)),
+                Literal("0"),
                 SEMICOLON
             )
         ),
         SuccessCase(
             "number with decimal points",
-            "x = 5.5",
+            "x = 5.5;",
             listOf(
                 Identifier("x"),
                 ASSIGN,
-                Literal(PrintScriptValue.NumberLiteral(5.5)),
+                Literal("5.5"),
                 SEMICOLON
             )
         )
-
-
     )
 }

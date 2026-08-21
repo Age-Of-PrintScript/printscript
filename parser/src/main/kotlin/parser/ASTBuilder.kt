@@ -42,5 +42,6 @@ data class ASTBuilder(
             val safeName = functionName ?: return Failure(SyntaxError.MISSING_FUNCTION_NAME)
             Success(AST.Call(safeName, expressions))
         }
+
     }
 }

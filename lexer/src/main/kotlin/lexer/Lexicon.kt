@@ -25,9 +25,12 @@ internal fun createSymbolKeywordMap(): Map<String, TokenType> {
         when (keyword) {
             PrintScriptFunctions.PRINTLN ->
                 keywordMap["println"] = Call(PrintScriptFunctions.PRINTLN)
+
             PrintScriptReservedWords.LET -> keywordMap["let"] = LET
+
             PrintScriptType.NUMBER ->
                 keywordMap["number"] = DataType(PrintScriptType.NUMBER)
+
             PrintScriptType.STRING ->
                 keywordMap["string"] = DataType(PrintScriptType.STRING)
         }

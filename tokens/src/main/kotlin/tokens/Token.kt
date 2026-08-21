@@ -29,7 +29,7 @@ data class Operator(val operator: PrintScriptOperator): TokenType
 data class Identifier(val name: String): TokenType
 
 //valor de literal
-data class Literal(val value: PrintScriptValue): TokenType
+data class Literal(val value: String): TokenType
 
 //tipo de dato
 data class DataType(val type: PrintScriptType): TokenType

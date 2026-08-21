@@ -11,7 +11,6 @@ class ParserImpl : Parser {
     private val expressionParser = ExpressionParser()
     override fun parse(tokens: List<Token>): Either<SyntaxError, Program> {
         val stateMachine = ParserStateMachine()
-        val result = stateMachine.parse(tokens, expressionParser)
-        return result
+        return stateMachine.parse(tokens, expressionParser)
     }
 }
