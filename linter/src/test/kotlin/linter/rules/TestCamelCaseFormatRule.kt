@@ -92,14 +92,14 @@ class TestCamelCaseFormatRule {
     }
 
     @Test
-    fun assignmentNodeIsIgnored() {
+    fun assignmentNodeIsChecked() {
         val rule = IdentifierFormatRule(IdentifierConvention.CAMEL_CASE)
         val ast = AST.Assignment(
             id = ASTIdentifier("snake_case"),
             value = Expression.Literal(PrintScriptValue.NumberLiteral(1))
         )
         val result = rule.apply(ast)
-        assertTrue(result.isEmpty, "Expected no warning for Assignment nodes")
+        assertTrue(result.isPresent, "Expected warning for 'snake_case' in Assignment node")
     }
 
     // --- Helpers ---

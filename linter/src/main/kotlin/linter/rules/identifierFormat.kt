@@ -23,7 +23,7 @@ class IdentifierFormatRule(val convention: IdentifierConvention): LinterRule {
     }
 
     private fun extractIdentifier(ast: AST): String? = when (ast) {
-        is AST.Assignment -> null
+        is AST.Assignment -> ast.id.name
         is AST.Call -> null
         is AST.Declaration -> ast.id.name
     }

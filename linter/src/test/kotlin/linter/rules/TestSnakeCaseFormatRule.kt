@@ -80,14 +80,14 @@ class TestSnakeCaseFormatRule {
     // --- AST node type coverage ---
 
     @Test
-    fun assignmentNodeIsIgnored() {
+    fun assignmentNodeIsChecked() {
         val rule = IdentifierFormatRule(IdentifierConvention.SNAKE_CASE)
         val ast = AST.Assignment(
             id = ASTIdentifier("camelCase"),
             value = Expression.Literal(PrintScriptValue.NumberLiteral(1))
         )
         val result = rule.apply(ast)
-        assertTrue(result.isEmpty)
+        assertTrue(result.isPresent, "Expected warning for 'camelCase' in Assignment node")
     }
 
     // --- Helpers ---

@@ -24,7 +24,7 @@ class PrintlnArgumentRule : LinterRule {
     }
     private fun notAPrintCall(ast: AST)=
         ast !is Call ||
-            ast.functionName == PrintScriptFunctions.PRINTLN
+            ast.functionName != PrintScriptFunctions.PRINTLN
 }
 
 object PrintlnArgumentRuleFactory : LinterRuleFactory {
