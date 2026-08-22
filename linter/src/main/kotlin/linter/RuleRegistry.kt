@@ -11,7 +11,7 @@ object RuleRegistry {
 
     fun build(entry: RuleConfigEntry): LinterRule {
         val factory = factories[entry.name]
-            ?: throw RuntimeException("Unknown rule: $name")
+            ?: throw RuntimeException("Unknown rule: ${entry.name}")
         return factory.fromConfig(entry.params)
     }
 }
