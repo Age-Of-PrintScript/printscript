@@ -4,7 +4,6 @@ import domain.Position
 import domain.PrintScriptFunctions
 import domain.PrintScriptOperator
 import domain.PrintScriptType
-import domain.PrintScriptValue
 
 data class Token(
     val type: TokenType,
