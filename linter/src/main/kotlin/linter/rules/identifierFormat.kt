@@ -3,7 +3,10 @@ package linter.rules
 import ast.AST
 import domain.Position
 import linter.IdentifierConvention
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import linter.LinterRule
+import linter.LinterRuleFactory
 import linter.Warning
 import java.util.Optional
 
@@ -28,4 +31,16 @@ class IdentifierFormatRule(val convention: IdentifierConvention): LinterRule {
         is AST.Declaration -> ast.id.name
     }
 
+}
+
+object IdentifierFormatRuleFactory : LinterRuleFactory {
+    override val ruleName = "identifier-format"
+    override fun fromConfig(params: JsonObject): LinterRule {
+        val convention = params["convention"]?.jsonPrimitive?.content
+            ?: throw RuntimeException("identifier-format rule requires 'convention' parameter")
+        return IdentifierFormatRule(
+            IdentifierConvention.from(convention)
+                ?: throw RuntimeException("Unknown convention: $convention")
+        )
+    }
 }

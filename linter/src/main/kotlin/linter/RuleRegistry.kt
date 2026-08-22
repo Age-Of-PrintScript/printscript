@@ -1,12 +1,12 @@
 package linter
 
-import interpreter.RuntimeEvents
-import kotlinx.serialization.json.JsonObject
+import linter.rules.IdentifierFormatRuleFactory
 import linter.rules.PrintlnArgumentRuleFactory
 
 object RuleRegistry {
     private val factories: Map<String, LinterRuleFactory> = listOf(
-        PrintlnArgumentRuleFactory
+        PrintlnArgumentRuleFactory,
+        IdentifierFormatRuleFactory
     ).associateBy { it.ruleName }
 
     fun build(entry: RuleConfigEntry): LinterRule {
