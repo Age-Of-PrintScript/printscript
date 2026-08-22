@@ -10,5 +10,5 @@ interface LinterRule {
 
 interface LinterRuleFactory {
     val ruleName: String
-    fun fromConfig(json: JsonObject): LinterRule
+    fun fromConfig(params: JsonObject): LinterRule
 }

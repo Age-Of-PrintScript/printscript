@@ -25,5 +25,5 @@ class PrintlnArgumentRule : LinterRule {
 
 object PrintlnArgumentRuleFactory : LinterRuleFactory {
     override val ruleName = "println-no-expression"
-    override fun fromConfig(json: JsonObject): LinterRule = PrintlnArgumentRule()
+    override fun fromConfig(params: JsonObject): LinterRule = PrintlnArgumentRule()
 }

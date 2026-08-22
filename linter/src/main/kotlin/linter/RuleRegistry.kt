@@ -9,9 +9,9 @@ object RuleRegistry {
         PrintlnArgumentRuleFactory
     ).associateBy { it.ruleName }
 
-    fun build(name: String, json: JsonObject): LinterRule {
-        val factory = factories[name]
+    fun build(entry: RuleConfigEntry): LinterRule {
+        val factory = factories[entry.name]
             ?: throw RuntimeException("Unknown rule: $name")
-        return factory.fromConfig(json)
+        return factory.fromConfig(entry.params)
     }
 }
