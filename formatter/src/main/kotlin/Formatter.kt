@@ -38,51 +38,77 @@ class RulesLoader { // Para el executor
 }
 
 interface Formatter {
-    fun format(program: Program, rules: FormattingRules): Either<ParsingError, String>
+    fun format(program: Program, rules: FormattingRules): String
 }
 
 class FormatterImpl: Formatter {
 
-    override fun format(program: Program, rules: FormattingRules): Either<ParsingError, String> {
+    override fun format(program: Program, rules: FormattingRules): String {
         var finalString = ""
         val asts = program.trees
+
         for (ast in asts) {
-            val fileLine = formatLine(ast).getOrReturn { return Failure(it) }
+            val fileLine = formatLine(ast, rules)
             finalString += fileLine
         }
-        return Success(finalString)
+        return finalString
 
     }
 
-    fun formatLine(ast: AST): Either<ParsingError, String> {
-        when (ast) {
+    fun formatLine(ast: AST, rules: FormattingRules): String {
+        return when (ast) {
             is AST.Assignment -> {
-                    val result = handleAssignmentParser().getOrReturn { return Failure(it) }
+                    val result = handleAssignmentParser(ast, rules)
+                   result
                 }
                 is AST.Call -> {
-                    val result = handleCallParser().getOrReturn { return Failure(it) }
+                    val result = handleCallParser(ast, rules)
+                    result
                 }
                 is AST.Declaration -> {
-                    val result = handleDeclarationParser().getOrReturn { return Failure(it) }
+                    val result = handleDeclarationParser(ast, rules)
+                    result
                 }
-                }
-        return Failure(ParsingError.PARSE_ERROR)
             }
+        }
 
+    fun handleCallParser(ast: AST.Call, rules: FormattingRules): String {
+        val line = "${ast.functionName}(${ast.args})"
+        val linesBeforeCall = rules.linesBeforeCall
+        val functionName = ast.functionName
 
-
-
-
-    fun handleCallParser(): Either<ParsingError, AST.Assignment> {
-        TODO()
+        return when (functionName) {
+            PrintScriptFunctions.PRINTLN -> {
+                val newlines = "\n".repeat(linesBeforeCall) // "".repeat(n: Int) te devuelve el string "" repetido n veces
+                newlines + line
+            }
+        }
     }
 
-    fun handleAssignmentParser(): Either<ParsingError, AST.Assignment> {
-        TODO()
+    fun handleAssignmentParser(ast: AST.Assignment, rules: FormattingRules): String {
+        val separator = if (rules.spacesAroundAssign) " = " else "="
+        val expression = ast.value.toString() //no se como sale esto, creo que puede devolver el AST[value = ...], deberiamos implementar un expressionToString
+        return "${ast.id}$separator$expression"
     }
 
-    fun handleDeclarationParser(): Either<ParsingError, AST.Assignment> {
-        TODO()
+    fun handleDeclarationParser(ast: AST.Declaration, rules: FormattingRules): String {
+        val id = ast.id
+        val type = ast.type
+
+        var final = "let $id"
+
+        final += if (rules.spaceBeforeColon) " :" else ":"
+
+        if (rules.spaceAfterColon) {
+            final += " "
+        }
+
+        final += "$type"
+
+        val separator = if (rules.spacesAroundAssign) " = " else "="
+        val expression = expressionToString(ast.value)
+
+        return final + separator + expression
     }
 
 }
