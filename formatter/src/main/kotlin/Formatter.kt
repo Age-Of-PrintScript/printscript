@@ -112,7 +112,7 @@ class FormatterImpl: Formatter {
         final += "$type"
 
         val separator = if (rules.spacesAroundAssign) " = " else "="
-        val expression = expressionToString(ast.value)
+        val expression = expressionToString(ast.value, 0)
 
         return final + separator + expression
     }
