@@ -21,10 +21,11 @@ data class RuleConfigEntry(
 
 class ConfigParser {
     private val json = Json { ignoreUnknownKeys = true }
-    fun parse(configFile: File): List<LinterRule> {
+    fun parse(configFile: File): RulesConfig {
         val config = json.decodeFromString<LinterConfig>(configFile.readText())
-        return config.rules
+        return RulesConfig(config.rules
             .filter { it.enabled }
             .map { entry -> RuleRegistry.build(entry) }
+        )
     }
 }
