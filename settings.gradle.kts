@@ -8,7 +8,10 @@
 plugins {
     // Apply the foojay-resolver plugin to allow automatic download of JDKs
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.1" apply false
 }
+
+
 
 rootProject.name = "printscript"
 include("domain", "lexer", "parser", "interpreter", "tokens", "ast", "executor")
