@@ -1,17 +1,11 @@
 package formatter
 
 import ast.AST
-import ast.Expression
-import ast.ExpressionSolver
 import domain.Either
-import domain.getOrReturn
 import ast.Program
 import domain.Failure
 import domain.PrintScriptFunctions
-import domain.PrintScriptType
-import domain.PrintScriptValue
 import domain.Success
-import java.util.Optional
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -27,13 +21,25 @@ data class FormattingRules(
 )
 
 class RulesLoader { // Para el executor
-    fun loadRules(jsonText: String): FormattingRules {
-        return Json.decodeFromString<FormattingRules>(jsonText)
+    fun loadRules(jsonText: String): Either<FormattingError, FormattingRules> {
+        return try {
+            Success(Json.decodeFromString<FormattingRules>(jsonText))
+        } catch (e: kotlinx.serialization.SerializationException) {
+            Failure(FormattingError.INVALID_RULES)
+        }
     }
 
-    fun loadRulesFromFile(path: String): FormattingRules {
-        val text = java.io.File(path).readText()
-        return Json.decodeFromString(text)
+    fun loadRulesFromFile(path: String): Either<FormattingError, FormattingRules> {
+        val text = try {
+            java.io.File(path).readText()
+        } catch (e: java.io.IOException) {
+            return Failure(FormattingError.FILE_NOT_FOUND)
+        }
+        return try {
+            Success(Json.decodeFromString<FormattingRules>(text))
+        } catch (e: kotlinx.serialization.SerializationException) {
+            Failure(FormattingError.INVALID_RULES)
+        }
     }
 }
 
