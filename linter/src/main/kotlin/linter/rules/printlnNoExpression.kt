@@ -4,6 +4,7 @@ import ast.AST
 import ast.AST.Call
 import ast.Expression
 import domain.Position
+import domain.PrintScriptFunctions
 import kotlinx.serialization.json.JsonObject
 import linter.LinterRule
 import linter.LinterRuleFactory
@@ -13,13 +14,17 @@ import java.util.Optional
 
 class PrintlnArgumentRule : LinterRule {
     override fun apply(ast: AST): Optional<Warning> {
-        if (ast !is Call || ast.functionName.name != "println") return Optional.empty()
+        if (notAPrintCall(ast)) return Optional.empty()
+        val ast = ast as Call
         val arg = ast.args.firstOrNull() ?: return Optional.empty()
         return if (arg is Expression.Variable || arg is Expression.Literal)
             Optional.empty()
         else
             Optional.of(Warning("println must be called with an identifier or literal", Position(0,0)))
     }
+    private fun notAPrintCall(ast: AST)=
+        ast !is Call ||
+            ast.functionName == PrintScriptFunctions.PRINTLN
 }
 
 object PrintlnArgumentRuleFactory : LinterRuleFactory {
