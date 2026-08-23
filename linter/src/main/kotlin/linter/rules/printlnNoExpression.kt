@@ -17,14 +17,19 @@ class PrintlnArgumentRule : LinterRule {
         if (notAPrintCall(ast)) return Optional.empty()
         val ast = ast as Call
         val arg = ast.args.firstOrNull() ?: return Optional.empty()
-        return if (arg is Expression.Variable || arg is Expression.Literal)
+        return if (argIsNotExpression(arg))
             Optional.empty()
         else
-            Optional.of(Warning("println must be called with an identifier or literal", Position(0,0)))
+            Optional.of(Warning(
+            "println must be called with an identifier or literal",
+                Position(0,0)
+            ))
     }
+    private fun argIsNotExpression(arg: Expression) =
+        arg is Expression.Variable || arg is Expression.Literal
+
     private fun notAPrintCall(ast: AST)=
-        ast !is Call ||
-            ast.functionName != PrintScriptFunctions.PRINTLN
+        ast !is Call || ast.functionName != PrintScriptFunctions.PRINTLN
 }
 
 object PrintlnArgumentRuleFactory : LinterRuleFactory {
