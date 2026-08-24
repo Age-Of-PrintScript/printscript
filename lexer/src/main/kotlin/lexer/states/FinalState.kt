@@ -7,7 +7,5 @@ import lexer.LexerError
 internal class FinalState : State {
     override fun canConsume(chr: Char): Boolean = false
 
-    override fun consume(chr: Char): Either<LexerError, State> {
-        return Failure(LexerError.INVALID_CHARACTER)
-    }
+    override fun consume(chr: Char): Either<LexerError, State> = Failure(LexerError.INVALID_CHARACTER)
 }

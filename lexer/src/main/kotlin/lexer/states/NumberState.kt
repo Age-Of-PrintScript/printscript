@@ -10,16 +10,15 @@ import lexer.LexerError
 internal class IntegerState : State {
     override fun canConsume(chr: Char): Boolean = chr.isDigit() || chr == '.'
 
-    override fun consume(chr: Char): Either<LexerError, State> {
-        return when {
+    override fun consume(chr: Char): Either<LexerError, State> =
+        when {
             chr.isDigit() -> Success(this)
             chr == '.' -> Success(DecimalPointState())
             else -> Failure(LexerError.INVALID_CHARACTER)
         }
-    }
 }
 
-internal class DecimalPointState: State {
+internal class DecimalPointState : State {
     override fun canConsume(chr: Char): Boolean = chr.isDigit()
 
     override fun consume(chr: Char): Either<LexerError, State> {
@@ -28,7 +27,7 @@ internal class DecimalPointState: State {
     }
 }
 
-internal class DecimalState: State {
+internal class DecimalState : State {
     override fun canConsume(chr: Char): Boolean = chr.isDigit()
 
     override fun consume(chr: Char): Either<LexerError, State> {

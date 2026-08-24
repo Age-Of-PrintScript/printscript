@@ -1,14 +1,13 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.kotlin.jvm)
-    id("org.jlleitschuh.gradle.ktlint")
+    `java-library`
 }
 
 repositories {
     mavenCentral()
 }
 
-dependencies{
+dependencies {
     implementation(project(":interpreter"))
     implementation(project(":lexer"))
     implementation(project(":parser"))

@@ -18,17 +18,17 @@ import tokens.Token
 internal data class CallArgsPending(
     val function: PrintScriptFunctions,
     val tokens: List<Token> = emptyList(),
-): State {
+) : State {
     override fun consume(
         token: Token,
         builder: ASTBuilder,
-        expressionParser: ExpressionParser
-    ): Either<SyntaxError, ConsumeResult> {
-        return when(token.type) {
+        expressionParser: ExpressionParser,
+    ): Either<SyntaxError, ConsumeResult> =
+        when (token.type) {
             is Literal, is Identifier, is Operator ->
                 Success(copy(tokens = tokens + token) to builder)
-            is CLOSED_PARENTHESIS ->{
-                when(val res = expressionParser.parseExpression(tokens)){
+            is CLOSED_PARENTHESIS -> {
+                when (val res = expressionParser.parseExpression(tokens)) {
                     is Failure -> Failure(res.value)
                     is Success -> {
                         val newBuilder = builder.addExpression(res.value)
@@ -38,5 +38,4 @@ internal data class CallArgsPending(
             }
             else -> Failure(SyntaxError.INVALID_TOKEN)
         }
-    }
 }

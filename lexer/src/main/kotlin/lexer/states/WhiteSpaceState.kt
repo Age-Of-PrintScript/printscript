@@ -5,12 +5,11 @@ import domain.Failure
 import domain.Success
 import lexer.LexerError
 
-internal class WhiteSpaceState: State {
+internal class WhiteSpaceState : State {
     override fun canConsume(chr: Char): Boolean = chr.isWhitespace()
 
     override fun consume(chr: Char): Either<LexerError, State> {
-        if(chr.isWhitespace()) return Success(this)
+        if (chr.isWhitespace()) return Success(this)
         return Failure(LexerError.INVALID_CHARACTER)
     }
-
 }

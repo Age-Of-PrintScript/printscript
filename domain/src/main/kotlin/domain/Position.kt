@@ -1,3 +1,6 @@
 package domain
 
-data class Position(val line: Int, val charPosition: Int)
+data class Position(
+    val line: Int,
+    val charPosition: Int,
+)

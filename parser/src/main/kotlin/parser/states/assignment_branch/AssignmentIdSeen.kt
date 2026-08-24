@@ -12,11 +12,16 @@ import parser.states.State
 import tokens.ASSIGN
 import tokens.Token
 
-internal data class AssignmentIdSeen(val id: ASTIdentifier) : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
-        return when (token.type) {
+internal data class AssignmentIdSeen(
+    val id: ASTIdentifier,
+) : State {
+    override fun consume(
+        token: Token,
+        builder: ASTBuilder,
+        expressionParser: ExpressionParser,
+    ): Either<SyntaxError, ConsumeResult> =
+        when (token.type) {
             ASSIGN -> Success(ExpressionPending(id) to builder)
             else -> Failure(SyntaxError.MISSING_ASSIGNMENT_OPERATOR)
         }
-    }
 }

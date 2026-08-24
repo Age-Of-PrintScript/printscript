@@ -1,4 +1,3 @@
 package lexer
 
-internal fun charIsQuote(chr: Char): Boolean =
-    chr == '\'' || chr == '"'
+internal fun charIsQuote(chr: Char): Boolean = chr == '\'' || chr == '"'

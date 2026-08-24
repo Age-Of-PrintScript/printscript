@@ -2,7 +2,9 @@ package parser
 
 import domain.Error
 
-enum class SyntaxError(val message: String): Error {
+enum class SyntaxError(
+    val message: String,
+) : Error {
     MISSING_COLON_IN_DECLARATION("Missing colon in declaration"),
     MISSING_ASSIGNMENT_OPERATOR("Expected assignment"),
     MISSING_SEMICOLON("Expected semicolon"),

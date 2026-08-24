@@ -9,9 +9,9 @@ import domain.keywordRegistry
 import lexer.states.FinalState
 import lexer.states.State
 import tokens.ASSIGN
+import tokens.CLOSED_PARENTHESIS
 import tokens.COLON
 import tokens.Call
-import tokens.CLOSED_PARENTHESIS
 import tokens.DataType
 import tokens.LET
 import tokens.OPEN_PARENTHESIS
