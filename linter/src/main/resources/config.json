@@ -1,0 +1,14 @@
+{
+  "rules": [
+    {
+      "name": "identifier-format",
+      "enabled": true,
+      "params": { "convention": "camelCase" }
+    },
+    {
+      "name": "println-no-expression",
+      "enabled": true,
+      "params": {}
+    }
+  ]
+}
