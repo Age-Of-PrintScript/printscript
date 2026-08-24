@@ -84,10 +84,7 @@ class TestCamelCaseFormatRule {
     @Test
     fun callNodeIsIgnored() {
         val rule = IdentifierFormatRule(IdentifierConvention.CAMEL_CASE)
-        val ast = AST.Call(
-            functionName = PrintScriptFunctions.PRINTLN,
-            args = listOf(Expression.Literal(PrintScriptValue.StringLiteral("hello")))
-        )
+        val ast = createPrintln(createLiteralExpression("hello"))
         val result = rule.apply(ast)
         assertEquals(result, null, "Expected no warning for Call nodes")
     }
@@ -95,10 +92,7 @@ class TestCamelCaseFormatRule {
     @Test
     fun assignmentNodeIsChecked() {
         val rule = IdentifierFormatRule(IdentifierConvention.CAMEL_CASE)
-        val ast = AST.Assignment(
-            id = ASTIdentifier("snake_case"),
-            value = Expression.Literal(PrintScriptValue.NumberLiteral(1))
-        )
+        val ast = createAssignment(name = "snake_case")
         val result = rule.apply(ast)
         assertTrue(result != null, "Expected warning for 'snake_case' in Assignment node")
     }
@@ -107,23 +101,15 @@ class TestCamelCaseFormatRule {
 
     private fun testWarning(identifier: String) {
         val rule = IdentifierFormatRule(IdentifierConvention.CAMEL_CASE)
-        val ast = buildDeclaration(identifier)
+        val ast = createDeclaration(name = identifier)
         val result = rule.apply(ast)
         assertTrue(result != null, "Expected warning for '$identifier' but got none")
     }
 
     private fun testNoWarning(identifier: String) {
         val rule = IdentifierFormatRule(IdentifierConvention.CAMEL_CASE)
-        val ast = buildDeclaration(identifier)
+        val ast = createDeclaration(name = identifier)
         val result = rule.apply(ast)
         assertEquals(result, null, "Expected no warning for '$identifier' but got one")
-    }
-
-    private fun buildDeclaration(id: String): AST {
-        return AST.Declaration(
-            id = ASTIdentifier(id),
-            type = ASTDataType(PrintScriptType.STRING),
-            value = Expression.Literal(PrintScriptValue.StringLiteral("test"))
-        )
     }
 }

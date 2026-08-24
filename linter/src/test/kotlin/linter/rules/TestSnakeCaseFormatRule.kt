@@ -83,10 +83,7 @@ class TestSnakeCaseFormatRule {
     @Test
     fun assignmentNodeIsChecked() {
         val rule = IdentifierFormatRule(IdentifierConvention.SNAKE_CASE)
-        val ast = AST.Assignment(
-            id = ASTIdentifier("camelCase"),
-            value = Expression.Literal(PrintScriptValue.NumberLiteral(1))
-        )
+        val ast = createAssignment(name = "camelCase")
         val result = rule.apply(ast)
         assertTrue(result != null, "Expected warning for 'camelCase' in Assignment node")
     }
@@ -95,23 +92,15 @@ class TestSnakeCaseFormatRule {
 
     private fun testWarning(identifier: String) {
         val rule = IdentifierFormatRule(IdentifierConvention.SNAKE_CASE)
-        val ast = buildDeclaration(identifier)
+        val ast = createDeclaration(name = identifier)
         val result = rule.apply(ast)
         assertTrue(result != null, "Expected warning for '$identifier' but got none")
     }
 
     private fun testNoWarning(identifier: String) {
         val rule = IdentifierFormatRule(IdentifierConvention.SNAKE_CASE)
-        val ast = buildDeclaration(identifier)
+        val ast = createDeclaration(name = identifier)
         val result = rule.apply(ast)
         assertEquals(result, null, "Expected no warning for '$identifier' but got one")
-    }
-
-    private fun buildDeclaration(id: String): AST {
-        return AST.Declaration(
-            id = ASTIdentifier(id),
-            type = ASTDataType(PrintScriptType.NUMBER),
-            value = Expression.Literal(PrintScriptValue.NumberLiteral(5))
-        )
     }
 }
