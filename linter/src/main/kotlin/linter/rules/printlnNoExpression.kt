@@ -13,17 +13,17 @@ import java.util.Optional
 
 
 class PrintlnArgumentRule : LinterRule {
-    override fun apply(ast: AST): Optional<Warning> {
-        if (notAPrintCall(ast)) return Optional.empty()
+    override fun apply(ast: AST): Warning? {
+        if (notAPrintCall(ast)) return null
         val ast = ast as Call
-        val arg = ast.args.firstOrNull() ?: return Optional.empty()
+        val arg = ast.args.firstOrNull() ?: return null
         return if (argIsNotExpression(arg))
-            Optional.empty()
+            null
         else
-            Optional.of(Warning(
+            Warning(
             "println must be called with an identifier or literal",
                 Position(0,0)
-            ))
+            )
     }
     private fun argIsNotExpression(arg: Expression) =
         arg is Expression.Variable || arg is Expression.Literal

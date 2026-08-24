@@ -9,6 +9,7 @@ object RuleRegistry {
         IdentifierFormatRuleFactory
     ).associateBy { it.ruleName }
 
+
     fun build(entry: RuleConfigEntry): LinterRule {
         val factory = factories[entry.name]
             ?: throw RuntimeException("Unknown rule: ${entry.name}")

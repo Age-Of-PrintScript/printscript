@@ -11,17 +11,15 @@ import linter.Warning
 import java.util.Optional
 
 class IdentifierFormatRule(val convention: IdentifierConvention): LinterRule {
-    override fun apply(ast: AST): Optional<Warning> {
-        val id = extractIdentifier(ast) ?: return Optional.empty()
+    override fun apply(ast: AST): Warning? {
+        val id = extractIdentifier(ast) ?: return null
 
         return if (convention.matches(id))
-            Optional.empty()
+            null
         else
-            Optional.of(
-                Warning(
-                    "Identifier '$id' does not follow ${convention.name} convention",
-                    Position(0,0)
-                )
+            Warning(
+                "Identifier '$id' does not follow ${convention.name} convention",
+                Position(0,0)
             )
     }
 

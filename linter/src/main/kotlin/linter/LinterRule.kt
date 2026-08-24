@@ -2,10 +2,9 @@ package linter
 
 import ast.AST
 import kotlinx.serialization.json.JsonObject
-import java.util.Optional
 
 interface LinterRule {
-    fun apply(ast: AST): Optional<Warning>
+    fun apply(ast: AST): Warning?
 }
 
 interface LinterRuleFactory {

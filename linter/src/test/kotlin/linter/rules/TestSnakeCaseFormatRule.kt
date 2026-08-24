@@ -8,6 +8,7 @@ import domain.PrintScriptType
 import domain.PrintScriptValue
 import linter.IdentifierConvention
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 
@@ -87,7 +88,7 @@ class TestSnakeCaseFormatRule {
             value = Expression.Literal(PrintScriptValue.NumberLiteral(1))
         )
         val result = rule.apply(ast)
-        assertTrue(result.isPresent, "Expected warning for 'camelCase' in Assignment node")
+        assertTrue(result != null, "Expected warning for 'camelCase' in Assignment node")
     }
 
     // --- Helpers ---
@@ -96,14 +97,14 @@ class TestSnakeCaseFormatRule {
         val rule = IdentifierFormatRule(IdentifierConvention.SNAKE_CASE)
         val ast = buildDeclaration(identifier)
         val result = rule.apply(ast)
-        assertTrue(result.isPresent, "Expected warning for '$identifier' but got none")
+        assertTrue(result != null, "Expected warning for '$identifier' but got none")
     }
 
     private fun testNoWarning(identifier: String) {
         val rule = IdentifierFormatRule(IdentifierConvention.SNAKE_CASE)
         val ast = buildDeclaration(identifier)
         val result = rule.apply(ast)
-        assertTrue(result.isEmpty, "Expected no warning for '$identifier' but got one")
+        assertEquals(result, null, "Expected no warning for '$identifier' but got one")
     }
 
     private fun buildDeclaration(id: String): AST {
