@@ -9,14 +9,13 @@ import kotlinx.serialization.json.JsonObject
 import linter.LinterRule
 import linter.LinterRuleFactory
 import linter.Warning
-import java.util.Optional
 
 
 class PrintlnArgumentRule : LinterRule {
     override fun apply(ast: AST): Warning? {
         if (notAPrintCall(ast)) return null
-        val ast = ast as Call
-        val arg = ast.args.firstOrNull() ?: return null
+        val astCall = ast as Call
+        val arg = astCall.args.firstOrNull() ?: return null
         return if (argIsNotExpression(arg))
             null
         else

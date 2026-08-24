@@ -8,7 +8,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import linter.LinterRule
 import linter.LinterRuleFactory
 import linter.Warning
-import java.util.Optional
 
 class IdentifierFormatRule(val convention: IdentifierConvention): LinterRule {
     override fun apply(ast: AST): Warning? {
