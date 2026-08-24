@@ -1,11 +1,7 @@
 package interpreter
 
 import domain.Failure
-import domain.PrintScriptType
-import domain.PrintScriptValue
 import domain.Success
-import junit.framework.TestCase.assertTrue
-import java.util.Optional
 import kotlin.test.assertEquals
 
 internal fun assertSuccessCase(

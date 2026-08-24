@@ -143,10 +143,6 @@ val ASSIGNMENT_X_TO_2 = AST.Assignment(
     value = LITERAL_NUMBER_2
 )
 
-val ASSIGNMENT_A_TO_5 = AST.Assignment(
-    id = ID_A,
-    value = LITERAL_NUMBER_5
-)
 
 val ASSIGNMENT_Y_TO_X = AST.Assignment(
     id = ID_Y,
@@ -176,15 +172,6 @@ val CALL_PRINTLN_MUNDO = AST.Call(
     args = listOf(LITERAL_STRING_MUNDO)
 )
 
-val CALL_PRINTLN_5 = AST.Call(
-    functionName = PrintScriptFunctions.PRINTLN,
-    args = listOf(LITERAL_NUMBER_5)
-)
-
-val CALL_PRINTLN_10 = AST.Call(
-    functionName = PrintScriptFunctions.PRINTLN,
-    args = listOf(LITERAL_NUMBER_10)
-)
 
 val CALL_PRINTLN_X = AST.Call(
     functionName = PrintScriptFunctions.PRINTLN,
@@ -287,28 +274,7 @@ val ENV_WITH_A_EQUAL_TO_1 = RuntimeEnvironment(
     )
 )
 
-val ENV_WITH_A_EQUAL_TO_5 = RuntimeEnvironment(
-    mapOf(
-        "a" to VariableInfo(
-            PrintScriptType.NUMBER,
-            Optional.of(PrintScriptValue.NumberLiteral(5))
-        )
-    )
-)
 
- 
-val ENV_WITH_X_10_AND_A_1 = RuntimeEnvironment(
-    mapOf(
-        "x" to VariableInfo(
-            PrintScriptType.NUMBER,
-            Optional.of(PrintScriptValue.NumberLiteral(10))
-        ),
-        "a" to VariableInfo(
-            PrintScriptType.NUMBER,
-            Optional.of(PrintScriptValue.NumberLiteral(1))
-        )
-    )
-)
 
  
 val EMPTY_EVENTS = RuntimeEvents(emptyList())
