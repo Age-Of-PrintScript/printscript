@@ -1,21 +1,9 @@
 package interpreter.cases.failure
 
 import ast.Program
-import interpreter.RuntimeError
-import interpreter.cases.ASSIGNMENT_UNDECLARED_A_TO_5
-import interpreter.cases.ASSIGNMENT_X_TO_STRING_X
-import interpreter.cases.ASSIGNMENT_Y_TO_X
-import interpreter.cases.CALL_PRINTLN_OPERATION_X_PLUS_1
-import interpreter.cases.CALL_PRINTLN_UNDECLARED_A
-import interpreter.cases.DECLARATION_X_NUMBER_5
-import interpreter.cases.DECLARATION_X_NUMBER_NO_VALUE
-import interpreter.cases.DECLARATION_X_NUMBER_WITH_INVALID_OPERATION
-import interpreter.cases.DECLARATION_X_NUMBER_WITH_STRING_VALUE
-import interpreter.cases.DECLARATION_X_STRING_HOLA
-import interpreter.cases.DECLARATION_Y_NUMBER_NO_VALUE
-import interpreter.cases.DECLARATION_Y_NUMBER_WITH_X_VALUE
 import interpreter.FailureCase
-import interpreter.cases.POS
+import interpreter.RuntimeError
+import interpreter.cases.*
 
 val FAILURE_CASES = listOf(
     FailureCase(
@@ -57,7 +45,7 @@ val FAILURE_CASES = listOf(
     FailureCase(
         name = "println with undeclared variable",
         program = Program(listOf(CALL_PRINTLN_UNDECLARED_A), POS, POS),
-        expectedFailure = RuntimeError.MATH_ERROR // a confirmar según comportamiento real de ExpressionSolver
+        expectedFailure = RuntimeError.MATH_ERROR
     ),
 
     FailureCase(
@@ -66,7 +54,7 @@ val FAILURE_CASES = listOf(
             listOf(DECLARATION_X_NUMBER_NO_VALUE, CALL_PRINTLN_OPERATION_X_PLUS_1),
             POS, POS
         ),
-        expectedFailure = RuntimeError.MATH_ERROR // a confirmar: puede tirar excepción no controlada en vez de Failure
+        expectedFailure = RuntimeError.MATH_ERROR
     ),
 
     FailureCase(

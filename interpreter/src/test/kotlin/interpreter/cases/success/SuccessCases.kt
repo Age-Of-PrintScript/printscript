@@ -1,10 +1,8 @@
 package interpreter.cases.success
 
 import ast.Program
-import interpreter.RuntimeEnvironment
-import interpreter.RuntimeEvents
-import interpreter.cases.*
 import interpreter.SuccessCase
+import interpreter.cases.*
 
 val SUCCESS_CASES = listOf(
     SuccessCase(
@@ -77,19 +75,30 @@ val SUCCESS_CASES = listOf(
             POS, POS
         ),
         expectedEnv = ENV_WITH_X_EQUAL_TO_10,
-        expectedEvents = EVENTS_WITH_PRINT_5_THEN_10.let {
-            // ojo: println se ejecuta después de la reasignación a 10,
-            // por lo que el evento esperado es solo "10", no "5" y "10".
-            RuntimeEvents(listOf(it.events.last()))
-        }
+        expectedEvents = EVENTS_WITH_PRINT_10
     ),
 
     SuccessCase(
         name = "two independent variables declared",
         program = Program(listOf(DECLARATION_X_NUMBER_5, DECLARATION_A_NUMBER_1), POS, POS),
-        expectedEnv = RuntimeEnvironment(
-            ENV_WITH_X_EQUAL_TO_5.variableMap + ENV_WITH_A_EQUAL_TO_1.variableMap
+        expectedEnv = ENV_WITH_X_5_AND_A_1,
+        expectedEvents = EMPTY_EVENTS
+    ),
+
+    SuccessCase(
+        name = "declaration initializing variable with another declared variable",
+        program = Program(listOf(DECLARATION_X_NUMBER_5, DECLARATION_Y_NUMBER_WITH_X_VALUE), POS, POS),
+        expectedEnv = ENV_WITH_X_5_AND_Y_5,
+        expectedEvents = EMPTY_EVENTS
+    ),
+
+    SuccessCase(
+        name = "assignment to variable using another declared variable",
+        program = Program(
+            listOf(DECLARATION_X_NUMBER_5, DECLARATION_Y_NUMBER_NO_VALUE, ASSIGNMENT_Y_TO_X),
+            POS, POS
         ),
+        expectedEnv = ENV_WITH_X_5_AND_Y_5,
         expectedEvents = EMPTY_EVENTS
     ),
 
