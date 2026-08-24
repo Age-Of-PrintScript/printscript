@@ -19,9 +19,12 @@ class Linter {
     private val file = File("./config.json")
     private val analyser = Analyser()
     fun analyse(source: String): Either<Error,List<Warning>> {
+        return analyse(source, file)
+    }
+    fun analyse(source: String, configFile: File): Either<Error, List<Warning>> {
         val tokens = lexer.tokenize(source).getOrReturn { return Failure(it) }
         val program = parser.parse(tokens).getOrReturn { return Failure(it) }
-        val rulesConfig = configParser.parse(file)
+        val rulesConfig = configParser.parse(configFile)
         val analysis = analyser.analyse(program, rulesConfig)
         return Success(analysis)
     }
