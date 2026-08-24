@@ -4,6 +4,7 @@ import ast.Program
 import interpreter.RuntimeError
 import interpreter.cases.ASSIGNMENT_UNDECLARED_A_TO_5
 import interpreter.cases.ASSIGNMENT_X_TO_STRING_X
+import interpreter.cases.ASSIGNMENT_Y_TO_X
 import interpreter.cases.CALL_PRINTLN_OPERATION_X_PLUS_1
 import interpreter.cases.CALL_PRINTLN_UNDECLARED_A
 import interpreter.cases.DECLARATION_X_NUMBER_5
@@ -11,7 +12,9 @@ import interpreter.cases.DECLARATION_X_NUMBER_NO_VALUE
 import interpreter.cases.DECLARATION_X_NUMBER_WITH_INVALID_OPERATION
 import interpreter.cases.DECLARATION_X_NUMBER_WITH_STRING_VALUE
 import interpreter.cases.DECLARATION_X_STRING_HOLA
-import interpreter.cases.FailureCase
+import interpreter.cases.DECLARATION_Y_NUMBER_NO_VALUE
+import interpreter.cases.DECLARATION_Y_NUMBER_WITH_X_VALUE
+import interpreter.FailureCase
 import interpreter.cases.POS
 
 val FAILURE_CASES = listOf(
@@ -64,5 +67,23 @@ val FAILURE_CASES = listOf(
             POS, POS
         ),
         expectedFailure = RuntimeError.MATH_ERROR // a confirmar: puede tirar excepción no controlada en vez de Failure
+    ),
+
+    FailureCase(
+        name = "declaration initializing variable with uninitialized variable",
+        program = Program(
+            listOf(DECLARATION_X_NUMBER_NO_VALUE, DECLARATION_Y_NUMBER_WITH_X_VALUE),
+            POS, POS
+        ),
+        expectedFailure = RuntimeError.MATH_ERROR
+    ),
+
+    FailureCase(
+        name = "assignment to variable using uninitialized variable",
+        program = Program(
+            listOf(DECLARATION_X_NUMBER_NO_VALUE, DECLARATION_Y_NUMBER_NO_VALUE, ASSIGNMENT_Y_TO_X),
+            POS, POS
+        ),
+        expectedFailure = RuntimeError.MATH_ERROR
     ),
 )

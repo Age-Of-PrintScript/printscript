@@ -84,5 +84,5 @@ data class RuntimeEvents(val events: List<Event>){
 
 
 sealed interface Event
-class PrintEvent(val message: String) : Event
+data class PrintEvent(val message: String) : Event
 

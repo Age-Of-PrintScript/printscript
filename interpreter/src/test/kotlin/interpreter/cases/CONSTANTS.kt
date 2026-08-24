@@ -26,6 +26,7 @@ val LITERAL_NUMBER_2 = Expression.Literal(PrintScriptValue.NumberLiteral(2))
 
 val LITERAL_STRING_HOLA = Expression.Literal(PrintScriptValue.StringLiteral("hola"))
 val LITERAL_STRING_X = Expression.Literal(PrintScriptValue.StringLiteral("x"))
+val LITERAL_STRING_MUNDO = Expression.Literal(PrintScriptValue.StringLiteral(" mundo"))
 
 val VARIABLE_X = Expression.Variable("x")
 val VARIABLE_A = Expression.Variable("a")
@@ -48,9 +49,28 @@ val OPERATION_X_PLUS_1 = Expression.Operation(
     operator = PrintScriptOperator.SUM
 )
 
+val OPERATION_STRING_PLUS_NUMBER = Expression.Operation(
+    left = LITERAL_STRING_HOLA,
+    right = LITERAL_NUMBER_5,
+    operator = PrintScriptOperator.SUM
+)
+
+val OPERATION_NUMBER_PLUS_STRING = Expression.Operation(
+    left = LITERAL_NUMBER_5,
+    right = LITERAL_STRING_HOLA,
+    operator = PrintScriptOperator.SUM
+)
+
+val OPERATION_STRING_PLUS_STRING = Expression.Operation(
+    left = LITERAL_STRING_HOLA,
+    right = LITERAL_STRING_MUNDO,
+    operator = PrintScriptOperator.SUM
+)
+
  
 val ID_X = ASTIdentifier("x")
 val ID_A = ASTIdentifier("a")
+val ID_Y = ASTIdentifier("y")
 
 val TYPE_NUMBER = ASTDataType(PrintScriptType.NUMBER)
 val TYPE_STRING = ASTDataType(PrintScriptType.STRING)
@@ -86,6 +106,18 @@ val DECLARATION_A_NUMBER_1 = AST.Declaration(
     value = LITERAL_NUMBER_1
 )
 
+val DECLARATION_Y_NUMBER_NO_VALUE = AST.Declaration(
+    id = ID_Y,
+    type = TYPE_NUMBER,
+    value = null
+)
+
+val DECLARATION_Y_NUMBER_WITH_X_VALUE = AST.Declaration(
+    id = ID_Y,
+    type = TYPE_NUMBER,
+    value = VARIABLE_X
+)
+
  
 val DECLARATION_X_NUMBER_WITH_STRING_VALUE = AST.Declaration(
     id = ID_X,
@@ -116,6 +148,11 @@ val ASSIGNMENT_A_TO_5 = AST.Assignment(
     value = LITERAL_NUMBER_5
 )
 
+val ASSIGNMENT_Y_TO_X = AST.Assignment(
+    id = ID_Y,
+    value = VARIABLE_X
+)
+
  
 val ASSIGNMENT_X_TO_STRING_X = AST.Assignment(
     id = ID_X,
@@ -134,6 +171,21 @@ val CALL_PRINTLN_HOLA = AST.Call(
     args = listOf(LITERAL_STRING_HOLA)
 )
 
+val CALL_PRINTLN_MUNDO = AST.Call(
+    functionName = PrintScriptFunctions.PRINTLN,
+    args = listOf(LITERAL_STRING_MUNDO)
+)
+
+val CALL_PRINTLN_5 = AST.Call(
+    functionName = PrintScriptFunctions.PRINTLN,
+    args = listOf(LITERAL_NUMBER_5)
+)
+
+val CALL_PRINTLN_10 = AST.Call(
+    functionName = PrintScriptFunctions.PRINTLN,
+    args = listOf(LITERAL_NUMBER_10)
+)
+
 val CALL_PRINTLN_X = AST.Call(
     functionName = PrintScriptFunctions.PRINTLN,
     args = listOf(VARIABLE_X)
@@ -142,6 +194,21 @@ val CALL_PRINTLN_X = AST.Call(
 val CALL_PRINTLN_OPERATION_1_PLUS_2 = AST.Call(
     functionName = PrintScriptFunctions.PRINTLN,
     args = listOf(OPERATION_1_PLUS_2)
+)
+
+val CALL_PRINTLN_STRING_PLUS_NUMBER = AST.Call(
+    functionName = PrintScriptFunctions.PRINTLN,
+    args = listOf(OPERATION_STRING_PLUS_NUMBER)
+)
+
+val CALL_PRINTLN_NUMBER_PLUS_STRING = AST.Call(
+    functionName = PrintScriptFunctions.PRINTLN,
+    args = listOf(OPERATION_NUMBER_PLUS_STRING)
+)
+
+val CALL_PRINTLN_STRING_PLUS_STRING = AST.Call(
+    functionName = PrintScriptFunctions.PRINTLN,
+    args = listOf(OPERATION_STRING_PLUS_STRING)
 )
 
 val CALL_PRINTLN_UNDECLARED_A = AST.Call(
@@ -255,9 +322,25 @@ val EVENTS_WITH_PRINT_5 = RuntimeEvents(
 )
 
 val EVENTS_WITH_PRINT_3 = RuntimeEvents(
-    listOf(PrintEvent("3"))
+    listOf(PrintEvent("3.0"))
 )
 
 val EVENTS_WITH_PRINT_5_THEN_10 = RuntimeEvents(
     listOf(PrintEvent("5"), PrintEvent("10"))
+)
+
+val EVENTS_WITH_PRINT_HOLA_THEN_MUNDO = RuntimeEvents(
+    listOf(PrintEvent("hola"), PrintEvent(" mundo"))
+)
+
+val EVENTS_WITH_PRINT_HOLA_5 = RuntimeEvents(
+    listOf(PrintEvent("hola5"))
+)
+
+val EVENTS_WITH_PRINT_5_HOLA = RuntimeEvents(
+    listOf(PrintEvent("5hola"))
+)
+
+val EVENTS_WITH_PRINT_HOLA_MUNDO = RuntimeEvents(
+    listOf(PrintEvent("hola mundo"))
 )

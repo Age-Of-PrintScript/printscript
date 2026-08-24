@@ -1,35 +1,38 @@
 package interpreter
 
+import domain.Failure
 import domain.PrintScriptType
 import domain.PrintScriptValue
+import domain.Success
 import junit.framework.TestCase.assertTrue
 import java.util.Optional
 import kotlin.test.assertEquals
 
-internal fun assertEnvWithVariable(
-    id: String,
-    type: PrintScriptType,
-    value: Optional<PrintScriptValue>,
-    env: RuntimeEnvironment
-){
-    assertTrue(env.variableMap.containsKey(id))
-    val info = env.variableMap[id]!!
-    val envType = info.type
-    val envValue = info.value
-    assertEquals(type,envType)
-    assertEquals(value, envValue)
-}
-
-internal fun assertPrintEventExists(
-    events: RuntimeEvents,
-    message: String,
-){
-    val eventList = events.events
-    var containsPrintEvent = false;
-    for(event in eventList) {
-        if((event as PrintEvent).message.equals(message)){
-            containsPrintEvent = true
+internal fun assertSuccessCase(
+    interpreter: Interpreter,
+    case: SuccessCase
+) {
+    when (val result = interpreter.execute(case.program)) {
+        is Success -> {
+            assertEquals(case.expectedEnv, result.value.runtimeEnvironment, "RuntimeEnvironment mismatch for case: ${case.name}")
+            assertEquals(case.expectedEvents, result.value.runtimeEvents, "RuntimeEvents mismatch for case: ${case.name}")
+        }
+        is Failure -> {
+            throw AssertionError("Expected success for case '${case.name}', but failed with: ${result.value}")
         }
     }
-    assertTrue(containsPrintEvent)
+}
+
+internal fun assertFailureCase(
+    interpreter: Interpreter,
+    case: FailureCase
+) {
+    when (val result = interpreter.execute(case.program)) {
+        is Success -> {
+            throw AssertionError("Expected failure with error '${case.expectedFailure}' for case '${case.name}', but succeeded with: ${result.value}")
+        }
+        is Failure -> {
+            assertEquals(case.expectedFailure, result.value, "Error mismatch for case: ${case.name}")
+        }
+    }
 }
