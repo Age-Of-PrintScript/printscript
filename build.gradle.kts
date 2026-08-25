@@ -20,10 +20,13 @@ subprojects {
         apply(plugin = "org.jlleitschuh.gradle.ktlint")
         apply(plugin = "io.gitlab.arturbosch.detekt")
         apply(plugin = "jacoco")
+        dependencies {
+            add("detektPlugins", "io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
+        }
 
         extensions.configure<DetektExtension> {
             buildUponDefaultConfig = true
-            // config.setFrom("$rootDir/config/detekt/detekt.yml") // descomentar si arman reglas custom
+            config.setFrom("$rootDir/config/detekt/detekt.yml")
         }
 
         tasks.withType<Test> {
