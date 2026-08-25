@@ -75,11 +75,11 @@ class ExpressionTest {
                 left = Expression.Literal(Num(2)),
                 operator = PrintScriptOperator.SUM,
                 right =
-                Expression.Operation(
-                    Expression.Literal(Num(3)),
-                    Expression.Literal(Num(4)),
-                    PrintScriptOperator.MULTIPLY,
-                ),
+                    Expression.Operation(
+                        Expression.Literal(Num(3)),
+                        Expression.Literal(Num(4)),
+                        PrintScriptOperator.MULTIPLY,
+                    ),
             )
         assertExpressionEquals(expression, 14)
     }

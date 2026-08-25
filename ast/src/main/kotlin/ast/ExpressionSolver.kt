@@ -193,7 +193,7 @@ class ExpressionSolver {
                 right is NumberLiteral ||
                 left is StringLiteral &&
                 right is StringLiteral
-            )
+        )
 
     /*
      * Manejo de operaciones con tipos distintos

@@ -24,8 +24,7 @@ interface Interpreter {
 class InterpreterImpl : Interpreter {
     val expressionSolver = ExpressionSolver()
 
-    override fun execute(program: Program): Either<RuntimeError, ExecutionResult> =
-        execute(program, RuntimeEnvironment(emptyMap()), RuntimeEvents(emptyList()))
+    override fun execute(program: Program): Either<RuntimeError, ExecutionResult> = execute(program, RuntimeEnvironment(emptyMap()), RuntimeEvents(emptyList()))
 
     override fun executeWithEnvironment(
         program: Program,
