@@ -74,7 +74,8 @@ class InterpreterImpl : Interpreter {
                         when (val solvedResult = solveExpression(ast.value!!, env)) {
                             is Failure -> return Failure(solvedResult.value)
                             is Success -> {
-                                val newEnv = updateEnvironmentWithNewDeclaration(env, ast.id.name, ast.type.name, solvedResult.value) // edito el environment
+                                val newEnv =
+                                    updateEnvironmentWithNewDeclaration(env, ast.id.name, ast.type.name, solvedResult.value) // edito el environment
                                 when (newEnv) {
                                     is Failure -> return Failure(newEnv.value)
                                     is Success -> {

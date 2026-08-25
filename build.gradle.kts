@@ -26,7 +26,8 @@ subprojects {
 
         extensions.configure<DetektExtension> {
             buildUponDefaultConfig = true
-            config.setFrom("$rootDir/config/detekt/detekt.yml")
+            config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+            autoCorrect = true
         }
 
         tasks.withType<Test> {
