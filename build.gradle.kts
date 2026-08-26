@@ -57,5 +57,26 @@ subprojects {
         tasks.named("check") {
             dependsOn(tasks.named("jacocoTestCoverageVerification"))
         }
+        tasks.register<Copy>("installGitHooks") {
+            description = "Copies git hooks from /hooks to /.git/hooks with execution permissions"
+            group = "git hooks"
+            from("$rootDir/hooks")
+            into("$rootDir/.git/hooks")
+            filePermissions {
+                user {
+                    read = true
+                    write = true
+                    execute = true
+                }
+                group {
+                    read = true
+                    execute = true
+                }
+                other {
+                    read = true
+                    execute = true
+                }
+            }
+        }
     }
 }

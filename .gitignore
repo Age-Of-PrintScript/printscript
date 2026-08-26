@@ -2,5 +2,7 @@
 .gradle
 .idea
 .agents
+.DS_Store
+
 # Ignore Gradle build output directory
 build
