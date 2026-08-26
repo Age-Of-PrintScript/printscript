@@ -12,7 +12,7 @@ import lexer.LexerImpl
 import parser.Parser
 import parser.ParserImpl
 
-class Executor {
+class Engine {
     private val lexer: Lexer = LexerImpl()
     private val parser: Parser = ParserImpl()
     private val interpreter: Interpreter = InterpreterImpl()
