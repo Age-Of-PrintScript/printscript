@@ -1,36 +1,34 @@
-# Como se crean modulos
+# Cómo se crean módulos
 
 ---
 
-1. Crear la nueva carpeta en la raiz del repo
-2. Agregar un archivo build.gradle.kts
-3. Ponerle esto:
+1. Crear la nueva carpeta en la raíz del repo (ej: `formatter`).
+2. Agregar un archivo `build.gradle.kts` dentro de la carpeta del nuevo módulo.
+3. Ponerle únicamente esto:
 ```kotlin
 plugins {
-    alias(libs.plugins.kotlin.jvm)
-}
-
-repositories {
-    mavenCentral()
+    id("printscript.common-conventions")
 }
 ```
-4. Agregar una carpeta src, adentro una carpeta main y adentro una kotlin (dentro de esta ultima va todo el codigo)
-5. En el archivo global settings.gradle.kts agregar acá
-```kotlin
-include("domain", "lexer", "parser", "interpreter", "tokens", "ast")
-```
-El nuevo modulo:
-```kotlin
-include("nombre_del_nuevo", "domain", "lexer", "parser", "interpreter", "tokens", "ast")
-```
-6. Rebuildear gradle desde el elefantito
-## opcional (dependencias)
+*(Esto aplica automáticamente Kotlin JVM, Detekt, KtLint, JaCoCo, JUnit 5 y configuración de calidad).*
 
-Si queremos que nuestro modulo dependa e importe cosas de otro
-agregar en el build.gradle.kts
+4. Agregar la estructura de carpetas: `src/main/kotlin` (dentro de esta va todo el código).
+5. En el archivo `settings.gradle.kts` agregar el nuevo módulo en `include(...)`:
 ```kotlin
+include("domain", "lexer", "parser", "interpreter", "tokens", "ast", "executor", "nombre_del_nuevo")
+```
+6. Rebuildear Gradle / hacer click en el elefante de Gradle en IntelliJ IDEA.
+
+## Dependencias entre módulos (opcional)
+
+Si queremos que nuestro módulo dependa de otro módulo del proyecto (por ejemplo `tokens` o `ast`):
+```kotlin
+plugins {
+    id("printscript.common-conventions")
+}
+
 dependencies {
-    implementation(project(":nombre_del_modulo_a_depender"))
+    api(project(":tokens"))
+    // o implementation(project(":ast"))
 }
 ```
-

@@ -13,13 +13,15 @@ import tokens.Identifier
 import tokens.Token
 
 internal object DeclarationBranch : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
-        return when (val t = token.type) {
+    override fun consume(
+        token: Token,
+        builder: ASTBuilder,
+        expressionParser: ExpressionParser,
+    ): Either<SyntaxError, ConsumeResult> =
+        when (val t = token.type) {
             is Identifier -> {
                 Success(DeclarationIdSeen(ASTIdentifier(t.name)) to builder.copy(id = ASTIdentifier(t.name)))
             }
             else -> Failure(SyntaxError.MISSING_IDENTIFIER)
         }
-    }
 }
-

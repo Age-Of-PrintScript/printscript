@@ -1,10 +1,7 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    id("printscript.common-conventions")
 }
 
-repositories {
-    mavenCentral()
-}
 dependencies {
     api(project(":ast"))
 }

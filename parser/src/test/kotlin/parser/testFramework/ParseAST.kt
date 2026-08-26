@@ -9,7 +9,10 @@ import domain.PrintScriptOperator
 import domain.PrintScriptType
 import domain.PrintScriptValue
 
-private data class Line(val depth: Int, val content: String)
+private data class Line(
+    val depth: Int,
+    val content: String,
+)
 
 internal fun parseExpectedTrees(rawLines: List<String>): List<AST> {
     val lines = rawLines.map { toLine(it) }
@@ -29,7 +32,10 @@ private fun toLine(raw: String): Line {
     return Line(depth, raw.trim())
 }
 
-private fun parseAST(lines: List<Line>, index: Int): Pair<AST, Int> {
+private fun parseAST(
+    lines: List<Line>,
+    index: Int,
+): Pair<AST, Int> {
     val head = lines[index]
     val childDepth = head.depth + 1
 
@@ -53,7 +59,10 @@ private fun parseAST(lines: List<Line>, index: Int): Pair<AST, Int> {
     }
 }
 
-private fun parseExpression(lines: List<Line>, index: Int): Pair<Expression, Int> {
+private fun parseExpression(
+    lines: List<Line>,
+    index: Int,
+): Pair<Expression, Int> {
     val line = lines[index]
 
     return when {
@@ -73,31 +82,42 @@ private fun createDeclaration(
     lines: List<Line>,
     childDepth: Int,
     id: ASTIdentifier,
-    type: ASTDataType
+    type: ASTDataType,
 ): Pair<AST.Declaration, Int> {
     if (index < lines.size && lines[index].depth == childDepth) {
         val (value, next) = parseExpression(lines, index)
         return AST.Declaration(id, type, value) to next
+    } else {
+        return AST.Declaration(id, type, null) to index
     }
-    else return AST.Declaration(id, type, null) to index
 }
 
-private fun getContent(lines: List<Line>, index: Int): String =
-    lines[index].content
+private fun getContent(
+    lines: List<Line>,
+    index: Int,
+): String = lines[index].content
 
-private fun getLiteral(line: Line, index: Int): Pair<Expression.Literal, Int> {
+private fun getLiteral(
+    line: Line,
+    index: Int,
+): Pair<Expression.Literal, Int> {
     val rest = getValue(line)
     val literalType = rest.substringBefore(" ")
     val value = rest.substringAfter(" ")
-    val literal = when (literalType) {
-        "NUMBER" -> PrintScriptValue.NumberLiteral(value.toDouble())
-        "STRING" -> PrintScriptValue.StringLiteral(value)
-        else -> throw IllegalArgumentException("Tipo de literal desconocido: $literalType")
-    }
+    val literal =
+        when (literalType) {
+            "NUMBER" -> PrintScriptValue.NumberLiteral(value.toDouble())
+            "STRING" -> PrintScriptValue.StringLiteral(value)
+            else -> throw IllegalArgumentException("Tipo de literal desconocido: $literalType")
+        }
     return Expression.Literal(literal) to index + 1
 }
 
-private fun getOperation(line: Line, lines: List<Line>, index: Int): Pair<Expression.Operation, Int> {
+private fun getOperation(
+    line: Line,
+    lines: List<Line>,
+    index: Int,
+): Pair<Expression.Operation, Int> {
     val op = PrintScriptOperator.valueOf(getValue(line))
     val (left, afterLeft) = parseExpression(lines, index + 1)
     val (right, afterRight) = parseExpression(lines, afterLeft)

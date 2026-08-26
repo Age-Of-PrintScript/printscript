@@ -1,19 +1,11 @@
 package linter.rules
 
-import ast.AST
-import ast.ASTDataType
-import ast.ASTIdentifier
-import ast.Expression
-import domain.PrintScriptType
-import domain.PrintScriptValue
 import linter.IdentifierConvention
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-
 class TestSnakeCaseFormatRule {
-
     // --- Should pass (no warning) ---
 
     @Test

@@ -16,13 +16,13 @@ import tokens.TokenType
 data class SuccessCase(
     val name: String,
     val input: String,
-    val expected: List<TokenType>
+    val expected: List<TokenType>,
 )
 
 data class FailureCase(
     val name: String,
     val input: String,
-    val expected: LexerError
+    val expected: LexerError,
 )
 
 class TestLexer {
@@ -79,5 +79,4 @@ class TestLexer {
         MalformedNumbers.cases().map { case ->
             dynamicTest(case.name) { assertIncorrectSource(lexer, case.input, case.expected) }
         }
-
 }

@@ -11,7 +11,9 @@ import parser.Parser
 import parser.ParserImpl
 import java.io.File
 
-class Linter(configFile: File) {
+class Linter(
+    configFile: File,
+) {
     private val lexer: Lexer = LexerImpl()
     private val parser: Parser = ParserImpl()
     private val rulesConfig: RulesConfig = ConfigParser().parse(configFile)

@@ -4,15 +4,16 @@ import linter.rules.IdentifierFormatRuleFactory
 import linter.rules.PrintlnArgumentRuleFactory
 
 object RuleRegistry {
-    private val factories: Map<String, LinterRuleFactory> = listOf(
-        PrintlnArgumentRuleFactory,
-        IdentifierFormatRuleFactory
-    ).associateBy { it.ruleName }
-
+    private val factories: Map<String, LinterRuleFactory> =
+        listOf(
+            PrintlnArgumentRuleFactory,
+            IdentifierFormatRuleFactory,
+        ).associateBy { it.ruleName }
 
     fun build(entry: RuleConfigEntry): LinterRule {
-        val factory = factories[entry.name]
-            ?: throw RuntimeException("Unknown rule: ${entry.name}")
+        val factory =
+            factories[entry.name]
+                ?: throw IllegalArgumentException("Unknown rule: ${entry.name}")
         return factory.fromConfig(entry.params)
     }
 }

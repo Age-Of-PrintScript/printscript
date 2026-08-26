@@ -1,14 +1,12 @@
 package linter.rules
 
 import ast.AST
-import ast.Expression
 import domain.PrintScriptOperator
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class TestPrintlnArgumentRule {
-
     // --- Should pass (no warning) ---
 
     @Test
@@ -38,56 +36,62 @@ class TestPrintlnArgumentRule {
 
     @Test
     fun arithmeticOperationWithNumbers() {
-        val operation = createOperationExpression(
-            left = createLiteralExpression(1),
-            right = createLiteralExpression(2),
-            operator = PrintScriptOperator.SUM
-        )
+        val operation =
+            createOperationExpression(
+                left = createLiteralExpression(1),
+                right = createLiteralExpression(2),
+                operator = PrintScriptOperator.SUM,
+            )
         testWarning(createPrintln(operation))
     }
 
     @Test
     fun operationWithVariableAndLiteral() {
-        val operation = createOperationExpression(
-            left = createVariableExpression("x"),
-            right = createLiteralExpression(10),
-            operator = PrintScriptOperator.SUM
-        )
+        val operation =
+            createOperationExpression(
+                left = createVariableExpression("x"),
+                right = createLiteralExpression(10),
+                operator = PrintScriptOperator.SUM,
+            )
         testWarning(createPrintln(operation))
     }
 
     @Test
     fun operationWithTwoVariables() {
-        val operation = createOperationExpression(
-            left = createVariableExpression("a"),
-            right = createVariableExpression("b"),
-            operator = PrintScriptOperator.MULTIPLY
-        )
+        val operation =
+            createOperationExpression(
+                left = createVariableExpression("a"),
+                right = createVariableExpression("b"),
+                operator = PrintScriptOperator.MULTIPLY,
+            )
         testWarning(createPrintln(operation))
     }
 
     @Test
     fun stringConcatenation() {
-        val operation = createOperationExpression(
-            left = createLiteralExpression("Hello, "),
-            right = createVariableExpression("name"),
-            operator = PrintScriptOperator.SUM
-        )
+        val operation =
+            createOperationExpression(
+                left = createLiteralExpression("Hello, "),
+                right = createVariableExpression("name"),
+                operator = PrintScriptOperator.SUM,
+            )
         testWarning(createPrintln(operation))
     }
 
     @Test
     fun complexNestedOperation() {
-        val innerSum = createOperationExpression(
-            left = createVariableExpression("a"),
-            right = createVariableExpression("b"),
-            operator = PrintScriptOperator.SUM
-        )
-        val outerMultiply = createOperationExpression(
-            left = innerSum,
-            right = createLiteralExpression(5),
-            operator = PrintScriptOperator.MULTIPLY
-        )
+        val innerSum =
+            createOperationExpression(
+                left = createVariableExpression("a"),
+                right = createVariableExpression("b"),
+                operator = PrintScriptOperator.SUM,
+            )
+        val outerMultiply =
+            createOperationExpression(
+                left = innerSum,
+                right = createLiteralExpression(5),
+                operator = PrintScriptOperator.MULTIPLY,
+            )
         testWarning(createPrintln(outerMultiply))
     }
 
@@ -95,22 +99,24 @@ class TestPrintlnArgumentRule {
 
     @Test
     fun declarationNodeWithOperationIsIgnored() {
-        val operation = createOperationExpression(
-            left = createLiteralExpression(5),
-            right = createLiteralExpression(5),
-            operator = PrintScriptOperator.SUM
-        )
+        val operation =
+            createOperationExpression(
+                left = createLiteralExpression(5),
+                right = createLiteralExpression(5),
+                operator = PrintScriptOperator.SUM,
+            )
         val ast = createDeclaration(name = "x", value = operation)
         testNoWarning(ast)
     }
 
     @Test
     fun assignmentNodeWithOperationIsIgnored() {
-        val operation = createOperationExpression(
-            left = createLiteralExpression(1),
-            right = createLiteralExpression(2),
-            operator = PrintScriptOperator.SUM
-        )
+        val operation =
+            createOperationExpression(
+                left = createLiteralExpression(1),
+                right = createLiteralExpression(2),
+                operator = PrintScriptOperator.SUM,
+            )
         val ast = createAssignment(name = "x", value = operation)
         testNoWarning(ast)
     }
