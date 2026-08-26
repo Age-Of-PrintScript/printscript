@@ -10,5 +10,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
+
+
 rootProject.name = "printscript"
-include("domain", "lexer", "parser", "interpreter", "tokens", "ast", "executor")
+include("domain", "lexer", "parser", "interpreter", "tokens", "ast", "executor", "linter")

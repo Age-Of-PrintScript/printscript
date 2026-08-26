@@ -17,38 +17,44 @@ val VARIABLE_X = Expression.Variable("x")
 val VARIABLE_A = Expression.Variable("a")
 val VARIABLE_Y = Expression.Variable("y")
 
-val OPERATION_1_PLUS_2 = Expression.Operation(
-    left = LITERAL_NUMBER_1,
-    right = LITERAL_NUMBER_2,
-    operator = PrintScriptOperator.SUM
-)
+val OPERATION_1_PLUS_2 =
+    Expression.Operation(
+        left = LITERAL_NUMBER_1,
+        right = LITERAL_NUMBER_2,
+        operator = PrintScriptOperator.SUM,
+    )
 
-val OPERATION_5_DIVIDE_STRING = Expression.Operation(
-    left = LITERAL_NUMBER_5,
-    right = LITERAL_STRING_X,
-    operator = PrintScriptOperator.DIVIDE
-)
+val OPERATION_5_DIVIDE_STRING =
+    Expression.Operation(
+        left = LITERAL_NUMBER_5,
+        right = LITERAL_STRING_X,
+        operator = PrintScriptOperator.DIVIDE,
+    )
 
-val OPERATION_X_PLUS_1 = Expression.Operation(
-    left = VARIABLE_X,
-    right = LITERAL_NUMBER_1,
-    operator = PrintScriptOperator.SUM
-)
+val OPERATION_X_PLUS_1 =
+    Expression.Operation(
+        left = VARIABLE_X,
+        right = LITERAL_NUMBER_1,
+        operator = PrintScriptOperator.SUM,
+    )
 
-val OPERATION_STRING_PLUS_NUMBER = Expression.Operation(
-    left = LITERAL_STRING_HOLA,
-    right = LITERAL_NUMBER_5,
-    operator = PrintScriptOperator.SUM
-)
+val OPERATION_STRING_PLUS_NUMBER =
+    Expression.Operation(
+        left = LITERAL_STRING_HOLA,
+        right = LITERAL_NUMBER_5,
+        operator = PrintScriptOperator.SUM,
+    )
 
-val OPERATION_NUMBER_PLUS_STRING = Expression.Operation(
-    left = LITERAL_NUMBER_5,
-    right = LITERAL_STRING_HOLA,
-    operator = PrintScriptOperator.SUM
-)
+val OPERATION_NUMBER_PLUS_STRING =
+    Expression.Operation(
+        left = LITERAL_NUMBER_5,
+        right = LITERAL_STRING_HOLA,
+        operator = PrintScriptOperator.SUM,
+    )
 
-val OPERATION_STRING_PLUS_STRING = Expression.Operation(
-    left = LITERAL_STRING_HOLA,
-    right = LITERAL_STRING_MUNDO,
-    operator = PrintScriptOperator.SUM
-)
+val OPERATION_STRING_PLUS_STRING =
+    Expression.Operation(
+        left = LITERAL_STRING_HOLA,
+        right = LITERAL_STRING_MUNDO,
+        operator = PrintScriptOperator.SUM,
+    )

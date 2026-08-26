@@ -1,11 +1,11 @@
 package parser
 
+import ast.AST
+import ast.Program
 import domain.Either
 import domain.Failure
 import domain.Position
-import ast.Program
 import domain.Success
-import ast.AST
 import domain.getOrReturn
 import parser.states.Start
 import parser.states.State
@@ -13,12 +13,15 @@ import parser.states.StatementComplete
 import tokens.TokenList
 
 internal class ParserStateMachine {
-    fun parse(tokens: TokenList, expressionParser: ExpressionParser): Either<SyntaxError, Program> {
+    fun parse(
+        tokens: TokenList,
+        expressionParser: ExpressionParser,
+    ): Either<SyntaxError, Program> {
         var state: State = Start
         var builder = ASTBuilder()
         val trees = mutableListOf<AST>()
 
-        for(token in tokens){
+        for (token in tokens) {
             val result = state.consume(token, builder, expressionParser)
 
             val pair = result.getOrReturn { return Failure(it) }
@@ -32,22 +35,26 @@ internal class ParserStateMachine {
                 builder = ASTBuilder()
             }
         }
-        return finalizeParsing(state, trees, tokens)
+        return finalizeParsing(state, trees.toList(), tokens)
     }
 
     private fun finalizeParsing(
         state: State,
         trees: List<AST>,
-        tokens: TokenList
+        tokens: TokenList,
     ): Either<SyntaxError, Program> {
-        if (state != Start) {
-            return Failure(SyntaxError.INCOMPLETE_STATEMENT)
-        }
+        if (state != Start) return Failure(SyntaxError.INCOMPLETE_STATEMENT)
+
         return Success(
             Program(
-            trees,
-            if(tokens.isNotEmpty()) tokens.first().start else Position(0, 0),
-            if(tokens.isNotEmpty()) tokens.last().end else Position(0, 0)
-        ))
+                trees,
+                getInitialPosition(tokens),
+                getFinalPosition(tokens),
+            ),
+        )
     }
+
+    private fun getFinalPosition(tokens: TokenList): Position = if (tokens.isNotEmpty()) tokens.last().end else Position(0, 0)
+
+    private fun getInitialPosition(tokens: TokenList): Position = if (tokens.isNotEmpty()) tokens.first().start else Position(0, 0)
 }

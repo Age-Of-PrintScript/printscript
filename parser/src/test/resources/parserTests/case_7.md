@@ -1,7 +1,7 @@
 # Input
 IDENTIFIER: X
 ASSIGN
-STRING LITERAL: hello
+LITERAL: hello
 SEMICOLON
 
 # Expected: SUCCESS

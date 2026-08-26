@@ -9,9 +9,9 @@ import domain.keywordRegistry
 import lexer.states.FinalState
 import lexer.states.State
 import tokens.ASSIGN
+import tokens.CLOSED_PARENTHESIS
 import tokens.COLON
 import tokens.Call
-import tokens.CLOSED_PARENTHESIS
 import tokens.DataType
 import tokens.LET
 import tokens.OPEN_PARENTHESIS
@@ -25,9 +25,12 @@ internal fun createSymbolKeywordMap(): Map<String, TokenType> {
         when (keyword) {
             PrintScriptFunctions.PRINTLN ->
                 keywordMap["println"] = Call(PrintScriptFunctions.PRINTLN)
+
             PrintScriptReservedWords.LET -> keywordMap["let"] = LET
+
             PrintScriptType.NUMBER ->
                 keywordMap["number"] = DataType(PrintScriptType.NUMBER)
+
             PrintScriptType.STRING ->
                 keywordMap["string"] = DataType(PrintScriptType.STRING)
         }

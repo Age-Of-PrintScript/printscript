@@ -16,12 +16,18 @@ import tokens.ASSIGN
 import tokens.SEMICOLON
 import tokens.Token
 
-internal data class DeclarationTypeSeen(val id: ASTIdentifier, val type: ASTDataType) : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
-        return when (token.type) {
+internal data class DeclarationTypeSeen(
+    val id: ASTIdentifier,
+    val type: ASTDataType,
+) : State {
+    override fun consume(
+        token: Token,
+        builder: ASTBuilder,
+        expressionParser: ExpressionParser,
+    ): Either<SyntaxError, ConsumeResult> =
+        when (token.type) {
             ASSIGN -> Success(ExpressionPending(id) to builder)
             SEMICOLON -> Success(StatementComplete to builder)
             else -> Failure(SyntaxError.INVALID_TOKEN_AFTER_TYPE)
         }
-    }
 }

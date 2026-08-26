@@ -12,11 +12,16 @@ import parser.states.State
 import tokens.OPEN_PARENTHESIS
 import tokens.Token
 
-internal data class CallSeen(val function: PrintScriptFunctions) : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
-        return when (token.type) {
+internal data class CallSeen(
+    val function: PrintScriptFunctions,
+) : State {
+    override fun consume(
+        token: Token,
+        builder: ASTBuilder,
+        expressionParser: ExpressionParser,
+    ): Either<SyntaxError, ConsumeResult> =
+        when (token.type) {
             OPEN_PARENTHESIS -> Success(CallArgsPending(function) to builder)
             else -> Failure(SyntaxError.INVALID_TOKEN)
         }
-    }
 }

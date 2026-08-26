@@ -8,7 +8,9 @@ import parser.SyntaxError
 import tokens.Token
 
 internal object StatementComplete : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
-        return Failure(SyntaxError.UNEXPECTED_TOKEN_AFTER_STATEMENT)
-    }
+    override fun consume(
+        token: Token,
+        builder: ASTBuilder,
+        expressionParser: ExpressionParser,
+    ): Either<SyntaxError, ConsumeResult> = Failure(SyntaxError.UNEXPECTED_TOKEN_AFTER_STATEMENT)
 }

@@ -2,11 +2,11 @@ package interpreter
 
 import domain.Failure
 import domain.Success
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 
 internal fun assertSuccessCase(
     interpreter: Interpreter,
-    case: SuccessCase
+    case: SuccessCase,
 ) {
     when (val result = interpreter.execute(case.program)) {
         is Success -> {
@@ -21,7 +21,7 @@ internal fun assertSuccessCase(
 
 internal fun assertFailureCase(
     interpreter: Interpreter,
-    case: FailureCase
+    case: FailureCase,
 ) {
     when (val result = interpreter.execute(case.program)) {
         is Success -> {
