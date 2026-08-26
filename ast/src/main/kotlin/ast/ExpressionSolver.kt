@@ -187,13 +187,11 @@ class ExpressionSolver {
     private fun stringAndNumberInOperation(
         left: PrintScriptValue,
         right: PrintScriptValue,
-    ): Boolean =
-        !(
-            left is NumberLiteral &&
-                right is NumberLiteral ||
-                left is StringLiteral &&
-                right is StringLiteral
-        )
+    ): Boolean {
+        val sameNumber = left is NumberLiteral && right is NumberLiteral
+        val sameString = left is StringLiteral && right is StringLiteral
+        return !(sameNumber || sameString)
+    }
 
     /*
      * Manejo de operaciones con tipos distintos
