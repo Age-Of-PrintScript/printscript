@@ -10,6 +10,7 @@ import interpreter.ExecutionResult
 import interpreter.Interpreter
 import interpreter.InterpreterImpl
 import interpreter.PrintEvent
+import interpreter.RuntimeEnvironment
 import lexer.Lexer
 import lexer.LexerImpl
 import parser.Parser
@@ -19,6 +20,7 @@ class Engine {
     private val lexer: Lexer = LexerImpl()
     private val parser: Parser = ParserImpl()
     private val interpreter: Interpreter = InterpreterImpl()
+    private var environment: RuntimeEnvironment? = null
 
     fun execute(
         source: String,
@@ -52,6 +54,7 @@ class Engine {
         logger: Logger,
     ) {
         val events = result.runtimeEvents
+        environment = result.runtimeEnvironment
         for (event in events.events) {
             when (event) {
                 is PrintEvent -> logger.log(event.message)
