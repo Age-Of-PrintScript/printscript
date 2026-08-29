@@ -1,4 +1,4 @@
-package formatter
+package formatter.formatter
 
 import ast.AST
 import ast.Expression

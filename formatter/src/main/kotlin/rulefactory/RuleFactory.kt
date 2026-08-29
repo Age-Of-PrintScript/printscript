@@ -31,7 +31,7 @@ class SpaceAroundAssignFactory: RuleFactory{
     }
 }
 class LinesBeforeCallFactory: RuleFactory{
-    override fun create(value: JsonElement): LineBeforeCallRule{
+    override fun create(value: JsonElement): LineBeforeCallRule {
         return LineBeforeCallRule(value.jsonPrimitive.int)
     }
 }

@@ -1,7 +1,7 @@
 package formatter.astformatterfactory
 
-import formatter.ASTFormatter
-import formatter.FormatterImplementation
+import formatter.formatter.ASTFormatter
+import formatter.formatter.FormatterImplementation
 import formatter.formatrules.FormattingRules
 import formatter.mapa
 import kotlinx.serialization.json.JsonElement
@@ -11,13 +11,14 @@ import kotlinx.serialization.json.jsonObject
 
 class FormatFactory(private val json: JsonObject) {
 
+
     private val rulesByKey: Map<String, JsonElement> =
         json["rules"]!!.jsonArray
             .flatMap { it.jsonObject.entries }
-            .associate { it.key to it.value }
+            .associate { it.key to it.value }  //asocio el nombre con el valor elemental del value
 
     private fun buildRules(keys: List<String>): FormattingRules {
-        val formatRules = keys.mapNotNull { key ->
+        val formatRules = keys.mapNotNull { key -> //para cada nombre de regla, le mapeo su formatRule
             val value = rulesByKey[key] ?: return@mapNotNull null
             mapa[key]?.create(value)
         }

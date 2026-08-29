@@ -1,8 +1,11 @@
-package formatter
+package formatter.formatter
 
 import ast.AST
 import formatter.formatrules.FormattingRules
 
+interface ASTFormatter {
+    fun format(ast: AST): String
+}
 class FormatterImplementation(val rules: FormattingRules): ASTFormatter {
     override fun format(ast: AST): String {
         val astToString = astToString(ast)
