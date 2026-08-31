@@ -1,11 +1,8 @@
 package executor
 
-import ast.Program
-import domain.Either
 import domain.Error
 import domain.Failure
 import domain.Success
-import domain.getOrReturn
 import interpreter.ExecutionResult
 import interpreter.Interpreter
 import interpreter.InterpreterImpl
@@ -71,9 +68,21 @@ class Engine {
         logger.log("Build Failed")
     }
 
-    fun validate(source: String): Either<Error, Program> {
-        val tokens = lexer.tokenize(source).getOrReturn { return Failure(it) }
-        val program = parser.parse(tokens).getOrReturn { return Failure(it) }
-        return Success(program)
+    fun validate(
+        source: String,
+        logger: Logger,
+    ): ExitCode {
+        val tokensResult = lexer.tokenize(source)
+        if (tokensResult is Failure) {
+            logFailure(tokensResult.value, logger)
+            return ExitCode.FAILURE
+        }
+        val programResult = parser.parse((tokensResult as Success).value)
+        if (programResult is Failure) {
+            logFailure(programResult.value, logger)
+            return ExitCode.FAILURE
+        }
+        logger.log("Validation Successful")
+        return ExitCode.SUCCESS
     }
 }
