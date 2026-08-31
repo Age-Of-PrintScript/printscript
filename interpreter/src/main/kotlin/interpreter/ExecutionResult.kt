@@ -88,6 +88,6 @@ data class RuntimeEvents(
 
 sealed interface Event
 
-class PrintEvent(
+data class PrintEvent(
     val message: String,
 ) : Event
