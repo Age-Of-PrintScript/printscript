@@ -11,3 +11,6 @@ dependencies {
 application {
     mainClass.set("cli.MainKt")
 }
+tasks.named<JavaExec>("run") {
+    workingDir = rootDir
+}

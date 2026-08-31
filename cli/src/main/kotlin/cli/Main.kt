@@ -1,5 +1,7 @@
 package cli
 
-fun main() {
-    println("hello world")
+import cli.commands.RunCommand
+
+fun main(args: Array<String>) {
+    RunCommand().main(args)
 }
