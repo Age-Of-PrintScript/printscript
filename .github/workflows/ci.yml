@@ -3,9 +3,10 @@ on:
     pull_request:
         branches:
             - main
+
 jobs:
     build:
-        runs-on: ubuntu-24.04 [Beta]
+        runs-on: ubuntu-24.04
 
         steps:
             - name: Clone repository
