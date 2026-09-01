@@ -1,12 +1,8 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    id("printscript.common-conventions")
 }
 
-repositories {
-    mavenCentral()
-}
-
-dependencies{
+dependencies {
     implementation(project(":interpreter"))
     implementation(project(":lexer"))
     implementation(project(":parser"))

@@ -13,7 +13,7 @@ import tokens.WHITESPACE
 
 internal data class TokenBuilder(
     val type: TokenType? = null,
-    val tokenMap: Map<Char, TokenType> = createSymbolTokenMap()
+    val tokenMap: Map<Char, TokenType> = createSymbolTokenMap(),
 ) {
     fun addChar(chr: Char): Either<LexerError, TokenBuilder> {
         if (type is Literal && !charIsQuote(chr)) {
@@ -24,26 +24,33 @@ internal data class TokenBuilder(
         when {
             chr.isDigit() -> {
                 val newType =
-                    if (type == null) Literal(chr.toString())
-                    else updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                    if (type == null) {
+                        Literal(chr.toString())
+                    } else {
+                        updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                    }
 
                 return Success(copy(type = newType))
             }
 
             chr.isLetter() -> {
                 val newType =
-                    if (type == null) Identifier(chr.toString())
-                    else updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                    if (type == null) {
+                        Identifier(chr.toString())
+                    } else {
+                        updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                    }
 
                 return Success(copy(type = newType))
             }
 
             chr == '\'' || chr == '"' -> {
-                val newType = when (type) {
-                    is Literal -> updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
-                    null -> Literal(chr.toString())
-                    else -> return Failure(LexerError.INVALID_CHARACTER)
-                }
+                val newType =
+                    when (type) {
+                        is Literal -> updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
+                        null -> Literal(chr.toString())
+                        else -> return Failure(LexerError.INVALID_CHARACTER)
+                    }
 
                 return Success(copy(type = newType))
             }
@@ -53,20 +60,24 @@ internal data class TokenBuilder(
             chr.isWhitespace() -> return Success(copy(type = WHITESPACE))
 
             else -> {
-                return if (tokenMap.containsKey(chr))
+                return if (tokenMap.containsKey(chr)) {
                     Success(copy(type = tokenMap.getValue(chr)))
-                else Failure(LexerError.INVALID_CHARACTER)
+                } else {
+                    Failure(LexerError.INVALID_CHARACTER)
+                }
             }
         }
     }
 
-    private fun updateTypeWithLiteral(type: TokenType?, chr: Char): Either<LexerError, TokenType> {
-        return when (type) {
+    private fun updateTypeWithLiteral(
+        type: TokenType?,
+        chr: Char,
+    ): Either<LexerError, TokenType> =
+        when (type) {
             is Identifier -> Success(Identifier(type.name + chr))
-            is Literal ->  Success(Literal(type.value + chr))
+            is Literal -> Success(Literal(type.value + chr))
             else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
         }
-    }
 
     fun build(): Either<LexerError, Token> {
         val finalType = resolveFinalType(type).getOrReturn { return Failure(it) }
@@ -74,8 +85,8 @@ internal data class TokenBuilder(
             Token(
                 finalType,
                 Position(0, 0),
-                Position(0,0)
-            )
+                Position(0, 0),
+            ),
         )
     }
 
@@ -84,17 +95,21 @@ internal data class TokenBuilder(
 
         if (finalType is Identifier) {
             val keywordMap = createSymbolKeywordMap()
-            if (keywordMap.contains(finalType.name))
+            if (keywordMap.contains(finalType.name)) {
                 finalType = keywordMap.getValue(finalType.name)
+            }
         }
 
         if (finalType is Literal) {
             val str = finalType.value
-            //El type solo es asignado string type si arranca con comillas
+            // El type solo es asignado string type si arranca con comillas
             if (str.isNotEmpty() && charIsQuote(str.first())) {
                 val last = str.last()
-                if (!charIsQuote(last)) return Failure(LexerError.UNTERMINATED_STRING)
-                else finalType = Literal(str.substring(1, str.length - 1))
+                if (!charIsQuote(last)) {
+                    return Failure(LexerError.UNTERMINATED_STRING)
+                } else {
+                    finalType = Literal(str.substring(1, str.length - 1))
+                }
             }
         }
 

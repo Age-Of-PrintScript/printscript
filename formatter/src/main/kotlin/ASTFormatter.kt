@@ -1,15 +1,15 @@
-package formatter.formatter
-
 import ast.AST
-import formatter.formatrules.FormattingRules
 
 interface ASTFormatter {
     fun format(ast: AST): String
 }
-class FormatterImplementation(val rules: FormattingRules): ASTFormatter {
+
+class FormatterImplementation(
+    val rules: FormattingRules,
+) : ASTFormatter {
     override fun format(ast: AST): String {
         val astToString = astToString(ast)
-        var result = ""
+        var result = astToString
 
         for (rule in rules.rules) {
             result = rule.apply(astToString)

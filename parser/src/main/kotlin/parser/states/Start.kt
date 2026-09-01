@@ -17,12 +17,18 @@ import tokens.LET
 import tokens.Token
 
 internal object Start : State {
-    override fun consume(token: Token, builder: ASTBuilder, expressionParser: ExpressionParser): Either<SyntaxError, ConsumeResult> {
-        return when (val t = token.type) {
+    override fun consume(
+        token: Token,
+        builder: ASTBuilder,
+        expressionParser: ExpressionParser,
+    ): Either<SyntaxError, ConsumeResult> =
+        when (val t = token.type) {
             is Call -> Success(CallSeen(t.type) to ASTBuilder(type = BuilderType.CALL, functionName = t.type))
-            is Identifier -> Success(AssignmentIdSeen(ASTIdentifier(t.name)) to ASTBuilder(type = BuilderType.ASSIGNMENT, id = ASTIdentifier(t.name)))
+            is Identifier ->
+                Success(
+                    AssignmentIdSeen(ASTIdentifier(t.name)) to ASTBuilder(type = BuilderType.ASSIGNMENT, id = ASTIdentifier(t.name)),
+                )
             LET -> Success(DeclarationBranch to ASTBuilder(type = BuilderType.DECLARATION))
             else -> Failure(SyntaxError.INVALID_TOKEN)
         }
-    }
 }

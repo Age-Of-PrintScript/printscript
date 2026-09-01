@@ -1,6 +1,8 @@
 # Ignore Gradle project-specific cache directory
 .gradle
 .idea
+.agents
+.DS_Store
 
 # Ignore Gradle build output directory
 build
