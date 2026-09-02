@@ -1,8 +1,0 @@
-{
-    "rules": [
-        {"space before colon": true},
-        {"space after colon": true},
-        {"spaces around assign": true},
-        {"lines before declaration": 1}
-    ]
-}

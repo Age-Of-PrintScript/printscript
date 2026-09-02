@@ -1,3 +1,5 @@
+package formatter
+
 import domain.Either
 import domain.Error
 import domain.Failure
@@ -23,6 +25,6 @@ fun parseConfig(path: String): Either<Error, JsonObject> {
         Success(json)
     } catch (e: SerializationException) {
         System.err.println("No se pudo serializar: ${e.message}")
-        Failure(FormattingError.INVALID_RULES)
+        Failure(FormattingError.INVALID_JSON)
     }
 }

@@ -1,5 +1,7 @@
+package formatter
+
 data class FormattingRules(
-    val rules: List<FormatRule>,
+    val rulesList: List<FormatRule>,
 )
 
 interface FormatRule {
@@ -31,4 +33,10 @@ class SpacesAroundAssignRule(
     val ruleApplies: Boolean,
 ) : FormatRule {
     override fun apply(line: String): String = if (ruleApplies) line.replaceFirst("=", " = ") else line
+}
+
+class SemiColonAtTheEndRule(
+    val ruleApplies: Boolean,
+) : FormatRule {
+    override fun apply(line: String): String = if (ruleApplies) "$line;" else line
 }

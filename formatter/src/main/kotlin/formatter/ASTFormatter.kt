@@ -1,3 +1,5 @@
+package formatter
+
 import ast.AST
 
 interface ASTFormatter {
@@ -11,8 +13,8 @@ class FormatterImplementation(
         val astToString = astToString(ast)
         var result = astToString
 
-        for (rule in rules.rules) {
-            result = rule.apply(astToString)
+        for (rule in rules.rulesList) {
+            result = rule.apply(result)
         }
         return result
     }
