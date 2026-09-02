@@ -1,6 +1,6 @@
 plugins {
     id("printscript.common-conventions")
-    kotlin("plugin.serialization") version "2.2.0"
+    kotlin("plugin.serialization")
 }
 
 dependencies {
