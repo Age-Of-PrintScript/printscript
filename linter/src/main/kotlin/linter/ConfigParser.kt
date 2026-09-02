@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import java.io.File
+import java.io.InputStream
 
 @Serializable
 data class LinterConfig(
@@ -20,10 +21,27 @@ data class RuleConfigEntry(
 class ConfigParser {
     private val json = Json { ignoreUnknownKeys = true }
 
-    fun parse(configFile: File): RulesConfig {
-        val config = deserializeConfigJson(configFile)
+    fun parse(configFile: File): RulesConfig = parse(configFile.inputStream())
+
+    fun parse(inputStream: InputStream): RulesConfig {
+        val content = inputStream.bufferedReader().use { it.readText() }
+        return parse(content)
+    }
+
+    fun parse(jsonContent: String): RulesConfig {
+        val config = deserializeConfigJson(jsonContent)
         val rules = buildRules(config)
         return RulesConfig(rules)
+    }
+
+    fun parseOrDefault(customConfigStream: InputStream?): RulesConfig = customConfigStream?.let { parse(it) } ?: parseDefault()
+
+    fun parseDefault(): RulesConfig {
+        val defaultStream =
+            javaClass.classLoader.getResourceAsStream("config.json")
+                ?: javaClass.getResourceAsStream("/config.json")
+                ?: error("Default linter config 'config.json' not found in resources")
+        return parse(defaultStream)
     }
 
     private fun buildRules(config: LinterConfig): List<LinterRule> =
@@ -31,5 +49,5 @@ class ConfigParser {
             .filter { it.enabled }
             .map { entry -> RuleRegistry.build(entry) }
 
-    private fun deserializeConfigJson(configFile: File): LinterConfig = json.decodeFromString<LinterConfig>(configFile.readText())
+    private fun deserializeConfigJson(jsonContent: String): LinterConfig = json.decodeFromString<LinterConfig>(jsonContent)
 }

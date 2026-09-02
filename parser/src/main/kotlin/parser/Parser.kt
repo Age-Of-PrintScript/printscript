@@ -6,9 +6,13 @@ import tokens.Token
 
 interface Parser {
     fun parse(tokens: List<Token>): Either<SyntaxError, Program>
+
+    companion object {
+        fun new(): Parser = ParserImpl()
+    }
 }
 
-class ParserImpl : Parser {
+internal class ParserImpl : Parser {
     private val expressionParser = ExpressionParser()
 
     override fun parse(tokens: List<Token>): Either<SyntaxError, Program> {

@@ -19,9 +19,13 @@ interface Interpreter {
         program: Program,
         runtimeEnvironment: RuntimeEnvironment,
     ): Either<RuntimeError, ExecutionResult>
+
+    companion object {
+        fun new(): Interpreter = InterpreterImpl()
+    }
 }
 
-class InterpreterImpl : Interpreter {
+internal class InterpreterImpl : Interpreter {
     val expressionSolver = ExpressionSolver()
 
     override fun execute(program: Program): Either<RuntimeError, ExecutionResult> = execute(program, RuntimeEnvironment(emptyMap()), RuntimeEvents(emptyList()))

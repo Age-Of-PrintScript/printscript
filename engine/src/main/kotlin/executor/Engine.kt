@@ -5,17 +5,14 @@ import domain.Failure
 import domain.Success
 import interpreter.ExecutionResult
 import interpreter.Interpreter
-import interpreter.InterpreterImpl
 import interpreter.PrintEvent
 import lexer.Lexer
-import lexer.LexerImpl
 import parser.Parser
-import parser.ParserImpl
 
 class Engine {
-    private val lexer: Lexer = LexerImpl()
-    private val parser: Parser = ParserImpl()
-    private val interpreter: Interpreter = InterpreterImpl()
+    private val lexer = Lexer.new()
+    private val parser = Parser.new()
+    private val interpreter = Interpreter.new()
 
     fun execute(
         source: String,
