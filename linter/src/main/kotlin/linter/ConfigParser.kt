@@ -7,18 +7,18 @@ import java.io.File
 import java.io.InputStream
 
 @Serializable
-data class LinterConfig(
+internal data class LinterConfig(
     val rules: List<RuleConfigEntry>,
 )
 
 @Serializable
-data class RuleConfigEntry(
+internal data class RuleConfigEntry(
     val name: String,
     val enabled: Boolean = true,
     val params: JsonObject = JsonObject(emptyMap()), // resto de los campos, específicos de cada regla
 )
 
-class ConfigParser {
+internal class ConfigParser {
     private val json = Json { ignoreUnknownKeys = true }
 
     fun parse(configFile: File): RulesConfig = parse(configFile.inputStream())

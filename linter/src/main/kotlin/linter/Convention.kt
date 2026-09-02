@@ -1,6 +1,6 @@
 package linter
 
-enum class IdentifierConvention {
+internal enum class IdentifierConvention {
     SNAKE_CASE,
     CAMEL_CASE,
     ;

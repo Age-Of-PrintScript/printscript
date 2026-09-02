@@ -27,11 +27,11 @@ interface Linter {
             return LinterImpl(config)
         }
 
-        fun fromRules(rulesConfig: RulesConfig): Linter = LinterImpl(rulesConfig)
+        internal fun fromRules(rulesConfig: RulesConfig): Linter = LinterImpl(rulesConfig)
     }
 }
 
-class LinterImpl(
+internal class LinterImpl(
     private val rulesConfig: RulesConfig,
     private val lexer: Lexer = Lexer.new(),
     private val parser: Parser = Parser.new(),

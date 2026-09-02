@@ -3,7 +3,7 @@ package linter
 import linter.rules.IdentifierFormatRuleFactory
 import linter.rules.PrintlnArgumentRuleFactory
 
-object RuleRegistry {
+internal object RuleRegistry {
     private val factories: Map<String, LinterRuleFactory> =
         listOf(
             PrintlnArgumentRuleFactory,
