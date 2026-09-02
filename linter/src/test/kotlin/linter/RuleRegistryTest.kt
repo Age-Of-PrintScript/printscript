@@ -1,71 +1,48 @@
 package linter
 
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNotNull
+import linter.cases.RuleRegistryFailureCases
+import linter.cases.RuleRegistrySuccessCases
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.DynamicNode
+import org.junit.jupiter.api.DynamicTest.dynamicTest
+import org.junit.jupiter.api.TestFactory
+import kotlin.reflect.KClass
 
-class RuleRegistryTest {
-    @Test
-    fun testBuildIdentifierFormatRule() {
-        val entry =
-            RuleConfigEntry(
-                name = "identifier-format",
-                enabled = true,
-                params = JsonObject(mapOf("convention" to JsonPrimitive("camelCase"))),
-            )
-        val rule = RuleRegistry.build(entry)
-        assertNotNull(rule)
-    }
+internal data class RuleRegistrySuccessCase(
+    val name: String,
+    val entry: RuleConfigEntry,
+    val expectedClass: KClass<out LinterRule>,
+)
 
-    @Test
-    fun testBuildPrintlnRule() {
-        val entry =
-            RuleConfigEntry(
-                name = "println-no-expression",
-                enabled = true,
-                params = JsonObject(emptyMap()),
-            )
-        val rule = RuleRegistry.build(entry)
-        assertNotNull(rule)
-    }
+internal data class RuleRegistryFailureCase(
+    val name: String,
+    val entry: RuleConfigEntry,
+    val expectedException: KClass<out Throwable>,
+)
 
-    @Test
-    fun testBuildUnknownRuleThrowsException() {
-        val entry =
-            RuleConfigEntry(
-                name = "unknown-rule",
-                enabled = true,
-            )
-        assertFailsWith<IllegalArgumentException> {
-            RuleRegistry.build(entry)
+internal class RuleRegistryTest {
+    @TestFactory
+    fun `successful rule creations`(): List<DynamicNode> =
+        RuleRegistrySuccessCases.cases().map { case ->
+            dynamicTest(case.name) {
+                val rule = RuleRegistry.build(case.entry)
+                assertNotNull(rule)
+                assertTrue(
+                    case.expectedClass.isInstance(rule),
+                    "Expected ${case.expectedClass.simpleName} but got ${rule::class.simpleName}",
+                )
+            }
         }
-    }
 
-    @Test
-    fun testMissingConventionParamThrowsException() {
-        val entry =
-            RuleConfigEntry(
-                name = "identifier-format",
-                enabled = true,
-                params = JsonObject(emptyMap()),
-            )
-        assertFailsWith<IllegalArgumentException> {
-            RuleRegistry.build(entry)
+    @TestFactory
+    fun `failure rule creations`(): List<DynamicNode> =
+        RuleRegistryFailureCases.cases().map { case ->
+            dynamicTest(case.name) {
+                assertThrows(case.expectedException.java) {
+                    RuleRegistry.build(case.entry)
+                }
+            }
         }
-    }
-
-    @Test
-    fun testUnknownConventionParamThrowsException() {
-        val entry =
-            RuleConfigEntry(
-                name = "identifier-format",
-                enabled = true,
-                params = JsonObject(mapOf("convention" to JsonPrimitive("invalid_convention"))),
-            )
-        assertFailsWith<IllegalArgumentException> {
-            RuleRegistry.build(entry)
-        }
-    }
 }

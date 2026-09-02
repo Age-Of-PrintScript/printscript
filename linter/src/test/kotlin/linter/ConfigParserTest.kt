@@ -1,103 +1,45 @@
 package linter
 
-import java.io.File
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import linter.cases.ConfigParserFailureCases
+import linter.cases.ConfigParserSuccessCases
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.DynamicNode
+import org.junit.jupiter.api.DynamicTest.dynamicTest
+import org.junit.jupiter.api.TestFactory
+import kotlin.reflect.KClass
 
-class ConfigParserTest {
+internal data class ConfigParserSuccessCase(
+    val name: String,
+    val execute: (ConfigParser) -> RulesConfig,
+    val expectedRulesCount: Int,
+)
+
+internal data class ConfigParserFailureCase(
+    val name: String,
+    val execute: (ConfigParser) -> Unit,
+    val expectedException: KClass<out Throwable>,
+)
+
+internal class ConfigParserTest {
     private val parser = ConfigParser()
 
-    @Test
-    fun testParseDefaultConfig() {
-        val config = parser.parseDefault()
-        assertEquals(2, config.rules.size)
-    }
-
-    @Test
-    fun testParseOrDefaultWithNull() {
-        val config = parser.parseOrDefault(null)
-        assertEquals(2, config.rules.size)
-    }
-
-    @Test
-    fun testParseOrDefaultWithCustomStream() {
-        val customJson =
-            """
-            {
-              "rules": [
-                {
-                  "name": "identifier-format",
-                  "enabled": true,
-                  "params": { "convention": "snake_case" }
-                }
-              ]
+    @TestFactory
+    fun `successful config parsing`(): List<DynamicNode> =
+        ConfigParserSuccessCases.cases().map { case ->
+            dynamicTest(case.name) {
+                val rulesConfig = case.execute(parser)
+                assertEquals(case.expectedRulesCount, rulesConfig.rules.size)
             }
-            """.trimIndent()
-        val stream = customJson.byteInputStream()
-        val config = parser.parseOrDefault(stream)
-        assertEquals(1, config.rules.size)
-    }
-
-    @Test
-    fun testParseFromJsonString() {
-        val json =
-            """
-            {
-              "rules": [
-                {
-                  "name": "println-no-expression",
-                  "enabled": true
-                },
-                {
-                  "name": "identifier-format",
-                  "enabled": false,
-                  "params": { "convention": "camelCase" }
-                }
-              ]
-            }
-            """.trimIndent()
-        val config = parser.parse(json)
-        assertEquals(1, config.rules.size)
-    }
-
-    @Test
-    fun testParseFromFile() {
-        val tempFile = File.createTempFile("test-config", ".json")
-        tempFile.deleteOnExit()
-        tempFile.writeText(
-            """
-            {
-              "rules": [
-                {
-                  "name": "println-no-expression",
-                  "enabled": true
-                }
-              ]
-            }
-            """.trimIndent(),
-        )
-
-        val config = parser.parse(tempFile)
-        assertEquals(1, config.rules.size)
-    }
-
-    @Test
-    fun testUnknownRuleThrowsException() {
-        val json =
-            """
-            {
-              "rules": [
-                {
-                  "name": "non-existent-rule",
-                  "enabled": true
-                }
-              ]
-            }
-            """.trimIndent()
-
-        assertFailsWith<IllegalArgumentException> {
-            parser.parse(json)
         }
-    }
+
+    @TestFactory
+    fun `failure config parsing`(): List<DynamicNode> =
+        ConfigParserFailureCases.cases().map { case ->
+            dynamicTest(case.name) {
+                assertThrows(case.expectedException.java) {
+                    case.execute(parser)
+                }
+            }
+        }
 }

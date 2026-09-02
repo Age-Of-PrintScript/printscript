@@ -1,99 +1,45 @@
 package linter
 
-import java.io.File
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import linter.cases.LinterErrorCases
+import linter.cases.LinterSuccessCases
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.DynamicNode
+import org.junit.jupiter.api.DynamicTest.dynamicTest
+import org.junit.jupiter.api.TestFactory
 
-class LinterTest {
-    @Test
-    fun testCreateDefaultLinter() {
-        val linter = Linter.createDefault()
-        val warnings = linter.analyse("let a_var: string = \"test\";")
-        assertEquals(1, warnings.size)
-    }
+internal data class LinterTestCase(
+    val name: String,
+    val linterProvider: () -> Linter,
+    val source: String,
+    val expectedWarningsCount: Int,
+)
 
-    @Test
-    fun testFromConfigStream() {
-        val json =
-            """
-            {
-              "rules": [
-                {
-                  "name": "identifier-format",
-                  "enabled": true,
-                  "params": { "convention": "snake_case" }
-                }
-              ]
+internal class LinterTest {
+    @TestFactory
+    fun `successful linter analysis cases`(): List<DynamicNode> =
+        LinterSuccessCases.cases().map { case ->
+            dynamicTest(case.name) {
+                val linter = case.linterProvider()
+                val warnings = linter.analyse(case.source)
+                assertEquals(
+                    case.expectedWarningsCount,
+                    warnings.size,
+                    "Expected ${case.expectedWarningsCount} warnings but got ${warnings.size}: $warnings",
+                )
             }
-            """.trimIndent()
-        val linter = Linter.fromConfig(json.byteInputStream())
-        val warningsCamel = linter.analyse("let myVar: string = \"test\";")
-        assertEquals(1, warningsCamel.size)
+        }
 
-        val warningsSnake = linter.analyse("let myvar: string = \"test\";")
-        assertTrue(warningsSnake.isEmpty())
-    }
-
-    @Test
-    fun testFromConfigFile() {
-        val tempFile = File.createTempFile("linter-test-config", ".json")
-        tempFile.deleteOnExit()
-        tempFile.writeText(
-            """
-            {
-              "rules": [
-                {
-                  "name": "println-no-expression",
-                  "enabled": true
-                }
-              ]
+    @TestFactory
+    fun `error and edge cases in linter analysis`(): List<DynamicNode> =
+        LinterErrorCases.cases().map { case ->
+            dynamicTest(case.name) {
+                val linter = case.linterProvider()
+                val warnings = linter.analyse(case.source)
+                assertEquals(
+                    case.expectedWarningsCount,
+                    warnings.size,
+                    "Expected ${case.expectedWarningsCount} warnings but got ${warnings.size}: $warnings",
+                )
             }
-            """.trimIndent(),
-        )
-
-        val linter = Linter.fromConfigFile(tempFile)
-        val warnings = linter.analyse("println(1 + 2);")
-        assertEquals(1, warnings.size)
-    }
-
-    @Test
-    fun testFromJson() {
-        val json =
-            """
-            {
-              "rules": [
-                {
-                  "name": "println-no-expression",
-                  "enabled": true
-                }
-              ]
-            }
-            """.trimIndent()
-        val linter = Linter.fromJson(json)
-        val warnings = linter.analyse("println(1 + 2);")
-        assertEquals(1, warnings.size)
-    }
-
-    @Test
-    fun testFromRules() {
-        val rulesConfig = ConfigParser().parseDefault()
-        val linter = Linter.fromRules(rulesConfig)
-        val warnings = linter.analyse("let a_var: string = \"test\";")
-        assertEquals(1, warnings.size)
-    }
-
-    @Test
-    fun testLexerErrorReturnsWarning() {
-        val linter = Linter.createDefault()
-        val warnings = linter.analyse("@invalid")
-        assertEquals(1, warnings.size)
-    }
-
-    @Test
-    fun testParserErrorReturnsWarning() {
-        val linter = Linter.createDefault()
-        val warnings = linter.analyse("let = 5;")
-        assertEquals(1, warnings.size)
-    }
+        }
 }
