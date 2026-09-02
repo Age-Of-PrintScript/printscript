@@ -1,3 +1,5 @@
 package domain
 
-interface Error
+interface Error {
+    fun getMessage(): String
+}

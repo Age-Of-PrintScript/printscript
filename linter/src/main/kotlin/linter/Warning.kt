@@ -10,7 +10,7 @@ data class Warning(
     companion object {
         fun fromError(error: Error): Warning =
             Warning(
-                error.toString(),
+                error.getMessage(),
                 Position(0, 0),
             )
     }
