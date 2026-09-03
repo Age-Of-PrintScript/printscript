@@ -11,6 +11,7 @@ interface Formatter {
     fun format(
         sourcePath: String,
         path: String,
+        fileReader: FileReader,
     ): FormatResult
 
     companion object {
@@ -21,11 +22,11 @@ interface Formatter {
 class FormatterExecutor : Formatter {
     private val lexer: Lexer = LexerImpl()
     private val parser: Parser = ParserImpl()
-    private val fileReader: FileReader = FileReaderFake("content") // esto es un dummy, hable con Facu y despues se implementa con el CLI
 
     override fun format(
         sourcePath: String,
         path: String,
+        fileReader: FileReader,
     ): FormatResult {
         val source = fileReader.readText(sourcePath)
 
