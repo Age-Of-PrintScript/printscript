@@ -5,7 +5,6 @@ import formatter.FormattingRules
 import formatter.LineBeforeCallRule
 import formatter.SemiColonAtTheEndRule
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import testframework.createNumberLiteralExpression
 import testframework.createOperationExpression
@@ -105,10 +104,10 @@ class CallTests {
         assertEquals("println(2 + 3);", result)
     }
 
-    // ---- Grupo C: casos limite que documentan bugs reales de callToString ----
+    // ---- Grupo C: casos limite resueltos ----
 
     @Test
-    fun `println con multiples argumentos solo formatea el primero (bug conocido)`() {
+    fun `println con multiples argumentos formatea todos separados por coma`() {
         val call =
             createPrintln(
                 createNumberLiteralExpression(1),
@@ -117,28 +116,23 @@ class CallTests {
             )
         val result = FormatterImplementation(FormattingRules(allCallRules)).format(call)
 
-        // callToString solo usa args[0]; el 2 y el 3 se pierden en silencio.
-        assertEquals("println(1);", result)
+        assertEquals("println(1, 2, 3);", result)
     }
 
     @Test
-    fun `println sin argumentos explota (bug conocido)`() {
+    fun `println sin argumentos formatea parentesis vacios sin romper`() {
         val call = createPrintln()
+        val result = FormatterImplementation(FormattingRules(allCallRules)).format(call)
 
-        assertThrows(IndexOutOfBoundsException::class.java) {
-            FormatterImplementation(
-                FormattingRules(allCallRules),
-            ).format(call)
-        }
+        assertEquals("println();", result)
     }
 
     @Test
-    fun `LineBeforeCallRule con lineas negativas explota (bug conocido)`() {
+    fun `LineBeforeCallRule con lineas negativas no agrega lineas y no explota`() {
         val call = createPrintln(createNumberLiteralExpression(5))
         val rules = listOf(LineBeforeCallRule(-1), SemiColonAtTheEndRule(true))
+        val result = FormatterImplementation(FormattingRules(rules)).format(call)
 
-        assertThrows(IllegalArgumentException::class.java) {
-            FormatterImplementation(FormattingRules(rules)).format(call)
-        }
+        assertEquals("println(5);", result)
     }
 }

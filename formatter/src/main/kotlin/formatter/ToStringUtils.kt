@@ -25,7 +25,10 @@ internal fun declarationToString(declaration: AST.Declaration): String {
 
 internal fun assignmentToString(assignment: AST.Assignment): String = "${assignment.id.name}=${expressionToString(assignment.value, 0)}"
 
-internal fun callToString(call: AST.Call): String = "${functionNameToString(call.functionName)}(${expressionToString(call.args[0], 0)})"
+internal fun callToString(call: AST.Call): String {
+    val argsStr = call.args.joinToString(", ") { expressionToString(it, 0) }
+    return "${functionNameToString(call.functionName)}($argsStr)"
+}
 
 internal fun expressionToString(
     expression: Expression?,

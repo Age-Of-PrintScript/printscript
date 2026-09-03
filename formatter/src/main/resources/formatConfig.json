@@ -3,6 +3,6 @@
         {"space before colon": false},
         {"space after colon": false},
         {"spaces around assign": true},
-        {"lines before declaration": 0}
+        {"lines before call": 0}
     ]
 }
