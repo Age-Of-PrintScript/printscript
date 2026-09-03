@@ -2,11 +2,11 @@ package formatter
 
 import ast.AST
 
-interface ASTFormatter {
+internal interface ASTFormatter {
     fun format(ast: AST): String
 }
 
-class FormatterImplementation(
+internal class FormatterImplementation(
     val rules: FormattingRules,
 ) : ASTFormatter {
     override fun format(ast: AST): String {

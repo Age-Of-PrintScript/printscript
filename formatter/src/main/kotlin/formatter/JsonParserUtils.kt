@@ -11,7 +11,7 @@ import kotlinx.serialization.json.jsonObject
 import java.io.File
 import java.io.FileNotFoundException
 
-fun parseConfig(path: String): Either<Error, JsonObject> {
+internal fun parseConfig(path: String): Either<Error, JsonObject> {
     val configText =
         try {
             File(path).readText()

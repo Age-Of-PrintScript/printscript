@@ -1,14 +1,14 @@
 package formatter
 
-data class FormattingRules(
+internal data class FormattingRules(
     val rulesList: List<FormatRule>,
 )
 
-interface FormatRule {
+internal interface FormatRule {
     fun apply(line: String): String
 }
 
-class LineBeforeCallRule(
+internal class LineBeforeCallRule(
     val lines: Int,
 ) : FormatRule {
     override fun apply(line: String): String {
@@ -17,25 +17,25 @@ class LineBeforeCallRule(
     }
 }
 
-class SpaceBeforeColonRule(
+internal class SpaceBeforeColonRule(
     val ruleApplies: Boolean,
 ) : FormatRule {
     override fun apply(line: String): String = if (ruleApplies) line.replaceFirst(":", " :") else line
 }
 
-class SpaceAfterColonRule(
+internal class SpaceAfterColonRule(
     val ruleApplies: Boolean,
 ) : FormatRule {
     override fun apply(line: String): String = if (ruleApplies) line.replaceFirst(":", ": ") else line
 }
 
-class SpacesAroundAssignRule(
+internal class SpacesAroundAssignRule(
     val ruleApplies: Boolean,
 ) : FormatRule {
     override fun apply(line: String): String = if (ruleApplies) line.replaceFirst("=", " = ") else line
 }
 
-class SemiColonAtTheEndRule(
+internal class SemiColonAtTheEndRule(
     val ruleApplies: Boolean,
 ) : FormatRule {
     override fun apply(line: String): String = if (ruleApplies) "$line;" else line

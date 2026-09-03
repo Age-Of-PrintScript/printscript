@@ -2,7 +2,7 @@ package formatter
 
 import domain.Error
 
-enum class FormattingError(
+internal enum class FormattingError(
     val reason: String,
 ) : Error {
     INVALID_JSON("Formatting rules are invalid"),

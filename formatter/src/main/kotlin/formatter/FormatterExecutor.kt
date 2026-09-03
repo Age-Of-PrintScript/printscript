@@ -19,7 +19,7 @@ interface Formatter {
     }
 }
 
-class FormatterExecutor : Formatter {
+internal class FormatterExecutor : Formatter {
     private val lexer: Lexer = LexerImpl()
     private val parser: Parser = ParserImpl()
 
@@ -30,11 +30,12 @@ class FormatterExecutor : Formatter {
     ): FormatResult {
         val source = fileReader.readText(sourcePath)
 
-        val tokens = lexer.tokenize(source).getOrReturn { return FormatResult.Failure(it) }
-        val program = parser.parse(tokens).getOrReturn { return FormatResult.Failure(it) }
-        val config = parseConfig(path).getOrReturn { return FormatResult.Failure(it) }
-
-        val formatters = FormatterFactory(config).constructFormatters().getOrReturn { return FormatResult.Failure(it) }
+        val tokens = lexer.tokenize(source).getOrReturn { return FormatResult.Failure(it.mensaje) }
+        val program = parser.parse(tokens).getOrReturn { return FormatResult.Failure(it.message) }
+        // TODO cambiar el toString() a getMessage cuando se mergee pr nr: #66
+        val config = parseConfig(path).getOrReturn { return FormatResult.Failure(it.toString()) }
+        // TODO cambiar el toString() a getMessage cuando se mergee pr nr: #66
+        val formatters = FormatterFactory(config).constructFormatters().getOrReturn { return FormatResult.Failure(it.toString()) }
 
         var finalString = ""
         for (tree in program.trees) {
@@ -43,7 +44,8 @@ class FormatterExecutor : Formatter {
                     is AST.Declaration -> formatters["declaration"]
                     is AST.Assignment -> formatters["assignment"]
                     is AST.Call -> formatters["call"]
-                } ?: return FormatResult.Failure(FormattingError.UNKNOWN_AST_TYPE)
+                    // TODO cambiar el toString() a getMessage cuando se mergee pr nr: #66
+                } ?: return FormatResult.Failure(FormattingError.UNKNOWN_AST_TYPE.toString())
             finalString += formatter.format(tree) + "\n"
         }
 

@@ -10,7 +10,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
-class FormatterFactory( // implementación fea, pero que por ahora anda. Lo dejo asi para esta integración
+internal class FormatterFactory( // implementación fea, pero que por ahora anda. Lo dejo asi para esta integración
     private val json: JsonObject,
 ) {
     private fun extractRulesByKey(): Either<Error, Map<String, JsonElement>> {
