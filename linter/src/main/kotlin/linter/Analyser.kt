@@ -3,7 +3,7 @@ package linter
 import ast.AST
 import ast.Program
 
-class Analyser {
+internal class Analyser {
     fun analyse(
         program: Program,
         rulesConfig: RulesConfig,

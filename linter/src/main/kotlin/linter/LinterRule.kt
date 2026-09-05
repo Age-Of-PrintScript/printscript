@@ -3,11 +3,11 @@ package linter
 import ast.AST
 import kotlinx.serialization.json.JsonObject
 
-interface LinterRule {
+internal interface LinterRule {
     fun apply(ast: AST): Warning?
 }
 
-interface LinterRuleFactory {
+internal interface LinterRuleFactory {
     val ruleName: String
 
     fun fromConfig(params: JsonObject): LinterRule

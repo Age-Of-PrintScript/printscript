@@ -13,4 +13,4 @@ plugins {
 
 
 rootProject.name = "printscript"
-include("domain", "lexer", "parser", "interpreter", "tokens", "ast", "engine", "linter", "cli")
+include("domain", "lexer", "parser", "interpreter", "tokens", "ast", "engine", "linter", "formatter", "cli")

@@ -1,0 +1,8 @@
+{
+    "rules": [
+        {"space before colon": false},
+        {"space after colon": false},
+        {"spaces around assign": true},
+        {"lines before call": 0}
+    ]
+}

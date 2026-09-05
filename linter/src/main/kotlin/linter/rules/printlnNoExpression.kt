@@ -10,7 +10,7 @@ import linter.LinterRule
 import linter.LinterRuleFactory
 import linter.Warning
 
-class PrintlnArgumentRule : LinterRule {
+internal class PrintlnArgumentRule : LinterRule {
     override fun apply(ast: AST): Warning? {
         if (notAPrintCall(ast)) return null
         val astCall = ast as Call
@@ -30,7 +30,7 @@ class PrintlnArgumentRule : LinterRule {
     private fun notAPrintCall(ast: AST) = ast !is Call || ast.functionName != PrintScriptFunctions.PRINTLN
 }
 
-object PrintlnArgumentRuleFactory : LinterRuleFactory {
+internal object PrintlnArgumentRuleFactory : LinterRuleFactory {
     override val ruleName = "println-no-expression"
 
     override fun fromConfig(params: JsonObject): LinterRule = PrintlnArgumentRule()

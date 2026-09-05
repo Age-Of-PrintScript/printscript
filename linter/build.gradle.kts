@@ -1,8 +1,9 @@
 plugins {
     id("printscript.common-conventions")
+    kotlin("plugin.serialization")
 }
 
-dependencies{
+dependencies {
     implementation(project(":lexer"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation(project(":parser"))

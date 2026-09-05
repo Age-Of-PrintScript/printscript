@@ -9,4 +9,7 @@ enum class RuntimeError(
     VARIABLE_DOESNT_EXIST("Variable doesn't exist"),
     MATH_ERROR("cannot resolve operation"),
     VARIABLE_HAS_DIFFERENT_TYPE("That variable exists with a different type"),
+    ;
+
+    override fun getMessage(): String = reason
 }

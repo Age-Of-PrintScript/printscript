@@ -9,7 +9,7 @@ import linter.LinterRule
 import linter.LinterRuleFactory
 import linter.Warning
 
-class IdentifierFormatRule(
+internal class IdentifierFormatRule(
     val convention: IdentifierConvention,
 ) : LinterRule {
     override fun apply(ast: AST): Warning? {
@@ -33,7 +33,7 @@ class IdentifierFormatRule(
         }
 }
 
-object IdentifierFormatRuleFactory : LinterRuleFactory {
+internal object IdentifierFormatRuleFactory : LinterRuleFactory {
     override val ruleName = "identifier-format"
 
     override fun fromConfig(params: JsonObject): LinterRule {

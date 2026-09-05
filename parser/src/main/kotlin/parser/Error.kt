@@ -3,7 +3,7 @@ package parser
 import domain.Error
 
 enum class SyntaxError(
-    val message: String,
+    private val message: String,
 ) : Error {
     MISSING_COLON_IN_DECLARATION("Missing colon in declaration"),
     MISSING_ASSIGNMENT_OPERATOR("Expected assignment"),
@@ -18,4 +18,7 @@ enum class SyntaxError(
     WRONG_TOKEN_TYPE("Number or variable was expected"),
     MISSING_CLOSING_PARENTHESIS("Missing closing parenthesis of expression"),
     MISSING_FUNCTION_ARGUMENT("Missing function argument in call"),
+    ;
+
+    override fun getMessage(): String = message
 }
