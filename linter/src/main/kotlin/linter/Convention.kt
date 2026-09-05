@@ -1,15 +1,13 @@
 package linter
 
-enum class IdentifierConvention {
-    SNAKE_CASE,
-    CAMEL_CASE,
+internal enum class IdentifierConvention(
+    private val regex: Regex,
+) {
+    SNAKE_CASE(Regex("^[a-z][a-z0-9]*(_[a-z0-9]+)*$")),
+    CAMEL_CASE(Regex("^[a-z][a-zA-Z0-9]*$")),
     ;
 
-    fun matches(identifier: String): Boolean =
-        when (this) {
-            CAMEL_CASE -> Regex("^[a-z][a-zA-Z0-9]*$").matches(identifier)
-            SNAKE_CASE -> Regex("^[a-z][a-z0-9]*(_[a-z0-9]+)*$").matches(identifier)
-        }
+    fun matches(identifier: String): Boolean = regex.matches(identifier)
 
     companion object {
         fun from(value: String): IdentifierConvention? =

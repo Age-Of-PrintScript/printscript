@@ -3,9 +3,7 @@ package formatter
 import ast.AST
 import domain.getOrReturn
 import lexer.Lexer
-import lexer.LexerImpl
 import parser.Parser
-import parser.ParserImpl
 
 interface Formatter {
     fun format(
@@ -20,8 +18,8 @@ interface Formatter {
 }
 
 internal class FormatterExecutor : Formatter {
-    private val lexer: Lexer = LexerImpl()
-    private val parser: Parser = ParserImpl()
+    private val lexer = Lexer.new()
+    private val parser = Parser.new()
 
     override fun format(
         sourcePath: String,
@@ -30,12 +28,10 @@ internal class FormatterExecutor : Formatter {
     ): FormatResult {
         val source = fileReader.readText(sourcePath)
 
-        val tokens = lexer.tokenize(source).getOrReturn { return FormatResult.Failure(it.mensaje) }
-        val program = parser.parse(tokens).getOrReturn { return FormatResult.Failure(it.message) }
-        // TODO cambiar el toString() a getMessage cuando se mergee pr nr: #66
-        val config = parseConfig(path).getOrReturn { return FormatResult.Failure(it.toString()) }
-        // TODO cambiar el toString() a getMessage cuando se mergee pr nr: #66
-        val formatters = FormatterFactory(config).constructFormatters().getOrReturn { return FormatResult.Failure(it.toString()) }
+        val tokens = lexer.tokenize(source).getOrReturn { return FormatResult.Failure(it.getMessage()) }
+        val program = parser.parse(tokens).getOrReturn { return FormatResult.Failure(it.getMessage()) }
+        val config = parseConfig(path).getOrReturn { return FormatResult.Failure(it.getMessage()) }
+        val formatters = FormatterFactory(config).constructFormatters().getOrReturn { return FormatResult.Failure(it.getMessage()) }
 
         var finalString = ""
         for (tree in program.trees) {
@@ -44,8 +40,7 @@ internal class FormatterExecutor : Formatter {
                     is AST.Declaration -> formatters["declaration"]
                     is AST.Assignment -> formatters["assignment"]
                     is AST.Call -> formatters["call"]
-                    // TODO cambiar el toString() a getMessage cuando se mergee pr nr: #66
-                } ?: return FormatResult.Failure(FormattingError.UNKNOWN_AST_TYPE.toString())
+                } ?: return FormatResult.Failure(FormattingError.UNKNOWN_AST_TYPE.getMessage())
             finalString += formatter.format(tree) + "\n"
         }
 

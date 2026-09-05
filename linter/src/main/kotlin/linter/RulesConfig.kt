@@ -1,5 +1,5 @@
 package linter
 
-data class RulesConfig(
+internal data class RulesConfig(
     val rules: List<LinterRule>,
 )
