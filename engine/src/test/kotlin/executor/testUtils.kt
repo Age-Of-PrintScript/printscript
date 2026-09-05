@@ -33,3 +33,23 @@ internal fun assertFailedExecution(
     assertEquals(ExitCode.FAILURE, result.exitCode, "Execution was expected to fail")
     assertEquals("Build Failed", logger.logs.lastOrNull())
 }
+
+internal fun assertCorrectValidation(
+    engine: Engine,
+    input: String,
+) {
+    val logger = TestLogger()
+    val result = engine.validate(input, logger)
+    assertEquals(ExitCode.SUCCESS, result, "Validation was expected to succeed")
+    assertEquals(listOf("Validation Successful"), logger.logs)
+}
+
+internal fun assertFailedValidation(
+    engine: Engine,
+    input: String,
+) {
+    val logger = TestLogger()
+    val result = engine.validate(input, logger)
+    assertEquals(ExitCode.FAILURE, result, "Validation was expected to fail")
+    assertEquals("Build Failed", logger.logs.lastOrNull())
+}

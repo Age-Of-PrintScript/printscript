@@ -1,13 +1,12 @@
 package executor
 
 import executor.cases.FailedPrograms
-import executor.cases.SuccessfulAssignments
-import executor.cases.SuccessfulCalls
-import executor.cases.SuccessfulDeclarations
-import executor.cases.SuccessfulEdgeCases
-import executor.cases.SuccessfulExpressions
+import executor.cases.SuccessfulPrograms
+import executor.cases.ValidationCases
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DynamicNode
 import org.junit.jupiter.api.DynamicTest.dynamicTest
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 
 data class SuccessCase(
@@ -25,50 +24,46 @@ class EndToEndTest {
     private val engine = Engine()
 
     @TestFactory
-    fun `successful declarations`(): List<DynamicNode> =
-        SuccessfulDeclarations.cases().map { case ->
+    fun `successful program executions`(): List<DynamicNode> =
+        SuccessfulPrograms.cases().map { case ->
             dynamicTest(case.name) {
                 assertCorrectExecution(engine, case.input, case.expectedOutputs)
             }
         }
 
     @TestFactory
-    fun `successful assignments`(): List<DynamicNode> =
-        SuccessfulAssignments.cases().map { case ->
-            dynamicTest(case.name) {
-                assertCorrectExecution(engine, case.input, case.expectedOutputs)
-            }
-        }
-
-    @TestFactory
-    fun `successful calls`(): List<DynamicNode> =
-        SuccessfulCalls.cases().map { case ->
-            dynamicTest(case.name) {
-                assertCorrectExecution(engine, case.input, case.expectedOutputs)
-            }
-        }
-
-    @TestFactory
-    fun `successful expressions`(): List<DynamicNode> =
-        SuccessfulExpressions.cases().map { case ->
-            dynamicTest(case.name) {
-                assertCorrectExecution(engine, case.input, case.expectedOutputs)
-            }
-        }
-
-    @TestFactory
-    fun `successful edge cases`(): List<DynamicNode> =
-        SuccessfulEdgeCases.cases().map { case ->
-            dynamicTest(case.name) {
-                assertCorrectExecution(engine, case.input, case.expectedOutputs)
-            }
-        }
-
-    @TestFactory
-    fun `failed programs`(): List<DynamicNode> =
+    fun `failed program executions`(): List<DynamicNode> =
         FailedPrograms.cases().map { case ->
             dynamicTest(case.name) {
                 assertFailedExecution(engine, case.input)
             }
         }
+
+    @TestFactory
+    fun `successful validations`(): List<DynamicNode> =
+        ValidationCases.successfulCases().map { case ->
+            dynamicTest(case.name) {
+                assertCorrectValidation(engine, case.input)
+            }
+        }
+
+    @TestFactory
+    fun `failed validations`(): List<DynamicNode> =
+        ValidationCases.failedCases().map { case ->
+            dynamicTest(case.name) {
+                assertFailedValidation(engine, case.input)
+            }
+        }
+
+    @Test
+    fun `sequential executions preserve execution context`() {
+        val logger1 = TestLogger()
+        val result1 = engine.execute("let x: number = 42;", logger1)
+        assertEquals(ExitCode.SUCCESS, result1.exitCode)
+
+        val logger2 = TestLogger()
+        val result2 = engine.execute("println(x);", logger2, result1.context)
+        assertEquals(ExitCode.SUCCESS, result2.exitCode)
+        assertEquals(listOf("42.0"), logger2.getPrints())
+    }
 }
