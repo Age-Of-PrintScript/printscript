@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation(project(":engine"))
+    implementation(project(":linter"))
     implementation(libs.clikt)
 }
 

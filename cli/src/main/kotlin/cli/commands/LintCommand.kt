@@ -1,23 +1,25 @@
 package cli.commands
 
-import cli.adapters.ConsoleLogger
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.help
 import com.github.ajalt.clikt.parameters.types.file
-import executor.Engine
-import executor.Logger
+import linter.Linter
 
-class RunCommand(
-    private val engine: Engine = Engine(),
-    private val logger: Logger = ConsoleLogger(),
-) : CliktCommand(name = "run", help = "Ejecuta un script PrintScript a partir de un archivo") {
+class LintCommand(
+    private val linter: Linter = Linter.createDefault(),
+) : CliktCommand(name = "lint", help = "Analiza un script PrintScript siguiendo las convenciones de codigo") {
     private val file by argument()
         .file(mustExist = true, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = true)
-        .help("Ruta al archivo .ps a ejecutar")
+        .help("Ruta al archivo .ps a analizar")
 
     override fun run() {
         val source = file.readText()
-        engine.execute(source, logger)
+        val warnings = linter.analyse(source)
+        if (warnings.isNotEmpty()) {
+            println(warnings.joinToString("\n"))
+        } else {
+            println("No warnings found")
+        }
     }
 }

@@ -1,5 +1,6 @@
 package cli
 
+import cli.commands.LintCommand
 import cli.commands.RunCommand
 import cli.commands.ValidateCommand
 import com.github.ajalt.clikt.core.CliktCommand
@@ -15,6 +16,6 @@ class PrintScriptCli :
 
 fun main(args: Array<String>) {
     PrintScriptCli()
-        .subcommands(RunCommand(), ValidateCommand())
+        .subcommands(RunCommand(), ValidateCommand(), LintCommand())
         .main(args)
 }
