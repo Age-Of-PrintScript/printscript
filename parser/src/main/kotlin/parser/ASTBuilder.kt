@@ -1,8 +1,8 @@
 package parser
 
-import ast.AST
 import ast.ASTDataType
 import ast.ASTIdentifier
+import ast.ASTViejo
 import ast.Expression
 import domain.Either
 import domain.Failure
@@ -27,22 +27,22 @@ data class ASTBuilder(
             BuilderType.NONE -> this
         }
 
-    fun build(): Either<SyntaxError, AST> =
+    fun build(): Either<SyntaxError, ASTViejo> =
         when (type) {
             BuilderType.NONE -> Failure(SyntaxError.INVALID_TOKEN)
             BuilderType.DECLARATION -> {
                 val safeId = id ?: return Failure(SyntaxError.MISSING_IDENTIFIER)
                 val safeType = dataType ?: return Failure(SyntaxError.MISSING_TYPE_IN_DECLARATION)
-                Success(AST.Declaration(safeId, safeType, value))
+                Success(ASTViejo.Declaration(safeId, safeType, value))
             }
             BuilderType.ASSIGNMENT -> {
                 val safeId = id ?: return Failure(SyntaxError.MISSING_IDENTIFIER)
                 val safeValue = value ?: return Failure(SyntaxError.INCOMPLETE_STATEMENT)
-                Success(AST.Assignment(safeId, safeValue))
+                Success(ASTViejo.Assignment(safeId, safeValue))
             }
             BuilderType.CALL -> {
                 val safeName = functionName ?: return Failure(SyntaxError.MISSING_FUNCTION_NAME)
-                Success(AST.Call(safeName, expressions))
+                Success(ASTViejo.Call(safeName, expressions))
             }
         }
 }

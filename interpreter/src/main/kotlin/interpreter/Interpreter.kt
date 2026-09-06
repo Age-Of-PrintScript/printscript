@@ -1,6 +1,6 @@
 package interpreter
 
-import ast.AST
+import ast.ASTViejo
 import ast.Expression
 import ast.ExpressionSolver
 import ast.Program
@@ -45,7 +45,7 @@ internal class InterpreterImpl : Interpreter {
         var env = runtimeEnvironment
         for (ast in asts) {
             when (ast) {
-                is AST.Assignment -> {
+                is ASTViejo.Assignment -> {
                     when (val newValue = solveExpression(ast.value, env)) {
                         is Failure -> return Failure(newValue.value)
                         is Success -> {
@@ -58,7 +58,7 @@ internal class InterpreterImpl : Interpreter {
                         }
                     }
                 }
-                is AST.Call -> {
+                is ASTViejo.Call -> {
                     when (ast.functionName) {
                         PrintScriptFunctions.PRINTLN -> {
                             val solvedResult = solveExpression(ast.args.first(), env)
@@ -72,7 +72,7 @@ internal class InterpreterImpl : Interpreter {
                         }
                     }
                 }
-                is AST.Declaration -> {
+                is ASTViejo.Declaration -> {
                     if (ast.value != null) {
                         when (val solvedResult = solveExpression(ast.value!!, env)) {
                             is Failure -> return Failure(solvedResult.value)

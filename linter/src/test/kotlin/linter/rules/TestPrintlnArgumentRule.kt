@@ -1,6 +1,6 @@
 package linter.rules
 
-import ast.AST
+import ast.ASTViejo
 import domain.PrintScriptOperator
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -123,13 +123,13 @@ class TestPrintlnArgumentRule {
 
     // --- Helpers ---
 
-    private fun testWarning(ast: AST) {
+    private fun testWarning(ast: ASTViejo) {
         val rule = PrintlnArgumentRule()
         val result = rule.apply(ast)
         assertTrue(result != null, "Expected warning for expression argument in println, but got none")
     }
 
-    private fun testNoWarning(ast: AST) {
+    private fun testNoWarning(ast: ASTViejo) {
         val rule = PrintlnArgumentRule()
         val result = rule.apply(ast)
         assertEquals(result, null, "Expected no warning, but got: $result")

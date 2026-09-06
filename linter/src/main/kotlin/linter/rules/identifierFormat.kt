@@ -1,6 +1,6 @@
 package linter.rules
 
-import ast.AST
+import ast.ASTViejo
 import domain.Position
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -12,8 +12,8 @@ import linter.Warning
 internal class IdentifierFormatRule(
     val convention: IdentifierConvention,
 ) : LinterRule {
-    override fun apply(ast: AST): Warning? {
-        val id = extractIdentifier(ast) ?: return null
+    override fun apply(astViejo: ASTViejo): Warning? {
+        val id = extractIdentifier(astViejo) ?: return null
 
         return if (convention.matches(id)) {
             null
@@ -25,11 +25,11 @@ internal class IdentifierFormatRule(
         }
     }
 
-    private fun extractIdentifier(ast: AST): String? =
-        when (ast) {
-            is AST.Assignment -> ast.id.name
-            is AST.Call -> null
-            is AST.Declaration -> ast.id.name
+    private fun extractIdentifier(astViejo: ASTViejo): String? =
+        when (astViejo) {
+            is ASTViejo.Assignment -> astViejo.id.name
+            is ASTViejo.Call -> null
+            is ASTViejo.Declaration -> astViejo.id.name
         }
 }
 

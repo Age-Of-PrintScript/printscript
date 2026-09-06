@@ -1,20 +1,20 @@
 package formatter
 
-import ast.AST
+import ast.ASTViejo
 import ast.Expression
 import domain.PrintScriptFunctions
 import domain.PrintScriptOperator
 import domain.PrintScriptType
 import domain.PrintScriptValue
 
-internal fun astToString(ast: AST): String =
-    when (ast) {
-        is AST.Assignment -> assignmentToString(ast)
-        is AST.Call -> callToString(ast)
-        is AST.Declaration -> declarationToString(ast)
+internal fun astToString(astViejo: ASTViejo): String =
+    when (astViejo) {
+        is ASTViejo.Assignment -> assignmentToString(astViejo)
+        is ASTViejo.Call -> callToString(astViejo)
+        is ASTViejo.Declaration -> declarationToString(astViejo)
     }
 
-internal fun declarationToString(declaration: AST.Declaration): String {
+internal fun declarationToString(declaration: ASTViejo.Declaration): String {
     var assignPart = ""
     if (declaration.value != null) {
         val string = expressionToString(declaration.value, 0)
@@ -23,9 +23,9 @@ internal fun declarationToString(declaration: AST.Declaration): String {
     return "let ${declaration.id.name}:${typeToString(declaration.type.name)}$assignPart"
 }
 
-internal fun assignmentToString(assignment: AST.Assignment): String = "${assignment.id.name}=${expressionToString(assignment.value, 0)}"
+internal fun assignmentToString(assignment: ASTViejo.Assignment): String = "${assignment.id.name}=${expressionToString(assignment.value, 0)}"
 
-internal fun callToString(call: AST.Call): String {
+internal fun callToString(call: ASTViejo.Call): String {
     val argsStr = call.args.joinToString(", ") { expressionToString(it, 0) }
     return "${functionNameToString(call.functionName)}($argsStr)"
 }

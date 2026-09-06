@@ -1,8 +1,8 @@
 package linter.rules
 
-import ast.AST
 import ast.ASTDataType
 import ast.ASTIdentifier
+import ast.ASTViejo
 import ast.Expression
 import domain.PrintScriptFunctions
 import domain.PrintScriptOperator
@@ -13,8 +13,8 @@ fun createDeclaration(
     name: String,
     type: PrintScriptType = PrintScriptType.STRING,
     value: Expression? = createLiteralExpression("test"),
-): AST.Declaration =
-    AST.Declaration(
+): ASTViejo.Declaration =
+    ASTViejo.Declaration(
         id = ASTIdentifier(name),
         type = ASTDataType(type),
         value = value,
@@ -23,14 +23,14 @@ fun createDeclaration(
 fun createAssignment(
     name: String,
     value: Expression = createLiteralExpression(1),
-): AST.Assignment =
-    AST.Assignment(
+): ASTViejo.Assignment =
+    ASTViejo.Assignment(
         id = ASTIdentifier(name),
         value = value,
     )
 
-fun createPrintln(vararg args: Expression): AST.Call =
-    AST.Call(
+fun createPrintln(vararg args: Expression): ASTViejo.Call =
+    ASTViejo.Call(
         functionName = PrintScriptFunctions.PRINTLN,
         args = args.toList(),
     )

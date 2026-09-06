@@ -1,7 +1,7 @@
 package linter.rules
 
-import ast.AST
-import ast.AST.Call
+import ast.ASTViejo
+import ast.ASTViejo.Call
 import ast.Expression
 import domain.Position
 import domain.PrintScriptFunctions
@@ -11,9 +11,9 @@ import linter.LinterRuleFactory
 import linter.Warning
 
 internal class PrintlnArgumentRule : LinterRule {
-    override fun apply(ast: AST): Warning? {
-        if (notAPrintCall(ast)) return null
-        val astCall = ast as Call
+    override fun apply(astViejo: ASTViejo): Warning? {
+        if (notAPrintCall(astViejo)) return null
+        val astCall = astViejo as Call
         val arg = astCall.args.firstOrNull() ?: return null
         return if (argIsNotExpression(arg)) {
             null
@@ -27,7 +27,7 @@ internal class PrintlnArgumentRule : LinterRule {
 
     private fun argIsNotExpression(arg: Expression) = arg is Expression.Variable || arg is Expression.Literal
 
-    private fun notAPrintCall(ast: AST) = ast !is Call || ast.functionName != PrintScriptFunctions.PRINTLN
+    private fun notAPrintCall(astViejo: ASTViejo) = astViejo !is Call || astViejo.functionName != PrintScriptFunctions.PRINTLN
 }
 
 internal object PrintlnArgumentRuleFactory : LinterRuleFactory {
