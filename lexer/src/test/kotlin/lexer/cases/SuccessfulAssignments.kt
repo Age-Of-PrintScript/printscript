@@ -1,10 +1,10 @@
 package lexer.cases
 
 import lexer.SuccessCase
-import tokens.ASSIGN
-import tokens.Identifier
-import tokens.Literal
-import tokens.SEMICOLON
+import tokens.ASSIGNViejo
+import tokens.IdentifierViejo
+import tokens.LiteralViejo
+import tokens.SEMICOLONViejo
 
 object SuccessfulAssignments {
     fun cases() =
@@ -13,30 +13,30 @@ object SuccessfulAssignments {
                 "number assignment",
                 "x = 5;",
                 listOf(
-                    Identifier("x"),
-                    ASSIGN,
-                    Literal("5"),
-                    SEMICOLON,
+                    IdentifierViejo("x"),
+                    ASSIGNViejo,
+                    LiteralViejo("5"),
+                    SEMICOLONViejo,
                 ),
             ),
             SuccessCase(
                 "string that looks like number",
                 "x = \"5\";",
                 listOf(
-                    Identifier("x"),
-                    ASSIGN,
-                    Literal("5"),
-                    SEMICOLON,
+                    IdentifierViejo("x"),
+                    ASSIGNViejo,
+                    LiteralViejo("5"),
+                    SEMICOLONViejo,
                 ),
             ),
             SuccessCase(
                 "string that contains symbols",
                 "x = \"hola mundo;\";",
                 listOf(
-                    Identifier("x"),
-                    ASSIGN,
-                    Literal("hola mundo;"),
-                    SEMICOLON,
+                    IdentifierViejo("x"),
+                    ASSIGNViejo,
+                    LiteralViejo("hola mundo;"),
+                    SEMICOLONViejo,
                 ),
             ),
             // ahora el lexer no lo va a pasar a 123, eso lo va a hacer el parser
@@ -44,40 +44,40 @@ object SuccessfulAssignments {
                 "number with 0s in the left",
                 "x = 000123;",
                 listOf(
-                    Identifier("x"),
-                    ASSIGN,
-                    Literal("000123"),
-                    SEMICOLON,
+                    IdentifierViejo("x"),
+                    ASSIGNViejo,
+                    LiteralViejo("000123"),
+                    SEMICOLONViejo,
                 ),
             ),
             SuccessCase(
                 "number = 0",
                 "x = 0;",
                 listOf(
-                    Identifier("x"),
-                    ASSIGN,
-                    Literal("0"),
-                    SEMICOLON,
+                    IdentifierViejo("x"),
+                    ASSIGNViejo,
+                    LiteralViejo("0"),
+                    SEMICOLONViejo,
                 ),
             ),
             SuccessCase(
                 "numbers in identifier",
                 "m1Variable1234 = 0;",
                 listOf(
-                    Identifier("m1Variable1234"),
-                    ASSIGN,
-                    Literal("0"),
-                    SEMICOLON,
+                    IdentifierViejo("m1Variable1234"),
+                    ASSIGNViejo,
+                    LiteralViejo("0"),
+                    SEMICOLONViejo,
                 ),
             ),
             SuccessCase(
                 "number with decimal points",
                 "x = 5.5;",
                 listOf(
-                    Identifier("x"),
-                    ASSIGN,
-                    Literal("5.5"),
-                    SEMICOLON,
+                    IdentifierViejo("x"),
+                    ASSIGNViejo,
+                    LiteralViejo("5.5"),
+                    SEMICOLONViejo,
                 ),
             ),
         )

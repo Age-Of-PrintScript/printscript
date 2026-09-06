@@ -12,22 +12,22 @@ import parser.states.ConsumeResult
 import parser.states.State
 import parser.states.StatementComplete
 import parser.states.assignment_branch.ExpressionPending
-import tokens.ASSIGN
-import tokens.SEMICOLON
-import tokens.Token
+import tokens.ASSIGNViejo
+import tokens.SEMICOLONViejo
+import tokens.TokenViejo
 
 internal data class DeclarationTypeSeen(
     val id: ASTIdentifier,
     val type: ASTDataType,
 ) : State {
     override fun consume(
-        token: Token,
+        tokenViejo: TokenViejo,
         builder: ASTBuilder,
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
-        when (token.type) {
-            ASSIGN -> Success(ExpressionPending(id) to builder)
-            SEMICOLON -> Success(StatementComplete to builder)
+        when (tokenViejo.type) {
+            ASSIGNViejo -> Success(ExpressionPending(id) to builder)
+            SEMICOLONViejo -> Success(StatementComplete to builder)
             else -> Failure(SyntaxError.INVALID_TOKEN_AFTER_TYPE)
         }
 }

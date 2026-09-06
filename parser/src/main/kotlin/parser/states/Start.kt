@@ -11,24 +11,24 @@ import parser.SyntaxError
 import parser.states.assignment_branch.AssignmentIdSeen
 import parser.states.call_branch.CallSeen
 import parser.states.declaration_branch.DeclarationBranch
-import tokens.Call
-import tokens.Identifier
-import tokens.LET
-import tokens.Token
+import tokens.CallViejo
+import tokens.IdentifierViejo
+import tokens.LETViejo
+import tokens.TokenViejo
 
 internal object Start : State {
     override fun consume(
-        token: Token,
+        tokenViejo: TokenViejo,
         builder: ASTBuilder,
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
-        when (val t = token.type) {
-            is Call -> Success(CallSeen(t.type) to ASTBuilder(type = BuilderType.CALL, functionName = t.type))
-            is Identifier ->
+        when (val t = tokenViejo.type) {
+            is CallViejo -> Success(CallSeen(t.type) to ASTBuilder(type = BuilderType.CALL, functionName = t.type))
+            is IdentifierViejo ->
                 Success(
                     AssignmentIdSeen(ASTIdentifier(t.name)) to ASTBuilder(type = BuilderType.ASSIGNMENT, id = ASTIdentifier(t.name)),
                 )
-            LET -> Success(DeclarationBranch to ASTBuilder(type = BuilderType.DECLARATION))
+            LETViejo -> Success(DeclarationBranch to ASTBuilder(type = BuilderType.DECLARATION))
             else -> Failure(SyntaxError.INVALID_TOKEN)
         }
 }

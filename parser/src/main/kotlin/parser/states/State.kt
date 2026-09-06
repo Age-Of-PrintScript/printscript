@@ -4,11 +4,11 @@ import domain.Either
 import parser.ASTBuilder
 import parser.ExpressionParser
 import parser.SyntaxError
-import tokens.Token
+import tokens.TokenViejo
 
 internal interface State {
     fun consume(
-        token: Token,
+        tokenViejo: TokenViejo,
         builder: ASTBuilder,
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult>

@@ -12,7 +12,7 @@ import testframework.createPrintln
 import testframework.createStringLiteralExpression
 import testframework.createVariableExpression
 
-class CallTests {
+class CallViejoTests {
     // ---- Grupo A: combinaciones de reglas activas/inactivas ----
 
     @Test

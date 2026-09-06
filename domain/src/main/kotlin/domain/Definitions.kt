@@ -4,10 +4,18 @@ interface PSType {
     val name: String
 }
 
-interface PSLiteral {
-    val raw: String
-    val type: PSType
+object StrType : PSType {
+    override val name = "string"
 }
+
+object NumType : PSType {
+    override val name = "number"
+}
+
+data class PSLiteral(
+    val raw: String,
+    val type: PSType,
+)
 
 interface PSOperator {
     val symbol: String

@@ -9,19 +9,19 @@ import parser.ExpressionParser
 import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
-import tokens.OPEN_PARENTHESIS
-import tokens.Token
+import tokens.OPEN_PARENTHESISViejo
+import tokens.TokenViejo
 
 internal data class CallSeen(
     val function: PrintScriptFunctions,
 ) : State {
     override fun consume(
-        token: Token,
+        tokenViejo: TokenViejo,
         builder: ASTBuilder,
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
-        when (token.type) {
-            OPEN_PARENTHESIS -> Success(CallArgsPending(function) to builder)
+        when (tokenViejo.type) {
+            OPEN_PARENTHESISViejo -> Success(CallArgsPending(function) to builder)
             else -> Failure(SyntaxError.INVALID_TOKEN)
         }
 }

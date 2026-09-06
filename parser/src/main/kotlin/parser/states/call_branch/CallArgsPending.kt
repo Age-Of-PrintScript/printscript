@@ -9,26 +9,26 @@ import parser.ExpressionParser
 import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
-import tokens.CLOSED_PARENTHESIS
-import tokens.Identifier
-import tokens.Literal
-import tokens.Operator
-import tokens.Token
+import tokens.CLOSED_PARENTHESISViejo
+import tokens.IdentifierViejo
+import tokens.LiteralViejo
+import tokens.OperatorViejo
+import tokens.TokenViejo
 
 internal data class CallArgsPending(
     val function: PrintScriptFunctions,
-    val tokens: List<Token> = emptyList(),
+    val tokenViejos: List<TokenViejo> = emptyList(),
 ) : State {
     override fun consume(
-        token: Token,
+        tokenViejo: TokenViejo,
         builder: ASTBuilder,
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
-        when (token.type) {
-            is Literal, is Identifier, is Operator ->
-                Success(copy(tokens = tokens + token) to builder)
-            is CLOSED_PARENTHESIS -> {
-                when (val res = expressionParser.parseExpression(tokens)) {
+        when (tokenViejo.type) {
+            is LiteralViejo, is IdentifierViejo, is OperatorViejo ->
+                Success(copy(tokenViejos = tokenViejos + tokenViejo) to builder)
+            is CLOSED_PARENTHESISViejo -> {
+                when (val res = expressionParser.parseExpression(tokenViejos)) {
                     is Failure -> Failure(res.value)
                     is Success -> {
                         val newBuilder = builder.addExpression(res.value)

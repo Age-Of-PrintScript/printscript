@@ -9,19 +9,19 @@ import parser.ExpressionParser
 import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
-import tokens.ASSIGN
-import tokens.Token
+import tokens.ASSIGNViejo
+import tokens.TokenViejo
 
 internal data class AssignmentIdSeen(
     val id: ASTIdentifier,
 ) : State {
     override fun consume(
-        token: Token,
+        tokenViejo: TokenViejo,
         builder: ASTBuilder,
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
-        when (token.type) {
-            ASSIGN -> Success(ExpressionPending(id) to builder)
+        when (tokenViejo.type) {
+            ASSIGNViejo -> Success(ExpressionPending(id) to builder)
             else -> Failure(SyntaxError.MISSING_ASSIGNMENT_OPERATOR)
         }
 }
