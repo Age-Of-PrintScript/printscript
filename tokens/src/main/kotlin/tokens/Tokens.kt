@@ -26,15 +26,15 @@ object CloseParen : TokenType
 
 object OpenBraces : TokenType
 
-object ClosedBraces : TokenType
+object CloseBraces : TokenType
 
 object Whitespace : TokenType
 
-object IF : TokenType
+object If : TokenType
 
-object ELSE : TokenType
+object Else : TokenType
 
-object CONST : TokenType
+object Const : TokenType
 
 data class Operator(
     val operator: PSOperator,
