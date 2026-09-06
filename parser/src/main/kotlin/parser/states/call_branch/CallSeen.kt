@@ -9,7 +9,7 @@ import parser.ExpressionParser
 import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
-import tokens.OPEN_PARENTHESIS
+import tokens.OPEN_PARENTHESISViejo
 import tokens.TokenViejo
 
 internal data class CallSeen(
@@ -21,7 +21,7 @@ internal data class CallSeen(
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
         when (tokenViejo.type) {
-            OPEN_PARENTHESIS -> Success(CallArgsPending(function) to builder)
+            OPEN_PARENTHESISViejo -> Success(CallArgsPending(function) to builder)
             else -> Failure(SyntaxError.INVALID_TOKEN)
         }
 }

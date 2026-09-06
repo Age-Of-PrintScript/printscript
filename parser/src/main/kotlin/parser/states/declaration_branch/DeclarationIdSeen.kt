@@ -9,7 +9,7 @@ import parser.ExpressionParser
 import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
-import tokens.COLON
+import tokens.COLONViejo
 import tokens.TokenViejo
 
 internal data class DeclarationIdSeen(
@@ -21,7 +21,7 @@ internal data class DeclarationIdSeen(
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
         when (tokenViejo.type) {
-            COLON -> Success(DeclarationColonSeen(id) to builder)
+            COLONViejo -> Success(DeclarationColonSeen(id) to builder)
             else -> Failure(SyntaxError.MISSING_COLON_IN_DECLARATION)
         }
 }

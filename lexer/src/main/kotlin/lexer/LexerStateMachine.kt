@@ -8,7 +8,7 @@ import lexer.states.InitialState
 import lexer.states.State
 import tokens.TokenList
 import tokens.TokenViejo
-import tokens.WHITESPACE
+import tokens.WHITESPACEViejo
 
 internal class LexerStateMachine {
     fun tokenize(source: String): Either<LexerError, TokenList> {
@@ -35,7 +35,7 @@ internal class LexerStateMachine {
                 state = InitialState()
             }
         }
-        return Success(tokenViejoList.filter { it.type != WHITESPACE })
+        return Success(tokenViejoList.filter { it.type != WHITESPACEViejo })
     }
 
     private fun cannotConsumeNextChar(

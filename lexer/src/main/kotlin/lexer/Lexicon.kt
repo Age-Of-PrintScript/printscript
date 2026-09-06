@@ -8,15 +8,15 @@ import domain.PrintScriptType
 import domain.keywordRegistry
 import lexer.states.FinalState
 import lexer.states.State
-import tokens.ASSIGN
-import tokens.CLOSED_PARENTHESIS
-import tokens.COLON
-import tokens.Call
+import tokens.ASSIGNViejo
+import tokens.CLOSED_PARENTHESISViejo
+import tokens.COLONViejo
+import tokens.CallViejo
 import tokens.DataTypeViejo
-import tokens.LET
-import tokens.OPEN_PARENTHESIS
-import tokens.Operator
-import tokens.SEMICOLON
+import tokens.LETViejo
+import tokens.OPEN_PARENTHESISViejo
+import tokens.OperatorViejo
+import tokens.SEMICOLONViejo
 import tokens.TokenTypeViejo
 
 internal fun createSymbolKeywordMap(): Map<String, TokenTypeViejo> {
@@ -24,9 +24,9 @@ internal fun createSymbolKeywordMap(): Map<String, TokenTypeViejo> {
     for (keyword in keywordRegistry) {
         when (keyword) {
             PrintScriptFunctions.PRINTLN ->
-                keywordMap["println"] = Call(PrintScriptFunctions.PRINTLN)
+                keywordMap["println"] = CallViejo(PrintScriptFunctions.PRINTLN)
 
-            PrintScriptReservedWords.LET -> keywordMap["let"] = LET
+            PrintScriptReservedWords.LET -> keywordMap["let"] = LETViejo
 
             PrintScriptType.NUMBER ->
                 keywordMap["number"] = DataTypeViejo(PrintScriptType.NUMBER)
@@ -42,15 +42,15 @@ internal fun createSymbolTokenMap(): Map<Char, TokenTypeViejo> {
     val tokenMap = mutableMapOf<Char, TokenTypeViejo>()
     for (symbol in PrintScriptSymbols.entries) {
         when (symbol) {
-            PrintScriptSymbols.SUM -> tokenMap[symbol.symbol] = Operator(PrintScriptOperator.SUM)
-            PrintScriptSymbols.SUBTRACT -> tokenMap[symbol.symbol] = Operator(PrintScriptOperator.SUBTRACT)
-            PrintScriptSymbols.MULTIPLY -> tokenMap[symbol.symbol] = Operator(PrintScriptOperator.MULTIPLY)
-            PrintScriptSymbols.DIVIDE -> tokenMap[symbol.symbol] = Operator(PrintScriptOperator.DIVIDE)
-            PrintScriptSymbols.COLON -> tokenMap[symbol.symbol] = COLON
-            PrintScriptSymbols.SEMICOLON -> tokenMap[symbol.symbol] = SEMICOLON
-            PrintScriptSymbols.ASSIGN -> tokenMap[symbol.symbol] = ASSIGN
-            PrintScriptSymbols.OPEN_PARENTHESIS -> tokenMap[symbol.symbol] = OPEN_PARENTHESIS
-            PrintScriptSymbols.CLOSE_PARENTHESIS -> tokenMap[symbol.symbol] = CLOSED_PARENTHESIS
+            PrintScriptSymbols.SUM -> tokenMap[symbol.symbol] = OperatorViejo(PrintScriptOperator.SUM)
+            PrintScriptSymbols.SUBTRACT -> tokenMap[symbol.symbol] = OperatorViejo(PrintScriptOperator.SUBTRACT)
+            PrintScriptSymbols.MULTIPLY -> tokenMap[symbol.symbol] = OperatorViejo(PrintScriptOperator.MULTIPLY)
+            PrintScriptSymbols.DIVIDE -> tokenMap[symbol.symbol] = OperatorViejo(PrintScriptOperator.DIVIDE)
+            PrintScriptSymbols.COLON -> tokenMap[symbol.symbol] = COLONViejo
+            PrintScriptSymbols.SEMICOLON -> tokenMap[symbol.symbol] = SEMICOLONViejo
+            PrintScriptSymbols.ASSIGN -> tokenMap[symbol.symbol] = ASSIGNViejo
+            PrintScriptSymbols.OPEN_PARENTHESIS -> tokenMap[symbol.symbol] = OPEN_PARENTHESISViejo
+            PrintScriptSymbols.CLOSE_PARENTHESIS -> tokenMap[symbol.symbol] = CLOSED_PARENTHESISViejo
         }
     }
     return tokenMap.toMap()

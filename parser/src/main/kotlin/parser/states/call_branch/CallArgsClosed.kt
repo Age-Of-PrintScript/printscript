@@ -10,7 +10,7 @@ import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
 import parser.states.StatementComplete
-import tokens.SEMICOLON
+import tokens.SEMICOLONViejo
 import tokens.TokenViejo
 
 internal data class CallArgsClosed(
@@ -22,7 +22,7 @@ internal data class CallArgsClosed(
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
         when (tokenViejo.type) {
-            SEMICOLON -> Success(StatementComplete to builder)
+            SEMICOLONViejo -> Success(StatementComplete to builder)
             else -> Failure(SyntaxError.UNEXPECTED_TOKEN_AFTER_STATEMENT)
         }
 }

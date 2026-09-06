@@ -9,3 +9,21 @@ data class Token(
 )
 
 sealed interface TokenType
+
+object Let : TokenType
+
+object Colon : TokenType
+
+object Semicolon : TokenType
+
+object Assign : TokenType
+
+object OpenParen : TokenType
+
+object CloseParen : TokenType
+
+object OpenBraces : TokenType
+
+object ClosedBraces : TokenType
+
+object Whitespace : TokenType

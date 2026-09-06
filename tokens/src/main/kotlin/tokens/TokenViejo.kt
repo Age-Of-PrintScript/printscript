@@ -13,31 +13,31 @@ data class TokenViejo(
 
 sealed interface TokenTypeViejo
 
-object LET : TokenTypeViejo
+object LETViejo : TokenTypeViejo
 
-object COLON : TokenTypeViejo
+object COLONViejo : TokenTypeViejo
 
-object SEMICOLON : TokenTypeViejo
+object SEMICOLONViejo : TokenTypeViejo
 
-object ASSIGN : TokenTypeViejo
+object ASSIGNViejo : TokenTypeViejo
 
-object WHITESPACE : TokenTypeViejo
+object WHITESPACEViejo : TokenTypeViejo
 
-object OPEN_PARENTHESIS : TokenTypeViejo
+object OPEN_PARENTHESISViejo : TokenTypeViejo
 
-object CLOSED_PARENTHESIS : TokenTypeViejo
+object CLOSED_PARENTHESISViejo : TokenTypeViejo
 
-data class Operator(
+data class OperatorViejo(
     val operator: PrintScriptOperator,
 ) : TokenTypeViejo
 
 // Nombre de variable
-data class Identifier(
+data class IdentifierViejo(
     val name: String,
 ) : TokenTypeViejo
 
 // valor de literal
-data class Literal(
+data class LiteralViejo(
     val value: String,
 ) : TokenTypeViejo
 
@@ -47,7 +47,7 @@ data class DataTypeViejo(
 ) : TokenTypeViejo
 
 // llamado a una funcion
-data class Call(
+data class CallViejo(
     val type: PrintScriptFunctions,
 ) : TokenTypeViejo
 

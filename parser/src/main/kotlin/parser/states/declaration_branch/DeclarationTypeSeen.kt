@@ -12,8 +12,8 @@ import parser.states.ConsumeResult
 import parser.states.State
 import parser.states.StatementComplete
 import parser.states.assignment_branch.ExpressionPending
-import tokens.ASSIGN
-import tokens.SEMICOLON
+import tokens.ASSIGNViejo
+import tokens.SEMICOLONViejo
 import tokens.TokenViejo
 
 internal data class DeclarationTypeSeen(
@@ -26,8 +26,8 @@ internal data class DeclarationTypeSeen(
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
         when (tokenViejo.type) {
-            ASSIGN -> Success(ExpressionPending(id) to builder)
-            SEMICOLON -> Success(StatementComplete to builder)
+            ASSIGNViejo -> Success(ExpressionPending(id) to builder)
+            SEMICOLONViejo -> Success(StatementComplete to builder)
             else -> Failure(SyntaxError.INVALID_TOKEN_AFTER_TYPE)
         }
 }

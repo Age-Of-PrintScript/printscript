@@ -9,7 +9,7 @@ import parser.ExpressionParser
 import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
-import tokens.Identifier
+import tokens.IdentifierViejo
 import tokens.TokenViejo
 
 internal object DeclarationBranch : State {
@@ -19,7 +19,7 @@ internal object DeclarationBranch : State {
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
         when (val t = tokenViejo.type) {
-            is Identifier -> {
+            is IdentifierViejo -> {
                 Success(DeclarationIdSeen(ASTIdentifier(t.name)) to builder.copy(id = ASTIdentifier(t.name)))
             }
             else -> Failure(SyntaxError.MISSING_IDENTIFIER)

@@ -9,10 +9,10 @@ import parser.ExpressionParser
 import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
-import tokens.CLOSED_PARENTHESIS
-import tokens.Identifier
-import tokens.Literal
-import tokens.Operator
+import tokens.CLOSED_PARENTHESISViejo
+import tokens.IdentifierViejo
+import tokens.LiteralViejo
+import tokens.OperatorViejo
 import tokens.TokenViejo
 
 internal data class CallArgsPending(
@@ -25,9 +25,9 @@ internal data class CallArgsPending(
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
         when (tokenViejo.type) {
-            is Literal, is Identifier, is Operator ->
+            is LiteralViejo, is IdentifierViejo, is OperatorViejo ->
                 Success(copy(tokenViejos = tokenViejos + tokenViejo) to builder)
-            is CLOSED_PARENTHESIS -> {
+            is CLOSED_PARENTHESISViejo -> {
                 when (val res = expressionParser.parseExpression(tokenViejos)) {
                     is Failure -> Failure(res.value)
                     is Success -> {

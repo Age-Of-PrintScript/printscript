@@ -9,11 +9,11 @@ import domain.PrintScriptValue.StringLiteral
 import domain.Success
 import domain.factorSeparators
 import domain.termSeparators
-import tokens.CLOSED_PARENTHESIS
-import tokens.Identifier
-import tokens.Literal
-import tokens.OPEN_PARENTHESIS
-import tokens.Operator
+import tokens.CLOSED_PARENTHESISViejo
+import tokens.IdentifierViejo
+import tokens.LiteralViejo
+import tokens.OPEN_PARENTHESISViejo
+import tokens.OperatorViejo
 import tokens.TokenViejo
 import java.util.Optional
 
@@ -53,7 +53,7 @@ internal class ExpressionParser {
                 ?: return Failure(SyntaxError.INCOMPLETE_STATEMENT) // Si llegue aca y la lista termino, la expresión no tiene sentido.
 
         return when (val type = token.type) {
-            is Literal -> {
+            is LiteralViejo -> {
                 val number = type.value.toDoubleOrNull()
                 if (number != null) {
                     Success(
@@ -71,8 +71,8 @@ internal class ExpressionParser {
                     )
                 }
             }
-            is Identifier -> Success(ParsedResult(Expression.Variable(type.name), position + 1))
-            is OPEN_PARENTHESIS -> parseParenthesisExpression(tokenViejos, position + 1)
+            is IdentifierViejo -> Success(ParsedResult(Expression.Variable(type.name), position + 1))
+            is OPEN_PARENTHESISViejo -> parseParenthesisExpression(tokenViejos, position + 1)
             else -> Failure(SyntaxError.WRONG_TOKEN_TYPE) // Si hay un tokenType que no es de los dos de arriba, la expresión no tiene sentido.
         }
     }
@@ -92,7 +92,7 @@ internal class ExpressionParser {
         parsedExpression: ParsedResult<Expression>,
     ): Either<SyntaxError, ParsedResult<Expression>> =
         when (tokenViejos.getOrNull(position)?.type) {
-            is CLOSED_PARENTHESIS -> Success(ParsedResult(parsedExpression.parsedResult, position + 1))
+            is CLOSED_PARENTHESISViejo -> Success(ParsedResult(parsedExpression.parsedResult, position + 1))
             else -> Failure(SyntaxError.MISSING_CLOSING_PARENTHESIS)
         }
 
@@ -147,6 +147,6 @@ internal class ExpressionParser {
         operators: List<PrintScriptOperator>,
     ): Optional<PrintScriptOperator> {
         val type = tokenViejos.getOrNull(position)?.type
-        return if (type is Operator && type.operator in operators) Optional.of(type.operator) else Optional.empty()
+        return if (type is OperatorViejo && type.operator in operators) Optional.of(type.operator) else Optional.empty()
     }
 }

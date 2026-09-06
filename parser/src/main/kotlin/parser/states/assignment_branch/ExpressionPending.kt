@@ -10,12 +10,12 @@ import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
 import parser.states.StatementComplete
-import tokens.CLOSED_PARENTHESIS
-import tokens.Identifier
-import tokens.Literal
-import tokens.OPEN_PARENTHESIS
-import tokens.Operator
-import tokens.SEMICOLON
+import tokens.CLOSED_PARENTHESISViejo
+import tokens.IdentifierViejo
+import tokens.LiteralViejo
+import tokens.OPEN_PARENTHESISViejo
+import tokens.OperatorViejo
+import tokens.SEMICOLONViejo
 import tokens.TokenViejo
 
 internal data class ExpressionPending(
@@ -28,10 +28,10 @@ internal data class ExpressionPending(
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
         when (tokenViejo.type) {
-            SEMICOLON -> {
+            SEMICOLONViejo -> {
                 buildExpressionOnAst(expressionParser, builder)
             }
-            is Literal, is Identifier, is Operator, is OPEN_PARENTHESIS, is CLOSED_PARENTHESIS ->
+            is LiteralViejo, is IdentifierViejo, is OperatorViejo, is OPEN_PARENTHESISViejo, is CLOSED_PARENTHESISViejo ->
                 Success(copy(tokenViejos = tokenViejos + tokenViejo) to builder)
             else -> Failure(SyntaxError.INVALID_TOKEN)
         }

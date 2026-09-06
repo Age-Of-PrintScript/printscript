@@ -9,7 +9,7 @@ import parser.ExpressionParser
 import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
-import tokens.ASSIGN
+import tokens.ASSIGNViejo
 import tokens.TokenViejo
 
 internal data class AssignmentIdSeen(
@@ -21,7 +21,7 @@ internal data class AssignmentIdSeen(
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
         when (tokenViejo.type) {
-            ASSIGN -> Success(ExpressionPending(id) to builder)
+            ASSIGNViejo -> Success(ExpressionPending(id) to builder)
             else -> Failure(SyntaxError.MISSING_ASSIGNMENT_OPERATOR)
         }
 }
