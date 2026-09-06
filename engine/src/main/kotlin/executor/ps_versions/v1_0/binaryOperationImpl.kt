@@ -56,9 +56,8 @@ val multNumAndString =
     BinaryOperation { l, r ->
         val times =
             l.raw
-                .toDoubleOrNull()
-                ?.takeIf { it >= 0 && it % 1.0 == 0.0 }
-                ?.toInt()
+                .toIntOrNull()
+                ?.takeIf { it > 0 }
                 ?: return@BinaryOperation Failure(RuntimeError.STRING_CONCATENATION_NEEDS_INT)
         Success(PSLiteral(r.raw.repeat(times), StrType))
     }
@@ -67,9 +66,8 @@ val multStringAndNum =
     BinaryOperation { l, r ->
         val times =
             r.raw
-                .toDoubleOrNull()
-                ?.takeIf { it >= 0 && it % 1.0 == 0.0 }
-                ?.toInt()
+                .toIntOrNull()
+                ?.takeIf { it > 0 }
                 ?: return@BinaryOperation Failure(RuntimeError.STRING_CONCATENATION_NEEDS_INT)
         Success(PSLiteral(l.raw.repeat(times), StrType))
     }
