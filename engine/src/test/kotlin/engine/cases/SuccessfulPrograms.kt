@@ -1,6 +1,6 @@
-package executor.cases
+package engine.cases
 
-import executor.SuccessCase
+import engine.SuccessCase
 
 object SuccessfulPrograms {
     fun cases() =
