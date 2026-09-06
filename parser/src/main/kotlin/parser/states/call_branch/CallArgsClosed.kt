@@ -11,17 +11,17 @@ import parser.states.ConsumeResult
 import parser.states.State
 import parser.states.StatementComplete
 import tokens.SEMICOLON
-import tokens.Token
+import tokens.TokenViejo
 
 internal data class CallArgsClosed(
     val function: PrintScriptFunctions,
 ) : State {
     override fun consume(
-        token: Token,
+        tokenViejo: TokenViejo,
         builder: ASTBuilder,
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
-        when (token.type) {
+        when (tokenViejo.type) {
             SEMICOLON -> Success(StatementComplete to builder)
             else -> Failure(SyntaxError.UNEXPECTED_TOKEN_AFTER_STATEMENT)
         }

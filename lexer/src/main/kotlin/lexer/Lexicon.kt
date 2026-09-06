@@ -12,15 +12,15 @@ import tokens.ASSIGN
 import tokens.CLOSED_PARENTHESIS
 import tokens.COLON
 import tokens.Call
-import tokens.DataType
+import tokens.DataTypeViejo
 import tokens.LET
 import tokens.OPEN_PARENTHESIS
 import tokens.Operator
 import tokens.SEMICOLON
-import tokens.TokenType
+import tokens.TokenTypeViejo
 
-internal fun createSymbolKeywordMap(): Map<String, TokenType> {
-    val keywordMap = mutableMapOf<String, TokenType>()
+internal fun createSymbolKeywordMap(): Map<String, TokenTypeViejo> {
+    val keywordMap = mutableMapOf<String, TokenTypeViejo>()
     for (keyword in keywordRegistry) {
         when (keyword) {
             PrintScriptFunctions.PRINTLN ->
@@ -29,17 +29,17 @@ internal fun createSymbolKeywordMap(): Map<String, TokenType> {
             PrintScriptReservedWords.LET -> keywordMap["let"] = LET
 
             PrintScriptType.NUMBER ->
-                keywordMap["number"] = DataType(PrintScriptType.NUMBER)
+                keywordMap["number"] = DataTypeViejo(PrintScriptType.NUMBER)
 
             PrintScriptType.STRING ->
-                keywordMap["string"] = DataType(PrintScriptType.STRING)
+                keywordMap["string"] = DataTypeViejo(PrintScriptType.STRING)
         }
     }
     return keywordMap.toMap()
 }
 
-internal fun createSymbolTokenMap(): Map<Char, TokenType> {
-    val tokenMap = mutableMapOf<Char, TokenType>()
+internal fun createSymbolTokenMap(): Map<Char, TokenTypeViejo> {
+    val tokenMap = mutableMapOf<Char, TokenTypeViejo>()
     for (symbol in PrintScriptSymbols.entries) {
         when (symbol) {
             PrintScriptSymbols.SUM -> tokenMap[symbol.symbol] = Operator(PrintScriptOperator.SUM)

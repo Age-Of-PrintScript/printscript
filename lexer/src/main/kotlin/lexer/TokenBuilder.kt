@@ -7,13 +7,13 @@ import domain.Success
 import domain.getOrReturn
 import tokens.Identifier
 import tokens.Literal
-import tokens.Token
-import tokens.TokenType
+import tokens.TokenTypeViejo
+import tokens.TokenViejo
 import tokens.WHITESPACE
 
 internal data class TokenBuilder(
-    val type: TokenType? = null,
-    val tokenMap: Map<Char, TokenType> = createSymbolTokenMap(),
+    val type: TokenTypeViejo? = null,
+    val tokenMap: Map<Char, TokenTypeViejo> = createSymbolTokenMap(),
 ) {
     fun addChar(chr: Char): Either<LexerError, TokenBuilder> {
         if (type is Literal && !charIsQuote(chr)) {
@@ -70,19 +70,19 @@ internal data class TokenBuilder(
     }
 
     private fun updateTypeWithLiteral(
-        type: TokenType?,
+        type: TokenTypeViejo?,
         chr: Char,
-    ): Either<LexerError, TokenType> =
+    ): Either<LexerError, TokenTypeViejo> =
         when (type) {
             is Identifier -> Success(Identifier(type.name + chr))
             is Literal -> Success(Literal(type.value + chr))
             else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
         }
 
-    fun build(): Either<LexerError, Token> {
+    fun build(): Either<LexerError, TokenViejo> {
         val finalType = resolveFinalType(type).getOrReturn { return Failure(it) }
         return Success(
-            Token(
+            TokenViejo(
                 finalType,
                 Position(0, 0),
                 Position(0, 0),
@@ -90,7 +90,7 @@ internal data class TokenBuilder(
         )
     }
 
-    private fun resolveFinalType(actualType: TokenType?): Either<LexerError, TokenType> {
+    private fun resolveFinalType(actualType: TokenTypeViejo?): Either<LexerError, TokenTypeViejo> {
         var finalType = actualType ?: return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
 
         if (finalType is Identifier) {

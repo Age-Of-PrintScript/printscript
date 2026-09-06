@@ -5,23 +5,23 @@ import domain.Position
 import domain.Success
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
-import tokens.Token
-import tokens.TokenType
+import tokens.TokenTypeViejo
+import tokens.TokenViejo
 
 internal fun assertCorrectSource(
     lexer: Lexer,
     input: String,
-    expected: List<TokenType>,
+    expected: List<TokenTypeViejo>,
 ) {
     val result = lexer.tokenize(input)
     assertTrue(result is Success, "Tokenization wasn't successful")
-    val givenTokens = (result as Success<LexerError, List<Token>>).value
-    assertEqualTokenList(createTokens(expected), givenTokens)
+    val givenTokenViejos = (result as Success<LexerError, List<TokenViejo>>).value
+    assertEqualTokenList(createTokens(expected), givenTokenViejos)
 }
 
 internal fun assertEqualTokenList(
-    expected: List<Token>,
-    actual: List<Token>,
+    expected: List<TokenViejo>,
+    actual: List<TokenViejo>,
 ) {
     if (expected.size != actual.size) error("Expected ${expected.size} tokenlist size || Actual ${actual.size} token list size")
     for (i in expected.indices) {
@@ -36,12 +36,12 @@ internal fun assertIncorrectSource(
 ) {
     val result = lexer.tokenize(input)
     assertTrue(result is Failure, "Tokenization shouldn't have succeeded")
-    assertEquals(expected, (result as Failure<LexerError, List<Token>>).value)
+    assertEquals(expected, (result as Failure<LexerError, List<TokenViejo>>).value)
 }
 
-internal fun createTokens(types: List<TokenType>): List<Token> =
+internal fun createTokens(types: List<TokenTypeViejo>): List<TokenViejo> =
     types.map {
-        Token(
+        TokenViejo(
             it,
             Position(0, 0),
             Position(0, 0),

@@ -5,11 +5,11 @@ import domain.Failure
 import parser.ASTBuilder
 import parser.ExpressionParser
 import parser.SyntaxError
-import tokens.Token
+import tokens.TokenViejo
 
 internal object StatementComplete : State {
     override fun consume(
-        token: Token,
+        tokenViejo: TokenViejo,
         builder: ASTBuilder,
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> = Failure(SyntaxError.UNEXPECTED_TOKEN_AFTER_STATEMENT)

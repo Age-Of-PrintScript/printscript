@@ -5,50 +5,50 @@ import domain.PrintScriptFunctions
 import domain.PrintScriptOperator
 import domain.PrintScriptType
 
-data class Token(
-    val type: TokenType,
+data class TokenViejo(
+    val type: TokenTypeViejo,
     val start: Position,
     val end: Position,
 )
 
-sealed interface TokenType
+sealed interface TokenTypeViejo
 
-object LET : TokenType
+object LET : TokenTypeViejo
 
-object COLON : TokenType
+object COLON : TokenTypeViejo
 
-object SEMICOLON : TokenType
+object SEMICOLON : TokenTypeViejo
 
-object ASSIGN : TokenType
+object ASSIGN : TokenTypeViejo
 
-object WHITESPACE : TokenType
+object WHITESPACE : TokenTypeViejo
 
-object OPEN_PARENTHESIS : TokenType
+object OPEN_PARENTHESIS : TokenTypeViejo
 
-object CLOSED_PARENTHESIS : TokenType
+object CLOSED_PARENTHESIS : TokenTypeViejo
 
 data class Operator(
     val operator: PrintScriptOperator,
-) : TokenType
+) : TokenTypeViejo
 
 // Nombre de variable
 data class Identifier(
     val name: String,
-) : TokenType
+) : TokenTypeViejo
 
 // valor de literal
 data class Literal(
     val value: String,
-) : TokenType
+) : TokenTypeViejo
 
 // tipo de dato
-data class DataType(
+data class DataTypeViejo(
     val type: PrintScriptType,
-) : TokenType
+) : TokenTypeViejo
 
 // llamado a una funcion
 data class Call(
     val type: PrintScriptFunctions,
-) : TokenType
+) : TokenTypeViejo
 
-typealias TokenList = List<Token>
+typealias TokenList = List<TokenViejo>

@@ -14,18 +14,18 @@ import parser.states.StatementComplete
 import parser.states.assignment_branch.ExpressionPending
 import tokens.ASSIGN
 import tokens.SEMICOLON
-import tokens.Token
+import tokens.TokenViejo
 
 internal data class DeclarationTypeSeen(
     val id: ASTIdentifier,
     val type: ASTDataType,
 ) : State {
     override fun consume(
-        token: Token,
+        tokenViejo: TokenViejo,
         builder: ASTBuilder,
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
-        when (token.type) {
+        when (tokenViejo.type) {
             ASSIGN -> Success(ExpressionPending(id) to builder)
             SEMICOLON -> Success(StatementComplete to builder)
             else -> Failure(SyntaxError.INVALID_TOKEN_AFTER_TYPE)

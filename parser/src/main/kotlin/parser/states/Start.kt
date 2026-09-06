@@ -14,15 +14,15 @@ import parser.states.declaration_branch.DeclarationBranch
 import tokens.Call
 import tokens.Identifier
 import tokens.LET
-import tokens.Token
+import tokens.TokenViejo
 
 internal object Start : State {
     override fun consume(
-        token: Token,
+        tokenViejo: TokenViejo,
         builder: ASTBuilder,
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
-        when (val t = token.type) {
+        when (val t = tokenViejo.type) {
             is Call -> Success(CallSeen(t.type) to ASTBuilder(type = BuilderType.CALL, functionName = t.type))
             is Identifier ->
                 Success(

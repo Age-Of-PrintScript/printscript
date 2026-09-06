@@ -8,24 +8,24 @@ import tokens.ASSIGN
 import tokens.CLOSED_PARENTHESIS
 import tokens.COLON
 import tokens.Call
-import tokens.DataType
+import tokens.DataTypeViejo
 import tokens.Identifier
 import tokens.LET
 import tokens.Literal
 import tokens.OPEN_PARENTHESIS
 import tokens.Operator
 import tokens.SEMICOLON
-import tokens.Token
-import tokens.TokenType
+import tokens.TokenTypeViejo
+import tokens.TokenViejo
 
 private val dummyPosition = Position(0, 0)
 
-internal fun parseInputSection(lines: List<String>): List<Token> =
+internal fun parseInputSection(lines: List<String>): List<TokenViejo> =
     lines.map { line ->
-        Token(parseTokenType(line), dummyPosition, dummyPosition)
+        TokenViejo(parseTokenType(line), dummyPosition, dummyPosition)
     }
 
-private fun parseTokenType(line: String): TokenType {
+private fun parseTokenType(line: String): TokenTypeViejo {
     val parts = line.split(":", limit = 2).map { it.trim() }
     val tag = parts[0]
     val value = parts.getOrNull(1)
@@ -38,7 +38,7 @@ private fun parseTokenType(line: String): TokenType {
         "OPEN_PARENTHESIS" -> OPEN_PARENTHESIS
         "CLOSED_PARENTHESIS" -> CLOSED_PARENTHESIS
         "IDENTIFIER" -> Identifier(value!!)
-        "TYPE" -> DataType(PrintScriptType.valueOf(value!!))
+        "TYPE" -> DataTypeViejo(PrintScriptType.valueOf(value!!))
         "LITERAL" -> Literal(value!!)
         "OPERATOR" -> Operator(PrintScriptOperator.valueOf(value!!))
         "CALL" -> Call(PrintScriptFunctions.valueOf(value!!))

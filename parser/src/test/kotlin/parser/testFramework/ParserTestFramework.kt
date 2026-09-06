@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
 import parser.ParserImpl
 import parser.SyntaxError
-import tokens.Token
+import tokens.TokenViejo
 import java.io.File
 import java.util.stream.Stream
 import kotlin.streams.asStream
@@ -16,7 +16,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 internal data class TestCase(
-    val inputTokens: List<Token>,
+    val inputTokenViejos: List<TokenViejo>,
     val expected: Either<SyntaxError, List<AST>>,
 )
 
@@ -41,7 +41,7 @@ internal class ParserFileTests {
 
     private fun runOneTest(file: File) {
         val testCase = parseTestFile(file.readText())
-        val actual = ParserImpl().parse(testCase.inputTokens)
+        val actual = ParserImpl().parse(testCase.inputTokenViejos)
         val actualTrees: Either<SyntaxError, List<AST>> =
             when (actual) {
                 is Success -> Success(actual.value.trees)

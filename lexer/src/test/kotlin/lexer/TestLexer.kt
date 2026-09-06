@@ -11,12 +11,12 @@ import lexer.cases.UnterminatedStrings
 import org.junit.jupiter.api.DynamicNode
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
-import tokens.TokenType
+import tokens.TokenTypeViejo
 
 data class SuccessCase(
     val name: String,
     val input: String,
-    val expected: List<TokenType>,
+    val expected: List<TokenTypeViejo>,
 )
 
 data class FailureCase(

@@ -1,7 +1,7 @@
 package lexer.cases
 
 import lexer.SuccessCase
-import tokens.TokenType
+import tokens.TokenTypeViejo
 
 object SuccessfulEdgeCases {
     fun cases() =
@@ -9,7 +9,7 @@ object SuccessfulEdgeCases {
             SuccessCase(
                 "empty input returns empty token list",
                 "",
-                emptyList<TokenType>(),
+                emptyList<TokenTypeViejo>(),
             ),
         )
 }

@@ -6,8 +6,8 @@ import domain.Success
 import domain.getOrReturn
 import lexer.states.InitialState
 import lexer.states.State
-import tokens.Token
 import tokens.TokenList
+import tokens.TokenViejo
 import tokens.WHITESPACE
 
 internal class LexerStateMachine {
@@ -15,7 +15,7 @@ internal class LexerStateMachine {
         var state: State = InitialState()
         var builder = TokenBuilder()
 
-        val tokenList = mutableListOf<Token>()
+        val tokenViejoList = mutableListOf<TokenViejo>()
 
         for (i in source.indices) {
             val chr = source[i]
@@ -30,12 +30,12 @@ internal class LexerStateMachine {
 
             if (shouldCloseToken) {
                 val token = builder.build().getOrReturn { return Failure(it) }
-                tokenList.add(token)
+                tokenViejoList.add(token)
                 builder = TokenBuilder()
                 state = InitialState()
             }
         }
-        return Success(tokenList.filter { it.type != WHITESPACE })
+        return Success(tokenViejoList.filter { it.type != WHITESPACE })
     }
 
     private fun cannotConsumeNextChar(

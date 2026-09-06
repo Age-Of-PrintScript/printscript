@@ -2,10 +2,10 @@ package parser
 
 import ast.Program
 import domain.Either
-import tokens.Token
+import tokens.TokenViejo
 
 interface Parser {
-    fun parse(tokens: List<Token>): Either<SyntaxError, Program>
+    fun parse(tokenViejos: List<TokenViejo>): Either<SyntaxError, Program>
 
     companion object {
         fun new(): Parser = ParserImpl()
@@ -15,8 +15,8 @@ interface Parser {
 internal class ParserImpl : Parser {
     private val expressionParser = ExpressionParser()
 
-    override fun parse(tokens: List<Token>): Either<SyntaxError, Program> {
+    override fun parse(tokenViejos: List<TokenViejo>): Either<SyntaxError, Program> {
         val stateMachine = ParserStateMachine()
-        return stateMachine.parse(tokens, expressionParser)
+        return stateMachine.parse(tokenViejos, expressionParser)
     }
 }

@@ -16,23 +16,23 @@ import tokens.Literal
 import tokens.OPEN_PARENTHESIS
 import tokens.Operator
 import tokens.SEMICOLON
-import tokens.Token
+import tokens.TokenViejo
 
 internal data class ExpressionPending(
     val id: ASTIdentifier,
-    val tokens: List<Token> = emptyList(),
+    val tokenViejos: List<TokenViejo> = emptyList(),
 ) : State {
     override fun consume(
-        token: Token,
+        tokenViejo: TokenViejo,
         builder: ASTBuilder,
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
-        when (token.type) {
+        when (tokenViejo.type) {
             SEMICOLON -> {
                 buildExpressionOnAst(expressionParser, builder)
             }
             is Literal, is Identifier, is Operator, is OPEN_PARENTHESIS, is CLOSED_PARENTHESIS ->
-                Success(copy(tokens = tokens + token) to builder)
+                Success(copy(tokenViejos = tokenViejos + tokenViejo) to builder)
             else -> Failure(SyntaxError.INVALID_TOKEN)
         }
 
@@ -40,7 +40,7 @@ internal data class ExpressionPending(
         expressionParser: ExpressionParser,
         builder: ASTBuilder,
     ): Either<SyntaxError, ConsumeResult> =
-        when (val result = expressionParser.parseExpression(tokens)) {
+        when (val result = expressionParser.parseExpression(tokenViejos)) {
             is Failure -> Failure(result.value)
             is Success -> {
                 val newBuilder = builder.addExpression(result.value)
