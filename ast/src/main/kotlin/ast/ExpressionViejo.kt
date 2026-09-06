@@ -3,18 +3,18 @@ package ast
 import domain.PrintScriptOperator
 import domain.PrintScriptValue
 
-sealed interface Expression {
+sealed interface ExpressionViejo {
     data class Literal(
         val value: PrintScriptValue,
-    ) : Expression
+    ) : ExpressionViejo
 
     data class Variable(
         val name: String,
-    ) : Expression
+    ) : ExpressionViejo
 
     data class Operation(
-        val left: Expression,
-        val right: Expression,
+        val left: ExpressionViejo,
+        val right: ExpressionViejo,
         val operator: PrintScriptOperator,
-    ) : Expression
+    ) : ExpressionViejo
 }

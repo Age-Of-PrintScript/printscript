@@ -1,8 +1,8 @@
 package interpreter
 
 import ast.ASTViejo
-import ast.Expression
 import ast.ExpressionSolver
+import ast.ExpressionViejo
 import ast.Program
 import domain.Either
 import domain.Failure
@@ -103,10 +103,10 @@ internal class InterpreterImpl : Interpreter {
     }
 
     private fun solveExpression(
-        expression: Expression,
+        expressionViejo: ExpressionViejo,
         env: RuntimeEnvironment,
     ): Either<RuntimeError, PrintScriptValue> =
-        when (val res = expressionSolver.solve(expression, env.getVariableMapWithValues())) {
+        when (val res = expressionSolver.solve(expressionViejo, env.getVariableMapWithValues())) {
             is Success -> Success(res.value)
             is Failure -> Failure(RuntimeError.MATH_ERROR)
         }

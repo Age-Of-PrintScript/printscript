@@ -8,17 +8,17 @@ sealed interface ASTViejo {
     data class Declaration(
         val id: ASTIdentifier,
         val type: ASTDataType,
-        val value: Expression?,
+        val value: ExpressionViejo?,
     ) : ASTViejo
 
     data class Assignment(
         val id: ASTIdentifier,
-        val value: Expression,
+        val value: ExpressionViejo,
     ) : ASTViejo
 
     data class Call(
         val functionName: PrintScriptFunctions,
-        val args: List<Expression>,
+        val args: List<ExpressionViejo>,
     ) : ASTViejo
 }
 

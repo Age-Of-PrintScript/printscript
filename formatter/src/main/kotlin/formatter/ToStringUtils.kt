@@ -1,7 +1,7 @@
 package formatter
 
 import ast.ASTViejo
-import ast.Expression
+import ast.ExpressionViejo
 import domain.PrintScriptFunctions
 import domain.PrintScriptOperator
 import domain.PrintScriptType
@@ -31,20 +31,20 @@ internal fun callToString(call: ASTViejo.Call): String {
 }
 
 internal fun expressionToString(
-    expression: Expression?,
+    expressionViejo: ExpressionViejo?,
     parentPrecedence: Int,
 ): String {
-    if (expression == null) return ""
+    if (expressionViejo == null) return ""
 
-    return when (expression) {
-        is Expression.Literal -> literalToString(expression.value)
-        is Expression.Operation -> operationToString(expression, parentPrecedence)
-        is Expression.Variable -> expression.name
+    return when (expressionViejo) {
+        is ExpressionViejo.Literal -> literalToString(expressionViejo.value)
+        is ExpressionViejo.Operation -> operationToString(expressionViejo, parentPrecedence)
+        is ExpressionViejo.Variable -> expressionViejo.name
     }
 }
 
 internal fun operationToString(
-    operation: Expression.Operation,
+    operation: ExpressionViejo.Operation,
     parentPrecedence: Int,
 ): String {
     val precedence = precedenceOf(operation.operator)

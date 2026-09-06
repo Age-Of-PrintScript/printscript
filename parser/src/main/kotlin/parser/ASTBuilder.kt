@@ -3,7 +3,7 @@ package parser
 import ast.ASTDataType
 import ast.ASTIdentifier
 import ast.ASTViejo
-import ast.Expression
+import ast.ExpressionViejo
 import domain.Either
 import domain.Failure
 import domain.PrintScriptFunctions
@@ -16,14 +16,14 @@ data class ASTBuilder(
     val id: ASTIdentifier? = null,
     val dataType: ASTDataType? = null,
     val functionName: PrintScriptFunctions? = null,
-    val value: Expression? = null,
-    val expressions: List<Expression> = emptyList(),
+    val value: ExpressionViejo? = null,
+    val expressionViejos: List<ExpressionViejo> = emptyList(),
 ) {
-    fun addExpression(expr: Expression): ASTBuilder =
+    fun addExpression(expr: ExpressionViejo): ASTBuilder =
         when (type) {
             BuilderType.ASSIGNMENT -> copy(value = expr)
             BuilderType.DECLARATION -> copy(value = expr)
-            BuilderType.CALL -> copy(expressions = expressions + expr)
+            BuilderType.CALL -> copy(expressionViejos = expressionViejos + expr)
             BuilderType.NONE -> this
         }
 
@@ -42,7 +42,7 @@ data class ASTBuilder(
             }
             BuilderType.CALL -> {
                 val safeName = functionName ?: return Failure(SyntaxError.MISSING_FUNCTION_NAME)
-                Success(ASTViejo.Call(safeName, expressions))
+                Success(ASTViejo.Call(safeName, expressionViejos))
             }
         }
 }

@@ -2,7 +2,7 @@ package linter.rules
 
 import ast.ASTViejo
 import ast.ASTViejo.Call
-import ast.Expression
+import ast.ExpressionViejo
 import domain.Position
 import domain.PrintScriptFunctions
 import kotlinx.serialization.json.JsonObject
@@ -25,7 +25,7 @@ internal class PrintlnArgumentRule : LinterRule {
         }
     }
 
-    private fun argIsNotExpression(arg: Expression) = arg is Expression.Variable || arg is Expression.Literal
+    private fun argIsNotExpression(arg: ExpressionViejo) = arg is ExpressionViejo.Variable || arg is ExpressionViejo.Literal
 
     private fun notAPrintCall(astViejo: ASTViejo) = astViejo !is Call || astViejo.functionName != PrintScriptFunctions.PRINTLN
 }

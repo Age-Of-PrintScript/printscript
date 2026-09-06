@@ -3,7 +3,7 @@ package parser.testFramework
 import ast.ASTDataType
 import ast.ASTIdentifier
 import ast.ASTViejo
-import ast.Expression
+import ast.ExpressionViejo
 import domain.PrintScriptFunctions
 import domain.PrintScriptOperator
 import domain.PrintScriptType
@@ -62,7 +62,7 @@ private fun parseAST(
 private fun parseExpression(
     lines: List<Line>,
     index: Int,
-): Pair<Expression, Int> {
+): Pair<ExpressionViejo, Int> {
     val line = lines[index]
 
     return when {
@@ -71,7 +71,7 @@ private fun parseExpression(
         line.content.startsWith("LITERAL") -> getLiteral(line, index)
 
         line.content.startsWith("VARIABLE") ->
-            Expression.Variable(getValue(line)) to index + 1
+            ExpressionViejo.Variable(getValue(line)) to index + 1
 
         else -> throw IllegalArgumentException("Expression desconocida: ${line.content}")
     }
@@ -100,7 +100,7 @@ private fun getContent(
 private fun getLiteral(
     line: Line,
     index: Int,
-): Pair<Expression.Literal, Int> {
+): Pair<ExpressionViejo.Literal, Int> {
     val rest = getValue(line)
     val literalType = rest.substringBefore(" ")
     val value = rest.substringAfter(" ")
@@ -110,18 +110,18 @@ private fun getLiteral(
             "STRING" -> PrintScriptValue.StringLiteral(value)
             else -> throw IllegalArgumentException("Tipo de literal desconocido: $literalType")
         }
-    return Expression.Literal(literal) to index + 1
+    return ExpressionViejo.Literal(literal) to index + 1
 }
 
 private fun getOperation(
     line: Line,
     lines: List<Line>,
     index: Int,
-): Pair<Expression.Operation, Int> {
+): Pair<ExpressionViejo.Operation, Int> {
     val op = PrintScriptOperator.valueOf(getValue(line))
     val (left, afterLeft) = parseExpression(lines, index + 1)
     val (right, afterRight) = parseExpression(lines, afterLeft)
-    return Expression.Operation(left, right, op) to afterRight
+    return ExpressionViejo.Operation(left, right, op) to afterRight
 }
 
 private fun getValue(line: Line): String = line.content.substringAfter(" ").trim()
