@@ -1,5 +1,7 @@
 package tokens
 
+import domain.PSOperator
+import domain.PSType
 import domain.Position
 
 data class Token(
@@ -27,3 +29,30 @@ object OpenBraces : TokenType
 object ClosedBraces : TokenType
 
 object Whitespace : TokenType
+
+object IF : TokenType
+
+object ELSE : TokenType
+
+object CONST : TokenType
+
+data class Operator(
+    val operator: PSOperator,
+) : TokenType
+
+data class Identifier(
+    val name: String,
+) : TokenType
+
+data class Literal(
+    val value: String,
+    val type: PSType,
+) : TokenType
+
+data class DataType(
+    val name: PSType,
+) : TokenType
+
+data class Call(
+    val name: String,
+) : TokenType
