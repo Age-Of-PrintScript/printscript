@@ -1,6 +1,6 @@
 package formatter
 
-import ast.AST
+import ast.ASTViejo
 import domain.getOrReturn
 import lexer.Lexer
 import parser.Parser
@@ -37,9 +37,9 @@ internal class FormatterExecutor : Formatter {
         for (tree in program.trees) {
             val formatter =
                 when (tree) { // el map.get siempre devuelve un nullable, tengo que manejar ese caso tambien
-                    is AST.Declaration -> formatters["declaration"]
-                    is AST.Assignment -> formatters["assignment"]
-                    is AST.Call -> formatters["call"]
+                    is ASTViejo.Declaration -> formatters["declaration"]
+                    is ASTViejo.Assignment -> formatters["assignment"]
+                    is ASTViejo.Call -> formatters["call"]
                 } ?: return FormatResult.Failure(FormattingError.UNKNOWN_AST_TYPE.getMessage())
             finalString += formatter.format(tree) + "\n"
         }

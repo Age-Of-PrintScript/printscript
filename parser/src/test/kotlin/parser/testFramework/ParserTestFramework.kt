@@ -1,6 +1,6 @@
 package parser.testFramework
 
-import ast.AST
+import ast.ASTViejo
 import domain.Either
 import domain.Failure
 import domain.Success
@@ -17,7 +17,7 @@ import kotlin.test.assertEquals
 
 internal data class TestCase(
     val inputTokenViejos: List<TokenViejo>,
-    val expected: Either<SyntaxError, List<AST>>,
+    val expected: Either<SyntaxError, List<ASTViejo>>,
 )
 
 internal class ParserFileTests {
@@ -42,7 +42,7 @@ internal class ParserFileTests {
     private fun runOneTest(file: File) {
         val testCase = parseTestFile(file.readText())
         val actual = ParserImpl().parse(testCase.inputTokenViejos)
-        val actualTrees: Either<SyntaxError, List<AST>> =
+        val actualTrees: Either<SyntaxError, List<ASTViejo>> =
             when (actual) {
                 is Success -> Success(actual.value.trees)
                 is Failure -> Failure(actual.value)
@@ -57,7 +57,7 @@ internal class ParserFileTests {
         // a complete key would be "Expected: SUCCESS" or "Expected: FAILURE"
         val expectedKey = getCompleteKey(sections, "Expected")
         val expectedResult = sections.getValue(expectedKey)
-        val expected: Either<SyntaxError, List<AST>> =
+        val expected: Either<SyntaxError, List<ASTViejo>> =
             when (val status = getStatus(expectedKey)) {
                 "SUCCESS" -> Success(parseExpectedTrees(expectedResult))
                 "FAILURE" -> Failure(getSyntaxError(expectedResult))

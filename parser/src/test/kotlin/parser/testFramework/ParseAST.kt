@@ -1,9 +1,9 @@
 package parser.testFramework
 
-import ast.AST
 import ast.ASTDataType
 import ast.ASTIdentifier
-import ast.Expression
+import ast.ASTViejo
+import ast.ExpressionViejo
 import domain.PrintScriptFunctions
 import domain.PrintScriptOperator
 import domain.PrintScriptType
@@ -14,9 +14,9 @@ private data class Line(
     val content: String,
 )
 
-internal fun parseExpectedTrees(rawLines: List<String>): List<AST> {
+internal fun parseExpectedTrees(rawLines: List<String>): List<ASTViejo> {
     val lines = rawLines.map { toLine(it) }
-    val trees = mutableListOf<AST>()
+    val trees = mutableListOf<ASTViejo>()
 
     var i = 0
     while (i < lines.size) {
@@ -35,7 +35,7 @@ private fun toLine(raw: String): Line {
 private fun parseAST(
     lines: List<Line>,
     index: Int,
-): Pair<AST, Int> {
+): Pair<ASTViejo, Int> {
     val head = lines[index]
     val childDepth = head.depth + 1
 
@@ -48,12 +48,12 @@ private fun parseAST(
         "ASSIGNMENT" -> {
             val id = ASTIdentifier(getContent(lines, index + 1))
             val (value, next) = parseExpression(lines, index + 2)
-            AST.Assignment(id, value) to next
+            ASTViejo.Assignment(id, value) to next
         }
         "CALL" -> {
             val functionName = PrintScriptFunctions.valueOf(getContent(lines, index + 1))
             val (arg, next) = parseExpression(lines, index + 2)
-            AST.Call(functionName, listOf(arg)) to next
+            ASTViejo.Call(functionName, listOf(arg)) to next
         }
         else -> throw IllegalArgumentException("AST desconocido: ${head.content}")
     }
@@ -62,7 +62,7 @@ private fun parseAST(
 private fun parseExpression(
     lines: List<Line>,
     index: Int,
-): Pair<Expression, Int> {
+): Pair<ExpressionViejo, Int> {
     val line = lines[index]
 
     return when {
@@ -71,7 +71,7 @@ private fun parseExpression(
         line.content.startsWith("LITERAL") -> getLiteral(line, index)
 
         line.content.startsWith("VARIABLE") ->
-            Expression.Variable(getValue(line)) to index + 1
+            ExpressionViejo.Variable(getValue(line)) to index + 1
 
         else -> throw IllegalArgumentException("Expression desconocida: ${line.content}")
     }
@@ -83,12 +83,12 @@ private fun createDeclaration(
     childDepth: Int,
     id: ASTIdentifier,
     type: ASTDataType,
-): Pair<AST.Declaration, Int> {
+): Pair<ASTViejo.Declaration, Int> {
     if (index < lines.size && lines[index].depth == childDepth) {
         val (value, next) = parseExpression(lines, index)
-        return AST.Declaration(id, type, value) to next
+        return ASTViejo.Declaration(id, type, value) to next
     } else {
-        return AST.Declaration(id, type, null) to index
+        return ASTViejo.Declaration(id, type, null) to index
     }
 }
 
@@ -100,7 +100,7 @@ private fun getContent(
 private fun getLiteral(
     line: Line,
     index: Int,
-): Pair<Expression.Literal, Int> {
+): Pair<ExpressionViejo.Literal, Int> {
     val rest = getValue(line)
     val literalType = rest.substringBefore(" ")
     val value = rest.substringAfter(" ")
@@ -110,18 +110,18 @@ private fun getLiteral(
             "STRING" -> PrintScriptValue.StringLiteral(value)
             else -> throw IllegalArgumentException("Tipo de literal desconocido: $literalType")
         }
-    return Expression.Literal(literal) to index + 1
+    return ExpressionViejo.Literal(literal) to index + 1
 }
 
 private fun getOperation(
     line: Line,
     lines: List<Line>,
     index: Int,
-): Pair<Expression.Operation, Int> {
+): Pair<ExpressionViejo.Operation, Int> {
     val op = PrintScriptOperator.valueOf(getValue(line))
     val (left, afterLeft) = parseExpression(lines, index + 1)
     val (right, afterRight) = parseExpression(lines, afterLeft)
-    return Expression.Operation(left, right, op) to afterRight
+    return ExpressionViejo.Operation(left, right, op) to afterRight
 }
 
 private fun getValue(line: Line): String = line.content.substringAfter(" ").trim()

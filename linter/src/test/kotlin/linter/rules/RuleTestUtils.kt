@@ -1,9 +1,9 @@
 package linter.rules
 
-import ast.AST
 import ast.ASTDataType
 import ast.ASTIdentifier
-import ast.Expression
+import ast.ASTViejo
+import ast.ExpressionViejo
 import domain.PrintScriptFunctions
 import domain.PrintScriptOperator
 import domain.PrintScriptType
@@ -12,9 +12,9 @@ import domain.PrintScriptValue
 fun createDeclaration(
     name: String,
     type: PrintScriptType = PrintScriptType.STRING,
-    value: Expression? = createLiteralExpression("test"),
-): AST.Declaration =
-    AST.Declaration(
+    value: ExpressionViejo? = createLiteralExpression("test"),
+): ASTViejo.Declaration =
+    ASTViejo.Declaration(
         id = ASTIdentifier(name),
         type = ASTDataType(type),
         value = value,
@@ -22,27 +22,27 @@ fun createDeclaration(
 
 fun createAssignment(
     name: String,
-    value: Expression = createLiteralExpression(1),
-): AST.Assignment =
-    AST.Assignment(
+    value: ExpressionViejo = createLiteralExpression(1),
+): ASTViejo.Assignment =
+    ASTViejo.Assignment(
         id = ASTIdentifier(name),
         value = value,
     )
 
-fun createPrintln(vararg args: Expression): AST.Call =
-    AST.Call(
+fun createPrintln(vararg args: ExpressionViejo): ASTViejo.Call =
+    ASTViejo.Call(
         functionName = PrintScriptFunctions.PRINTLN,
         args = args.toList(),
     )
 
-fun createLiteralExpression(value: Number): Expression.Literal = Expression.Literal(PrintScriptValue.NumberLiteral(value))
+fun createLiteralExpression(value: Number): ExpressionViejo.Literal = ExpressionViejo.Literal(PrintScriptValue.NumberLiteral(value))
 
-fun createLiteralExpression(value: String): Expression.Literal = Expression.Literal(PrintScriptValue.StringLiteral(value))
+fun createLiteralExpression(value: String): ExpressionViejo.Literal = ExpressionViejo.Literal(PrintScriptValue.StringLiteral(value))
 
-fun createVariableExpression(name: String): Expression.Variable = Expression.Variable(name)
+fun createVariableExpression(name: String): ExpressionViejo.Variable = ExpressionViejo.Variable(name)
 
 fun createOperationExpression(
-    left: Expression,
-    right: Expression,
+    left: ExpressionViejo,
+    right: ExpressionViejo,
     operator: PrintScriptOperator = PrintScriptOperator.SUM,
-): Expression.Operation = Expression.Operation(left, right, operator)
+): ExpressionViejo.Operation = ExpressionViejo.Operation(left, right, operator)

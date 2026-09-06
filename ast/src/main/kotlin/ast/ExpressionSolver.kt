@@ -1,7 +1,7 @@
 package ast
 
-import ast.Expression.Literal
-import ast.Expression.Operation
+import ast.ExpressionViejo.Literal
+import ast.ExpressionViejo.Operation
 import domain.Either
 import domain.Failure
 import domain.PrintScriptOperator
@@ -13,20 +13,20 @@ import java.util.Optional
 
 class ExpressionSolver {
     fun solve(
-        expression: Expression,
+        expressionViejo: ExpressionViejo,
         values: Map<String, Optional<PrintScriptValue>>,
     ): Either<String, PrintScriptValue> {
-        return when (expression) {
+        return when (expressionViejo) {
             is Literal -> {
-                when (expression.value) {
-                    is NumberLiteral -> Success(expression.value)
-                    is StringLiteral -> Success(expression.value)
+                when (expressionViejo.value) {
+                    is NumberLiteral -> Success(expressionViejo.value)
+                    is StringLiteral -> Success(expressionViejo.value)
                 }
             }
 
-            is Expression.Variable -> {
+            is ExpressionViejo.Variable -> {
                 val optionalValue =
-                    values[expression.name]
+                    values[expressionViejo.name]
                         ?: return Failure("variable is not defined")
 
                 if (optionalValue.isPresent) {
@@ -36,7 +36,7 @@ class ExpressionSolver {
                 }
             }
 
-            is Operation -> solveOperation(expression, values)
+            is Operation -> solveOperation(expressionViejo, values)
         }
     }
 

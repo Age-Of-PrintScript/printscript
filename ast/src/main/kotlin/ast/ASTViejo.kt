@@ -4,26 +4,26 @@ import domain.Position
 import domain.PrintScriptFunctions
 import domain.PrintScriptType
 
-sealed interface AST {
+sealed interface ASTViejo {
     data class Declaration(
         val id: ASTIdentifier,
         val type: ASTDataType,
-        val value: Expression?,
-    ) : AST
+        val value: ExpressionViejo?,
+    ) : ASTViejo
 
     data class Assignment(
         val id: ASTIdentifier,
-        val value: Expression,
-    ) : AST
+        val value: ExpressionViejo,
+    ) : ASTViejo
 
     data class Call(
         val functionName: PrintScriptFunctions,
-        val args: List<Expression>,
-    ) : AST
+        val args: List<ExpressionViejo>,
+    ) : ASTViejo
 }
 
 data class Program(
-    val trees: List<AST>,
+    val trees: List<ASTViejo>,
     val start: Position,
     val end: Position,
 )

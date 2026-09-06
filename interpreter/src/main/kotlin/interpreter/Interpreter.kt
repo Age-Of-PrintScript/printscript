@@ -1,8 +1,8 @@
 package interpreter
 
-import ast.AST
-import ast.Expression
+import ast.ASTViejo
 import ast.ExpressionSolver
+import ast.ExpressionViejo
 import ast.Program
 import domain.Either
 import domain.Failure
@@ -45,7 +45,7 @@ internal class InterpreterImpl : Interpreter {
         var env = runtimeEnvironment
         for (ast in asts) {
             when (ast) {
-                is AST.Assignment -> {
+                is ASTViejo.Assignment -> {
                     when (val newValue = solveExpression(ast.value, env)) {
                         is Failure -> return Failure(newValue.value)
                         is Success -> {
@@ -58,7 +58,7 @@ internal class InterpreterImpl : Interpreter {
                         }
                     }
                 }
-                is AST.Call -> {
+                is ASTViejo.Call -> {
                     when (ast.functionName) {
                         PrintScriptFunctions.PRINTLN -> {
                             val solvedResult = solveExpression(ast.args.first(), env)
@@ -72,7 +72,7 @@ internal class InterpreterImpl : Interpreter {
                         }
                     }
                 }
-                is AST.Declaration -> {
+                is ASTViejo.Declaration -> {
                     if (ast.value != null) {
                         when (val solvedResult = solveExpression(ast.value!!, env)) {
                             is Failure -> return Failure(solvedResult.value)
@@ -103,10 +103,10 @@ internal class InterpreterImpl : Interpreter {
     }
 
     private fun solveExpression(
-        expression: Expression,
+        expressionViejo: ExpressionViejo,
         env: RuntimeEnvironment,
     ): Either<RuntimeError, PrintScriptValue> =
-        when (val res = expressionSolver.solve(expression, env.getVariableMapWithValues())) {
+        when (val res = expressionSolver.solve(expressionViejo, env.getVariableMapWithValues())) {
             is Success -> Success(res.value)
             is Failure -> Failure(RuntimeError.MATH_ERROR)
         }

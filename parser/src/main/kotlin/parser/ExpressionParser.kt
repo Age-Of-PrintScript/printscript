@@ -1,6 +1,6 @@
 package parser
 
-import ast.Expression
+import ast.ExpressionViejo
 import domain.Either
 import domain.Failure
 import domain.PrintScriptOperator
@@ -18,7 +18,7 @@ import tokens.TokenViejo
 import java.util.Optional
 
 internal class ExpressionParser {
-    fun parseExpression(expression: List<TokenViejo>): Either<SyntaxError, Expression> =
+    fun parseExpression(expression: List<TokenViejo>): Either<SyntaxError, ExpressionViejo> =
         when (val result = createExpressionTree(expression)) {
             is Success -> Success(result.value.parsedResult)
             is Failure -> Failure(result.value)
@@ -29,7 +29,7 @@ internal class ExpressionParser {
         val nextPosition: Int,
     )
 
-    private fun createExpressionTree(tokenViejos: List<TokenViejo>): Either<SyntaxError, ParsedResult<Expression>> =
+    private fun createExpressionTree(tokenViejos: List<TokenViejo>): Either<SyntaxError, ParsedResult<ExpressionViejo>> =
         when (val term = parseTerm(tokenViejos, 0)) {
             is Success -> separateExpression(tokenViejos, term.value.nextPosition, term.value.parsedResult) // Quedo muy raro el nombre
             is Failure -> Failure(term.value)
@@ -38,7 +38,7 @@ internal class ExpressionParser {
     private fun parseTerm(
         tokenViejos: List<TokenViejo>,
         position: Int,
-    ): Either<SyntaxError, ParsedResult<Expression>> =
+    ): Either<SyntaxError, ParsedResult<ExpressionViejo>> =
         when (val factor = parseFactor(tokenViejos, position)) {
             is Success -> separateTerm(tokenViejos, factor.value.nextPosition, factor.value.parsedResult)
             is Failure -> Failure(factor.value)
@@ -47,7 +47,7 @@ internal class ExpressionParser {
     private fun parseFactor(
         tokenViejos: List<TokenViejo>,
         position: Int,
-    ): Either<SyntaxError, ParsedResult<Expression>> {
+    ): Either<SyntaxError, ParsedResult<ExpressionViejo>> {
         val token =
             tokenViejos.getOrNull(position)
                 ?: return Failure(SyntaxError.INCOMPLETE_STATEMENT) // Si llegue aca y la lista termino, la expresión no tiene sentido.
@@ -58,20 +58,20 @@ internal class ExpressionParser {
                 if (number != null) {
                     Success(
                         ParsedResult(
-                            Expression.Literal(NumberLiteral(number)),
+                            ExpressionViejo.Literal(NumberLiteral(number)),
                             position + 1,
                         ),
                     )
                 } else {
                     Success(
                         ParsedResult(
-                            Expression.Literal(StringLiteral(type.value)),
+                            ExpressionViejo.Literal(StringLiteral(type.value)),
                             position + 1,
                         ),
                     )
                 }
             }
-            is IdentifierViejo -> Success(ParsedResult(Expression.Variable(type.name), position + 1))
+            is IdentifierViejo -> Success(ParsedResult(ExpressionViejo.Variable(type.name), position + 1))
             is OPEN_PARENTHESISViejo -> parseParenthesisExpression(tokenViejos, position + 1)
             else -> Failure(SyntaxError.WRONG_TOKEN_TYPE) // Si hay un tokenType que no es de los dos de arriba, la expresión no tiene sentido.
         }
@@ -80,7 +80,7 @@ internal class ExpressionParser {
     private fun parseParenthesisExpression(
         tokenViejos: List<TokenViejo>,
         position: Int,
-    ): Either<SyntaxError, ParsedResult<Expression>> =
+    ): Either<SyntaxError, ParsedResult<ExpressionViejo>> =
         when (val expression = createExpressionTree(tokenViejos.subList(position, tokenViejos.size))) {
             is Success -> checkClosingParenthesis(tokenViejos, position + expression.value.nextPosition, expression.value)
             is Failure -> expression
@@ -89,10 +89,10 @@ internal class ExpressionParser {
     private fun checkClosingParenthesis(
         tokenViejos: List<TokenViejo>,
         position: Int,
-        parsedExpression: ParsedResult<Expression>,
-    ): Either<SyntaxError, ParsedResult<Expression>> =
+        parsedExpressionViejo: ParsedResult<ExpressionViejo>,
+    ): Either<SyntaxError, ParsedResult<ExpressionViejo>> =
         when (tokenViejos.getOrNull(position)?.type) {
-            is CLOSED_PARENTHESISViejo -> Success(ParsedResult(parsedExpression.parsedResult, position + 1))
+            is CLOSED_PARENTHESISViejo -> Success(ParsedResult(parsedExpressionViejo.parsedResult, position + 1))
             else -> Failure(SyntaxError.MISSING_CLOSING_PARENTHESIS)
         }
 
@@ -101,8 +101,8 @@ internal class ExpressionParser {
     private tailrec fun separateExpression(
         tokenViejos: List<TokenViejo>,
         position: Int,
-        left: Expression,
-    ): Either<SyntaxError, ParsedResult<Expression>> {
+        left: ExpressionViejo,
+    ): Either<SyntaxError, ParsedResult<ExpressionViejo>> {
         val operator = currentOperator(tokenViejos, position, termSeparators)
         if (operator.isEmpty) return Success(ParsedResult(left, position)) // Si es empty, no estoy en el medio de una expresión. Me quedo con lo de la izquierda.
 
@@ -111,7 +111,7 @@ internal class ExpressionParser {
                 separateExpression(
                     tokenViejos,
                     right.value.nextPosition,
-                    Expression.Operation(left, right.value.parsedResult, operator.get()),
+                    ExpressionViejo.Operation(left, right.value.parsedResult, operator.get()),
                 )
             is Failure -> Failure(right.value)
         }
@@ -120,8 +120,8 @@ internal class ExpressionParser {
     private tailrec fun separateTerm(
         tokenViejos: List<TokenViejo>,
         position: Int,
-        left: Expression,
-    ): Either<SyntaxError, ParsedResult<Expression>> {
+        left: ExpressionViejo,
+    ): Either<SyntaxError, ParsedResult<ExpressionViejo>> {
         val operator = currentOperator(tokenViejos, position, factorSeparators)
         if (operator.isEmpty) return Success(ParsedResult(left, position)) // Si es empty, no estoy en el medio de un termino. Me quedo con lo de la izquierda.
 
@@ -130,7 +130,7 @@ internal class ExpressionParser {
                 separateTerm(
                     tokenViejos,
                     right.value.nextPosition,
-                    Expression.Operation(left, right.value.parsedResult, operator.get()),
+                    ExpressionViejo.Operation(left, right.value.parsedResult, operator.get()),
                 )
             is Failure -> Failure(right.value)
         }
