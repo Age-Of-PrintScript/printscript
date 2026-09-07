@@ -12,7 +12,7 @@ import parser.Parser
 class Engine {
     private val lexer = Lexer.new()
     private val parser = Parser.new()
-    private val interpreter = Interpreter.new()
+    private val interpreter = Interpreter.new(v1_0semantics)
 
     fun execute(
         source: String,

@@ -12,6 +12,11 @@ import domain.PrintScriptValue
 import domain.Success
 import java.util.Optional
 
+data class LanguageSemantics(
+    val functions: Map<String, BuiltInFunction>,
+    val operations: Map<OperationKey, BinaryOperation>,
+)
+
 interface Interpreter {
     fun execute(program: Program): Either<RuntimeError, ExecutionResult>
 
@@ -21,11 +26,13 @@ interface Interpreter {
     ): Either<RuntimeError, ExecutionResult>
 
     companion object {
-        fun new(): Interpreter = InterpreterImpl()
+        fun new(semantics: LanguageSemantics): Interpreter = InterpreterImpl(semantics)
     }
 }
 
-internal class InterpreterImpl : Interpreter {
+internal class InterpreterImpl(
+    val semantics: LanguageSemantics,
+) : Interpreter {
     val expressionSolver = ExpressionSolver()
 
     override fun execute(program: Program): Either<RuntimeError, ExecutionResult> = execute(program, RuntimeEnvironment(emptyMap()), RuntimeEvents(emptyList()))
