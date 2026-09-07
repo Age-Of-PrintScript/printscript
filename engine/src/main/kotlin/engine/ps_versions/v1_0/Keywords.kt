@@ -5,8 +5,9 @@ import domain.StrType
 import tokens.Call
 import tokens.DataType
 import tokens.Let
+import tokens.TokenType
 
-val v1_0keywords =
+val v1_0Keywords: Map<String, TokenType> =
     mapOf(
         "let" to Let,
         "println" to Call("println"),

@@ -9,7 +9,7 @@ enum class RuntimeError(
     VARIABLE_DOESNT_EXIST("Variable doesn't exist"),
     MATH_ERROR("cannot resolve operation"),
     VARIABLE_HAS_DIFFERENT_TYPE("That variable exists with a different type"),
-    STRING_CONCATENATION_NEEDS_INT("to concat strings, integer are required"),
+    STRING_REPETITION_REQUIRES_INT("string repetition requires a positive integer"),
     ;
 
     override fun getMessage(): String = reason

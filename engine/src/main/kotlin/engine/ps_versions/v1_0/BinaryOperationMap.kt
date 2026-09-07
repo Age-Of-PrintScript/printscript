@@ -5,7 +5,7 @@ import domain.StrType
 import interpreter.BinaryOperation
 import interpreter.OperationKey
 
-val v1_0binaryOperations: Map<OperationKey, BinaryOperation> =
+val v1_0BinaryOperations: Map<OperationKey, BinaryOperation> =
     mapOf(
         OperationKey(Operators.SUM, NumType, NumType) to sumNumAndNum,
         OperationKey(Operators.SUM, StrType, StrType) to sumStrAndStr,

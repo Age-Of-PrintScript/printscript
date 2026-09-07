@@ -6,8 +6,9 @@ import tokens.Colon
 import tokens.OpenParen
 import tokens.Operator
 import tokens.Semicolon
+import tokens.TokenType
 
-val v1_0Symbols =
+val v1_0Symbols: Map<Char, TokenType> =
     mapOf(
         '+' to Operator(Operators.SUM),
         '-' to Operator(Operators.SUBTRACT),

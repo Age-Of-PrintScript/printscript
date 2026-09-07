@@ -3,7 +3,7 @@ package interpreter
 import domain.Either
 import domain.PSLiteral
 
-fun interface Function {
+fun interface BuiltInFunction {
     fun execute(args: List<PSLiteral>): Either<RuntimeError, FunctionResult>
 }
 
