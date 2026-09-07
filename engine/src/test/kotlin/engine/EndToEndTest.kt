@@ -1,8 +1,8 @@
-package executor
+package engine
 
-import executor.cases.FailedPrograms
-import executor.cases.SuccessfulPrograms
-import executor.cases.ValidationCases
+import engine.cases.FailedPrograms
+import engine.cases.SuccessfulPrograms
+import engine.cases.ValidationCases
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DynamicNode
 import org.junit.jupiter.api.DynamicTest.dynamicTest

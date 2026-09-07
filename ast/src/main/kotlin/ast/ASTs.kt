@@ -2,6 +2,12 @@ package ast
 
 import domain.PSType
 
+enum class ASTType {
+    DECLARATION,
+    ASSIGNMENT,
+    EXPRESSION_STATEMENT,
+}
+
 sealed interface AST {
     data class Declaration(
         val id: String,
