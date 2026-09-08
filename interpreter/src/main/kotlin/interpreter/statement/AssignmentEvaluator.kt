@@ -4,6 +4,7 @@ import ast.AST
 import domain.Either
 import domain.Failure
 import domain.Success
+import domain.getOrReturn
 import interpreter.LanguageSemantics
 import interpreter.RuntimeError
 import interpreter.environment.RuntimeEnvironment
@@ -16,18 +17,17 @@ class AssignmentEvaluator : StatementEvaluator<AST.Assignment> {
         events: RuntimeEvents,
         semantics: LanguageSemantics,
     ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
-        var currentEnv = env
-        when (val newValue = solveExpression(statement.value, env)) {
-            is Failure -> return Failure(newValue.value)
-            is Success -> {
-                when (val changedEnvResult = env.changeVariable(statement.id, newValue.value)) {
-                    is Failure -> return Failure(changedEnvResult.value)
-                    is Success -> {
-                        currentEnv = changedEnvResult.value
-                    }
-                }
-            }
-        }
-        return Success(Pair(currentEnv, events))
+        val newValue =
+            solveExpression(statement.value, env, semantics)
+                .getOrReturn { return Failure(it) }
+
+        if (newValue.returnValue == null) return Failure(RuntimeError.MISSING_ASSIGNATION)
+
+        val newEnv =
+            env
+                .changeVariable(statement.id, newValue.returnValue.toLiteral())
+                .getOrReturn { return Failure(it) }
+
+        return Success(Pair(newEnv, events))
     }
 }
