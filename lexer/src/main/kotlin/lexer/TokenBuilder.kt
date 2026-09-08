@@ -18,7 +18,7 @@ internal data class TokenBuilder(
     val lexicon: Lexicon,
 ) {
     fun addChar(chr: Char): Either<LexerError, TokenBuilder> {
-        if (type is TokenType && !charIsQuote(chr)) {
+        if (type is Literal && !charIsQuote(chr)) {
             val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
             return Success(copy(type = newType))
         }
