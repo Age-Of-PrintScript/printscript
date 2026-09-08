@@ -1,6 +1,6 @@
 package engine
 
-import interpreter.RuntimeEnvironment
+import interpreter.environment.RuntimeEnvironment
 
 class ExecutionContext internal constructor(
     internal val environment: RuntimeEnvironment = RuntimeEnvironment(emptyMap()),

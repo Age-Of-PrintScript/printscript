@@ -4,6 +4,8 @@ import ast.Program
 import domain.Error
 import interpreter.cases.failure.FAILURE_CASES
 import interpreter.cases.success.SUCCESS_CASES
+import interpreter.environment.RuntimeEnvironment
+import interpreter.environment.RuntimeEvents
 import org.junit.jupiter.api.DynamicNode
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
@@ -22,7 +24,7 @@ data class FailureCase(
 )
 
 class InterpreterTest {
-    private val interpreter = InterpreterImpl()
+    private val interpreter = InterpreterImpl(testSemantics)
 
     @TestFactory
     fun `successful interpreter executions`(): List<DynamicNode> =

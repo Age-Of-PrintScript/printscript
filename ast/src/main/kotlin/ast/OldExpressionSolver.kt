@@ -1,7 +1,9 @@
 package ast
 
-import ast.ExpressionViejo.Literal
-import ast.ExpressionViejo.Operation
+import ast.Expression.Call
+import ast.Expression.Literal
+import ast.Expression.Operation
+import ast.Expression.Variable
 import domain.Either
 import domain.Failure
 import domain.PrintScriptOperator
@@ -11,13 +13,13 @@ import domain.PrintScriptValue.StringLiteral
 import domain.Success
 import java.util.Optional
 
-class ExpressionSolver {
+class OldExpressionSolver {
     fun solve(
         expressionViejo: ExpressionViejo,
         values: Map<String, Optional<PrintScriptValue>>,
     ): Either<String, PrintScriptValue> {
         return when (expressionViejo) {
-            is Literal -> {
+            is ExpressionViejo.Literal -> {
                 when (expressionViejo.value) {
                     is NumberLiteral -> Success(expressionViejo.value)
                     is StringLiteral -> Success(expressionViejo.value)
@@ -36,12 +38,12 @@ class ExpressionSolver {
                 }
             }
 
-            is Operation -> solveOperation(expressionViejo, values)
+            is ExpressionViejo.Operation -> solveOperation(expressionViejo, values)
         }
     }
 
     private fun solveOperation(
-        operation: Operation,
+        operation: ExpressionViejo.Operation,
         values: Map<String, Optional<PrintScriptValue>>,
     ): Either<String, PrintScriptValue> {
         val left = solve(operation.left, values)
@@ -212,5 +214,22 @@ class ExpressionSolver {
                 is StringLiteral -> right.value
             }
         return Success(StringLiteral(leftText + rightText))
+    }
+}
+
+class ExpressionSolver {
+    fun solve(
+        expression: Expression,
+        values: Map<String, Literal?>,
+    ): Either<String, Literal> {
+        return when (expression) {
+            is Call -> TODO()
+            is Literal -> Success(expression)
+            is Operation -> TODO()
+            is Variable -> {
+                val value = values[expression.name] ?: return Failure("")
+                Success(value)
+            }
+        }
     }
 }

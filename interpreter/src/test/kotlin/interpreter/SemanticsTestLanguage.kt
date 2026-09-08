@@ -6,6 +6,7 @@ import domain.PSLiteral
 import domain.PSOperator
 import domain.StrType
 import domain.Success
+import interpreter.environment.PrintEvent
 
 val printlnFunction =
     BuiltInFunction { args ->
