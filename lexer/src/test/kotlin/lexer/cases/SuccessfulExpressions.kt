@@ -1,14 +1,18 @@
 package lexer.cases
 
-import domain.PrintScriptOperator
+import domain.NumType
+import lexer.Divide
+import lexer.Multiply
+import lexer.Subtract
 import lexer.SuccessCase
-import tokens.ASSIGNViejo
-import tokens.CLOSED_PARENTHESISViejo
-import tokens.IdentifierViejo
-import tokens.LiteralViejo
-import tokens.OPEN_PARENTHESISViejo
-import tokens.OperatorViejo
-import tokens.SEMICOLONViejo
+import lexer.Sum
+import tokens.Assign
+import tokens.CloseParen
+import tokens.Identifier
+import tokens.Literal
+import tokens.OpenParen
+import tokens.Operator
+import tokens.Semicolon
 
 object SuccessfulExpressions {
     fun cases() =
@@ -17,46 +21,46 @@ object SuccessfulExpressions {
                 "number assignment with expression",
                 "x = 5 + 2;",
                 listOf(
-                    IdentifierViejo("x"),
-                    ASSIGNViejo,
-                    LiteralViejo("5"),
-                    OperatorViejo(PrintScriptOperator.SUM),
-                    LiteralViejo("2"),
-                    SEMICOLONViejo,
+                    Identifier("x"),
+                    Assign,
+                    Literal("5", NumType),
+                    Operator(Sum),
+                    Literal("2", NumType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
                 "parenthesized expression with multiply",
                 "x = (5 + 2) * 3;",
                 listOf(
-                    IdentifierViejo("x"),
-                    ASSIGNViejo,
-                    OPEN_PARENTHESISViejo,
-                    LiteralViejo("5"),
-                    OperatorViejo(PrintScriptOperator.SUM),
-                    LiteralViejo("2"),
-                    CLOSED_PARENTHESISViejo,
-                    OperatorViejo(PrintScriptOperator.MULTIPLY),
-                    LiteralViejo("3"),
-                    SEMICOLONViejo,
+                    Identifier("x"),
+                    Assign,
+                    OpenParen,
+                    Literal("5", NumType),
+                    Operator(Sum),
+                    Literal("2", NumType),
+                    CloseParen,
+                    Operator(Multiply),
+                    Literal("3", NumType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
                 "expression with all operators",
                 "x = 5 + 2 - 3 * 4 / 2;",
                 listOf(
-                    IdentifierViejo("x"),
-                    ASSIGNViejo,
-                    LiteralViejo("5"),
-                    OperatorViejo(PrintScriptOperator.SUM),
-                    LiteralViejo("2"),
-                    OperatorViejo(PrintScriptOperator.SUBTRACT),
-                    LiteralViejo("3"),
-                    OperatorViejo(PrintScriptOperator.MULTIPLY),
-                    LiteralViejo("4"),
-                    OperatorViejo(PrintScriptOperator.DIVIDE),
-                    LiteralViejo("2"),
-                    SEMICOLONViejo,
+                    Identifier("x"),
+                    Assign,
+                    Literal("5", NumType),
+                    Operator(Sum),
+                    Literal("2", NumType),
+                    Operator(Subtract),
+                    Literal("3", NumType),
+                    Operator(Multiply),
+                    Literal("4", NumType),
+                    Operator(Divide),
+                    Literal("2", NumType),
+                    Semicolon,
                 ),
             ),
         )

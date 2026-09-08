@@ -51,4 +51,5 @@ data class CallViejo(
     val type: PrintScriptFunctions,
 ) : TokenTypeViejo
 
-typealias TokenList = List<TokenViejo>
+typealias TokenList = List<Token>
+typealias TokenListViejo = List<TokenViejo>
