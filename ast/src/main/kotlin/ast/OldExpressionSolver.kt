@@ -1,9 +1,5 @@
 package ast
 
-import ast.Expression.Call
-import ast.Expression.Literal
-import ast.Expression.Operation
-import ast.Expression.Variable
 import domain.Either
 import domain.Failure
 import domain.PrintScriptOperator
@@ -216,4 +212,3 @@ class OldExpressionSolver {
         return Success(StringLiteral(leftText + rightText))
     }
 }
-
