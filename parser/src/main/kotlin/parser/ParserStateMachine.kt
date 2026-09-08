@@ -10,11 +10,11 @@ import domain.getOrReturn
 import parser.states.Start
 import parser.states.State
 import parser.states.StatementComplete
-import tokens.TokenList
+import tokens.TokenListViejo
 
 internal class ParserStateMachine {
     fun parse(
-        tokens: TokenList,
+        tokens: TokenListViejo,
         expressionParser: ExpressionParser,
     ): Either<SyntaxError, Program> {
         var state: State = Start
@@ -41,7 +41,7 @@ internal class ParserStateMachine {
     private fun finalizeParsing(
         state: State,
         trees: List<ASTViejo>,
-        tokens: TokenList,
+        tokens: TokenListViejo,
     ): Either<SyntaxError, Program> {
         if (state != Start) return Failure(SyntaxError.INCOMPLETE_STATEMENT)
 
@@ -54,7 +54,7 @@ internal class ParserStateMachine {
         )
     }
 
-    private fun getFinalPosition(tokens: TokenList): Position = if (tokens.isNotEmpty()) tokens.last().end else Position(0, 0)
+    private fun getFinalPosition(tokens: TokenListViejo): Position = if (tokens.isNotEmpty()) tokens.last().end else Position(0, 0)
 
-    private fun getInitialPosition(tokens: TokenList): Position = if (tokens.isNotEmpty()) tokens.first().start else Position(0, 0)
+    private fun getInitialPosition(tokens: TokenListViejo): Position = if (tokens.isNotEmpty()) tokens.first().start else Position(0, 0)
 }

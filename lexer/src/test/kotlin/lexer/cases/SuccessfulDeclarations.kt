@@ -1,14 +1,15 @@
 package lexer.cases
 
-import domain.PrintScriptType
+import domain.NumType
+import domain.StrType
 import lexer.SuccessCase
-import tokens.ASSIGNViejo
-import tokens.COLONViejo
-import tokens.DataTypeViejo
-import tokens.IdentifierViejo
-import tokens.LETViejo
-import tokens.LiteralViejo
-import tokens.SEMICOLONViejo
+import tokens.Assign
+import tokens.Colon
+import tokens.DataType
+import tokens.Identifier
+import tokens.Let
+import tokens.Literal
+import tokens.Semicolon
 
 object SuccessfulDeclarations {
     fun cases() =
@@ -17,78 +18,78 @@ object SuccessfulDeclarations {
                 "number declaration",
                 "let x: number = 5;",
                 listOf(
-                    LETViejo,
-                    IdentifierViejo("x"),
-                    COLONViejo,
-                    DataTypeViejo(PrintScriptType.NUMBER),
-                    ASSIGNViejo,
-                    LiteralViejo("5"),
-                    SEMICOLONViejo,
+                    Let,
+                    Identifier("x"),
+                    Colon,
+                    DataType(NumType),
+                    Assign,
+                    Literal("5", NumType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
                 "string declaration",
                 "let x: string = \"Hello\";",
                 listOf(
-                    LETViejo,
-                    IdentifierViejo("x"),
-                    COLONViejo,
-                    DataTypeViejo(PrintScriptType.STRING),
-                    ASSIGNViejo,
-                    LiteralViejo("Hello"),
-                    SEMICOLONViejo,
+                    Let,
+                    Identifier("x"),
+                    Colon,
+                    DataType(StrType),
+                    Assign,
+                    Literal("Hello", StrType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
                 "empty string declaration",
                 "let x: string = \"\";",
                 listOf(
-                    LETViejo,
-                    IdentifierViejo("x"),
-                    COLONViejo,
-                    DataTypeViejo(PrintScriptType.STRING),
-                    ASSIGNViejo,
-                    LiteralViejo(""),
-                    SEMICOLONViejo,
+                    Let,
+                    Identifier("x"),
+                    Colon,
+                    DataType(StrType),
+                    Assign,
+                    Literal("", StrType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
                 "string with spaces declaration",
                 "let x: string = \"hola mundo\";",
                 listOf(
-                    LETViejo,
-                    IdentifierViejo("x"),
-                    COLONViejo,
-                    DataTypeViejo(PrintScriptType.STRING),
-                    ASSIGNViejo,
-                    LiteralViejo("hola mundo"),
-                    SEMICOLONViejo,
+                    Let,
+                    Identifier("x"),
+                    Colon,
+                    DataType(StrType),
+                    Assign,
+                    Literal("hola mundo", StrType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
                 "declaration with no spaces in input",
                 "let x:number=5;",
                 listOf(
-                    LETViejo,
-                    IdentifierViejo("x"),
-                    COLONViejo,
-                    DataTypeViejo(PrintScriptType.NUMBER),
-                    ASSIGNViejo,
-                    LiteralViejo("5"),
-                    SEMICOLONViejo,
+                    Let,
+                    Identifier("x"),
+                    Colon,
+                    DataType(NumType),
+                    Assign,
+                    Literal("5", NumType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
                 "declaration with multiple spaces in input",
                 "let    x  :   number  =   5  ;",
                 listOf(
-                    LETViejo,
-                    IdentifierViejo("x"),
-                    COLONViejo,
-                    DataTypeViejo(PrintScriptType.NUMBER),
-                    ASSIGNViejo,
-                    LiteralViejo("5"),
-                    SEMICOLONViejo,
+                    Let,
+                    Identifier("x"),
+                    Colon,
+                    DataType(NumType),
+                    Assign,
+                    Literal("5", NumType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
@@ -96,46 +97,46 @@ object SuccessfulDeclarations {
                 "let x: number = 5;\n " +
                     "let y: string = \"Hello\";",
                 listOf(
-                    LETViejo,
-                    IdentifierViejo("x"),
-                    COLONViejo,
-                    DataTypeViejo(PrintScriptType.NUMBER),
-                    ASSIGNViejo,
-                    LiteralViejo("5"),
-                    SEMICOLONViejo,
-                    LETViejo,
-                    IdentifierViejo("y"),
-                    COLONViejo,
-                    DataTypeViejo(PrintScriptType.STRING),
-                    ASSIGNViejo,
-                    LiteralViejo("Hello"),
-                    SEMICOLONViejo,
+                    Let,
+                    Identifier("x"),
+                    Colon,
+                    DataType(NumType),
+                    Assign,
+                    Literal("5", NumType),
+                    Semicolon,
+                    Let,
+                    Identifier("y"),
+                    Colon,
+                    DataType(StrType),
+                    Assign,
+                    Literal("Hello", StrType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
                 "declaration with identifier value",
                 "let x1: number = x2;",
                 listOf(
-                    LETViejo,
-                    IdentifierViejo("x1"),
-                    COLONViejo,
-                    DataTypeViejo(PrintScriptType.NUMBER),
-                    ASSIGNViejo,
-                    IdentifierViejo("x2"),
-                    SEMICOLONViejo,
+                    Let,
+                    Identifier("x1"),
+                    Colon,
+                    DataType(NumType),
+                    Assign,
+                    Identifier("x2"),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
                 "declaration with string with single quote inside",
                 "let x1: string = \"let's move\";",
                 listOf(
-                    LETViejo,
-                    IdentifierViejo("x1"),
-                    COLONViejo,
-                    DataTypeViejo(PrintScriptType.STRING),
-                    ASSIGNViejo,
-                    LiteralViejo("let's move"),
-                    SEMICOLONViejo,
+                    Let,
+                    Identifier("x1"),
+                    Colon,
+                    DataType(StrType),
+                    Assign,
+                    Literal("let's move", StrType),
+                    Semicolon,
                 ),
             ),
         )

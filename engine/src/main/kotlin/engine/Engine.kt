@@ -3,14 +3,17 @@ package engine
 import domain.Error
 import domain.Failure
 import domain.Success
+import engine.ps_versions.v1_0.v1_0Keywords
+import engine.ps_versions.v1_0.v1_0Symbols
 import interpreter.ExecutionResult
 import interpreter.Interpreter
 import interpreter.PrintEvent
 import lexer.Lexer
+import lexer.Lexicon
 import parser.Parser
 
 class Engine {
-    private val lexer = Lexer.new()
+    private val lexer = Lexer.new(Lexicon(v1_0Symbols, v1_0Keywords))
     private val parser = Parser.new()
     private val interpreter = Interpreter.new()
 
@@ -24,7 +27,7 @@ class Engine {
             logFailure(tokensResult.value, logger)
             return EngineResult(ExitCode.FAILURE, context)
         }
-        val programResult = parser.parse((tokensResult as Success).value)
+        val programResult = parser.parse(listOf()) // hardcodeado
         if (programResult is Failure) {
             logFailure(programResult.value, logger)
             return EngineResult(ExitCode.FAILURE, context)
@@ -79,7 +82,7 @@ class Engine {
             logFailure(tokensResult.value, logger)
             return ExitCode.FAILURE
         }
-        val programResult = parser.parse((tokensResult as Success).value)
+        val programResult = parser.parse(listOf())
         if (programResult is Failure) {
             logFailure(programResult.value, logger)
             return ExitCode.FAILURE
