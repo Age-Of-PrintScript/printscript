@@ -2,6 +2,9 @@ package interpreter.statement
 
 import ast.AST
 import domain.Either
+import domain.Failure
+import domain.Success
+import domain.getOrReturn
 import interpreter.LanguageSemantics
 import interpreter.RuntimeError
 import interpreter.environment.RuntimeEnvironment
@@ -14,6 +17,10 @@ class ExpressionStatementEvaluator : StatementEvaluator<AST.ExpressionStatement>
         events: RuntimeEvents,
         semantics: LanguageSemantics,
     ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
-        TODO("Not yet implemented")
+        val result =
+            solveExpression(statement.expression, env, semantics)
+                .getOrReturn { return Failure(it) }
+        val updatedEvents = events + result.events
+        return Success(Pair(env, updatedEvents))
     }
 }

@@ -54,23 +54,6 @@ internal class InterpreterImpl(
                     events = result.value.second
                 }
             }
-//                is ASTViejo.Call -> {
-//                    when (ast.functionName) {
-// //                        semantics.functions.forEach { (name, function) ->
-// //
-// //                        }
-//                        PrintScriptFunctions.PRINTLN -> {
-//                            val solvedResult = solveExpression(ast.args.first(), env)
-//                            when (solvedResult) {
-//                                is Failure -> return Failure(solvedResult.value)
-//                                is Success -> {
-//                                    events = addPrintEvent(events, valueToString(solvedResult.value))
-//                                }
-//                            }
-//                            // edito los events
-//                        }
-//                    }
-//                }
         }
         return Success(ExecutionResult(env, events))
     }
