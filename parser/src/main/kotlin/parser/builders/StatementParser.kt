@@ -3,11 +3,11 @@ package parser.builders
 import ast.AST
 import domain.Either
 import parser.SyntaxError
-import tokens.TokenList
+import parser.TokenConsumer
 import tokens.TokenType
 
-interface Builder {
+interface StatementParser {
     fun canParse(token: TokenType): Boolean
 
-    fun parse(tokens: TokenList): Either<SyntaxError, AST>
+    fun parse(consumer: TokenConsumer): Either<SyntaxError, AST>
 }
