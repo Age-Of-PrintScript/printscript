@@ -25,7 +25,7 @@ class Engine {
 
         val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
         val parser = Parser.new(version.statementParsers)
-        val interpreter = Interpreter.new(LanguageSemantics(version.builtInFunctions, version.binaryOperations))
+        val interpreter = Interpreter.new(LanguageSemantics(version.builtInFunctions, version.binaryOperations, version.statementEvaluators))
 
         val tokensResult = lexer.tokenize(source)
         if (tokensResult is Failure) {

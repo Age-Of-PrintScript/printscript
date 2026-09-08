@@ -1,6 +1,7 @@
 package interpreter
 
 import ast.AST
+import ast.ASTType
 import ast.Program
 import domain.Either
 import domain.Failure
@@ -8,17 +9,10 @@ import domain.Success
 import interpreter.environment.ExecutionResult
 import interpreter.environment.RuntimeEnvironment
 import interpreter.environment.RuntimeEvents
-import interpreter.statement.AssignmentEvaluator
-import interpreter.statement.DeclarationEvaluator
-import interpreter.statement.ExpressionStatementEvaluator
 
 internal class InterpreterImpl(
     val semantics: LanguageSemantics,
 ) : Interpreter {
-    private val declarationEvaluator = DeclarationEvaluator()
-    private val assignmentEvaluator = AssignmentEvaluator()
-    private val expressionStatementEvaluator = ExpressionStatementEvaluator()
-
     override fun execute(program: Program): Either<RuntimeError, ExecutionResult> = execute(program, RuntimeEnvironment(emptyMap()), RuntimeEvents(emptyList()))
 
     override fun executeWithEnvironment(
@@ -35,17 +29,12 @@ internal class InterpreterImpl(
         var events = runtimeEvents
         var env = runtimeEnvironment
         for (ast in asts) {
-            val result =
-                when (ast) {
-                    is AST.Declaration ->
-                        declarationEvaluator.evaluate(ast, env, events, semantics)
+            val astType = getASTType(ast)
+            val evaluator =
+                semantics.statementEvaluators[astType]
+                    ?: return Failure(RuntimeError.MISSING_EVALUATOR_FOR_AST)
 
-                    is AST.Assignment ->
-                        assignmentEvaluator.evaluate(ast, env, events, semantics)
-
-                    is AST.ExpressionStatement ->
-                        expressionStatementEvaluator.evaluate(ast, env, events, semantics)
-                }
+            val result = evaluator.evaluate(ast, env, events, semantics)
 
             when (result) {
                 is Failure -> return Failure(result.value)
@@ -57,4 +46,11 @@ internal class InterpreterImpl(
         }
         return Success(ExecutionResult(env, events))
     }
+
+    private fun getASTType(ast: AST): ASTType =
+        when (ast) {
+            is AST.Declaration -> ASTType.DECLARATION
+            is AST.Assignment -> ASTType.ASSIGNMENT
+            is AST.ExpressionStatement -> ASTType.EXPRESSION_STATEMENT
+        }
 }
