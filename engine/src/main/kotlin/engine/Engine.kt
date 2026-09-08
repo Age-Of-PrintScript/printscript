@@ -1,28 +1,31 @@
 package engine
 
+import domain.Either
 import domain.Error
 import domain.Failure
 import domain.Success
-import engine.ps_versions.v1_0.v1_0Keywords
-import engine.ps_versions.v1_0.v1_0Symbols
-import engine.ps_versions.v1_0.v1_0ValidAST
 import interpreter.Interpreter
+import interpreter.LanguageSemantics
 import interpreter.environment.ExecutionResult
 import interpreter.environment.PrintEvent
 import lexer.Lexer
 import lexer.Lexicon
 import parser.Parser
+import versionFactory.PSVersion
+import versionFactory.PSVersion1_0
 
 class Engine {
-    private val lexer = Lexer.new(Lexicon(v1_0Symbols, v1_0Keywords))
-    private val parser = Parser.new(v1_0ValidAST)
-    private val interpreter = Interpreter.new(v1_0semantics)
-
     fun execute(
         source: String,
         logger: Logger,
         context: ExecutionContext = ExecutionContext(),
+        version: String? = null,
     ): EngineResult {
+        val version = PSVersion1_0()
+
+        val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
+        val parser = Parser.new(version.statementParsers.keys.toList())
+        val interpreter = Interpreter.new(LanguageSemantics(version.builtInFunctions, version.binaryOperations))
         val tokensResult = lexer.tokenize(source)
         if (tokensResult is Failure) {
             logFailure(tokensResult.value, logger)
@@ -78,6 +81,10 @@ class Engine {
         source: String,
         logger: Logger,
     ): ExitCode {
+        val version = PSVersion1_0()
+        val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
+        val parser = Parser.new(version.statementParsers.keys.toList())
+
         val tokensResult = lexer.tokenize(source)
         if (tokensResult is Failure) {
             logFailure(tokensResult.value, logger)
@@ -91,4 +98,12 @@ class Engine {
         logger.log("Validation Successful")
         return ExitCode.SUCCESS
     }
+
+    private fun getVersion(version: String): Either<String, PSVersion> {
+        return when (version) {
+            "1.0" -> Success(PSVersion1_0())
+            else -> Failure("Unknown version")
+        }
+    }
+    private fun getLatestVersion() = PSVersion1_0()
 }

@@ -28,4 +28,3 @@ class PSVersion1_0 : PSVersion {
     override val statementEvaluators: Map<ASTType, StatementEvaluator>
         get() = v1_0StatementEvaluators
 }
-
