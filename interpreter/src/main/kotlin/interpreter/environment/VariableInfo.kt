@@ -6,5 +6,5 @@ import domain.PSType
 data class VariableInfo(
     val type: PSType,
     val value: Literal?,
-    val mutable: Boolean,
+    val mutable: Boolean = true,
 )

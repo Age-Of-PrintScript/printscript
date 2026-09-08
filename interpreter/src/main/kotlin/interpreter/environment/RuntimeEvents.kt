@@ -13,5 +13,6 @@ data class RuntimeEvents(
         )
 
     operator fun plus(newEvents: List<Event>): RuntimeEvents = RuntimeEvents(events + newEvents)
+
     operator fun plus(newEvent: Event): RuntimeEvents = RuntimeEvents(events + newEvent)
 }

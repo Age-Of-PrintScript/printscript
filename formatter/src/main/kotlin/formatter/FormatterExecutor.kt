@@ -3,6 +3,7 @@ package formatter
 import ast.ASTViejo
 import domain.getOrReturn
 import lexer.Lexer
+import lexer.Lexicon
 import parser.Parser
 
 interface Formatter {
@@ -18,7 +19,7 @@ interface Formatter {
 }
 
 internal class FormatterExecutor : Formatter {
-    private val lexer = Lexer.new()
+    private val lexer = Lexer.new(Lexicon(mapOf(), mapOf())) // dummy
     private val parser = Parser.new()
 
     override fun format(
@@ -28,8 +29,8 @@ internal class FormatterExecutor : Formatter {
     ): FormatResult {
         val source = fileReader.readText(sourcePath)
 
-        val tokens = lexer.tokenize(source).getOrReturn { return FormatResult.Failure(it.getMessage()) }
-        val program = parser.parse(tokens).getOrReturn { return FormatResult.Failure(it.getMessage()) }
+        lexer.tokenize(source).getOrReturn { return FormatResult.Failure(it.getMessage()) }
+        val program = parser.parse(listOf()).getOrReturn { return FormatResult.Failure(it.getMessage()) } // dummy, TODO(implementarlos bien cuando integremos estos modulos)
         val config = parseConfig(path).getOrReturn { return FormatResult.Failure(it.getMessage()) }
         val formatters = FormatterFactory(config).constructFormatters().getOrReturn { return FormatResult.Failure(it.getMessage()) }
 
