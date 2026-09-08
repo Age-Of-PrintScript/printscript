@@ -16,6 +16,7 @@ data class RuntimeEnvironment(
         id: String,
         type: PSType,
         value: Literal?,
+        mutable: Boolean,
     ): Either<RuntimeError, RuntimeEnvironment> {
         if (variableMap.containsKey(id)) return Failure(RuntimeError.VARIABLE_ALREADY_DEFINED)
         return Success(
@@ -23,7 +24,7 @@ data class RuntimeEnvironment(
                 variableMap
                     .toMutableMap()
                     .apply {
-                        put(id, VariableInfo(type, value))
+                        put(id, VariableInfo(type, value, mutable))
                     }.toMap(),
             ),
         )
