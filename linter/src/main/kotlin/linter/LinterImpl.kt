@@ -41,5 +41,6 @@ internal class LinterImpl(
         val tokens = lexer.tokenize(source).getOrReturn { return listOf(Warning.fromError(it)) }
         val program = parser.parse(tokens).getOrReturn { return listOf(Warning.fromError(it)) }
         return analyser.analyse(program, rulesConfig)
+        return listOf()
     }
 }

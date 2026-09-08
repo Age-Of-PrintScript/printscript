@@ -1,7 +1,5 @@
 package ast
 
-import ast.ExpressionViejo.Literal
-import ast.ExpressionViejo.Operation
 import domain.Either
 import domain.Failure
 import domain.PrintScriptOperator
@@ -11,13 +9,13 @@ import domain.PrintScriptValue.StringLiteral
 import domain.Success
 import java.util.Optional
 
-class ExpressionSolver {
+class OldExpressionSolver {
     fun solve(
         expressionViejo: ExpressionViejo,
         values: Map<String, Optional<PrintScriptValue>>,
     ): Either<String, PrintScriptValue> {
         return when (expressionViejo) {
-            is Literal -> {
+            is ExpressionViejo.Literal -> {
                 when (expressionViejo.value) {
                     is NumberLiteral -> Success(expressionViejo.value)
                     is StringLiteral -> Success(expressionViejo.value)
@@ -36,12 +34,12 @@ class ExpressionSolver {
                 }
             }
 
-            is Operation -> solveOperation(expressionViejo, values)
+            is ExpressionViejo.Operation -> solveOperation(expressionViejo, values)
         }
     }
 
     private fun solveOperation(
-        operation: Operation,
+        operation: ExpressionViejo.Operation,
         values: Map<String, Optional<PrintScriptValue>>,
     ): Either<String, PrintScriptValue> {
         val left = solve(operation.left, values)
@@ -214,3 +212,4 @@ class ExpressionSolver {
         return Success(StringLiteral(leftText + rightText))
     }
 }
+

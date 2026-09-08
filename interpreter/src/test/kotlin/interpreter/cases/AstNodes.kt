@@ -1,164 +1,183 @@
 package interpreter.cases
 
-import ast.ASTDataType
-import ast.ASTIdentifier
-import ast.ASTViejo
+import ast.AST
+import ast.Expression
+import domain.NumType
 import domain.Position
-import domain.PrintScriptFunctions
-import domain.PrintScriptType
+import domain.StrType
 
 val POS = Position(0, 0)
 
-val ID_X = ASTIdentifier("x")
-val ID_A = ASTIdentifier("a")
-val ID_Y = ASTIdentifier("y")
-
-val TYPE_NUMBER = ASTDataType(PrintScriptType.NUMBER)
-val TYPE_STRING = ASTDataType(PrintScriptType.STRING)
-
 val DECLARATION_X_NUMBER_5 =
-    ASTViejo.Declaration(
-        id = ID_X,
-        type = TYPE_NUMBER,
+    AST.Declaration(
+        id = "x",
+        type = NumType,
+        mutable = true,
         value = LITERAL_NUMBER_5,
     )
 
 val DECLARATION_X_STRING_HOLA =
-    ASTViejo.Declaration(
-        id = ID_X,
-        type = TYPE_STRING,
+    AST.Declaration(
+        id = "x",
+        type = StrType,
+        mutable = true,
         value = LITERAL_STRING_HOLA,
     )
 
 val DECLARATION_X_NUMBER_NO_VALUE =
-    ASTViejo.Declaration(
-        id = ID_X,
-        type = TYPE_NUMBER,
+    AST.Declaration(
+        id = "x",
+        type = NumType,
+        mutable = true,
         value = null,
     )
 
 val DECLARATION_X_STRING_NO_VALUE =
-    ASTViejo.Declaration(
-        id = ID_X,
-        type = TYPE_STRING,
+    AST.Declaration(
+        id = "x",
+        type = StrType,
+        mutable = true,
         value = null,
     )
 
 val DECLARATION_A_NUMBER_1 =
-    ASTViejo.Declaration(
-        id = ID_A,
-        type = TYPE_NUMBER,
+    AST.Declaration(
+        id = "a",
+        type = NumType,
+        mutable = true,
         value = LITERAL_NUMBER_1,
     )
 
 val DECLARATION_Y_NUMBER_NO_VALUE =
-    ASTViejo.Declaration(
-        id = ID_Y,
-        type = TYPE_NUMBER,
+    AST.Declaration(
+        id = "y",
+        type = NumType,
+        mutable = true,
         value = null,
     )
 
 val DECLARATION_Y_NUMBER_WITH_X_VALUE =
-    ASTViejo.Declaration(
-        id = ID_Y,
-        type = TYPE_NUMBER,
+    AST.Declaration(
+        id = "y",
+        type = NumType,
+        mutable = true,
         value = VARIABLE_X,
     )
 
 val DECLARATION_X_NUMBER_WITH_STRING_VALUE =
-    ASTViejo.Declaration(
-        id = ID_X,
-        type = TYPE_NUMBER,
+    AST.Declaration(
+        id = "x",
+        type = NumType,
+        mutable = true,
         value = LITERAL_STRING_X,
     )
 
 val DECLARATION_X_NUMBER_WITH_INVALID_OPERATION =
-    ASTViejo.Declaration(
-        id = ID_X,
-        type = TYPE_NUMBER,
+    AST.Declaration(
+        id = "x",
+        type = NumType,
+        mutable = true,
         value = OPERATION_5_DIVIDE_STRING,
     )
 
 val ASSIGNMENT_X_TO_10 =
-    ASTViejo.Assignment(
-        id = ID_X,
+    AST.Assignment(
+        id = "x",
         value = LITERAL_NUMBER_10,
     )
 
 val ASSIGNMENT_X_TO_2 =
-    ASTViejo.Assignment(
-        id = ID_X,
+    AST.Assignment(
+        id = "x",
         value = LITERAL_NUMBER_2,
     )
 
 val ASSIGNMENT_Y_TO_X =
-    ASTViejo.Assignment(
-        id = ID_Y,
+    AST.Assignment(
+        id = "y",
         value = VARIABLE_X,
     )
 
 val ASSIGNMENT_X_TO_STRING_X =
-    ASTViejo.Assignment(
-        id = ID_X,
+    AST.Assignment(
+        id = "x",
         value = LITERAL_STRING_X,
     )
 
 val ASSIGNMENT_UNDECLARED_A_TO_5 =
-    ASTViejo.Assignment(
-        id = ID_A,
+    AST.Assignment(
+        id = "a",
         value = LITERAL_NUMBER_5,
     )
 
 val CALL_PRINTLN_HOLA =
-    ASTViejo.Call(
-        functionName = PrintScriptFunctions.PRINTLN,
-        args = listOf(LITERAL_STRING_HOLA),
+    AST.ExpressionStatement(
+        Expression.Call(
+            name = "println",
+            args = listOf(LITERAL_STRING_HOLA),
+        ),
     )
 
 val CALL_PRINTLN_MUNDO =
-    ASTViejo.Call(
-        functionName = PrintScriptFunctions.PRINTLN,
-        args = listOf(LITERAL_STRING_MUNDO),
+    AST.ExpressionStatement(
+        Expression.Call(
+            name = "println",
+            args = listOf(LITERAL_STRING_MUNDO),
+        ),
     )
 
 val CALL_PRINTLN_X =
-    ASTViejo.Call(
-        functionName = PrintScriptFunctions.PRINTLN,
-        args = listOf(VARIABLE_X),
+    AST.ExpressionStatement(
+        Expression.Call(
+            name = "println",
+            args = listOf(VARIABLE_X),
+        ),
     )
 
 val CALL_PRINTLN_OPERATION_1_PLUS_2 =
-    ASTViejo.Call(
-        functionName = PrintScriptFunctions.PRINTLN,
-        args = listOf(OPERATION_1_PLUS_2),
+    AST.ExpressionStatement(
+        Expression.Call(
+            name = "println",
+            args = listOf(OPERATION_1_PLUS_2),
+        ),
     )
 
 val CALL_PRINTLN_STRING_PLUS_NUMBER =
-    ASTViejo.Call(
-        functionName = PrintScriptFunctions.PRINTLN,
-        args = listOf(OPERATION_STRING_PLUS_NUMBER),
+    AST.ExpressionStatement(
+        Expression.Call(
+            name = "println",
+            args = listOf(OPERATION_STRING_PLUS_NUMBER),
+        ),
     )
 
 val CALL_PRINTLN_NUMBER_PLUS_STRING =
-    ASTViejo.Call(
-        functionName = PrintScriptFunctions.PRINTLN,
-        args = listOf(OPERATION_NUMBER_PLUS_STRING),
+    AST.ExpressionStatement(
+        Expression.Call(
+            name = "println",
+            args = listOf(OPERATION_NUMBER_PLUS_STRING),
+        ),
     )
 
 val CALL_PRINTLN_STRING_PLUS_STRING =
-    ASTViejo.Call(
-        functionName = PrintScriptFunctions.PRINTLN,
-        args = listOf(OPERATION_STRING_PLUS_STRING),
+    AST.ExpressionStatement(
+        Expression.Call(
+            name = "println",
+            args = listOf(OPERATION_STRING_PLUS_STRING),
+        ),
     )
 
 val CALL_PRINTLN_UNDECLARED_A =
-    ASTViejo.Call(
-        functionName = PrintScriptFunctions.PRINTLN,
-        args = listOf(VARIABLE_A),
+    AST.ExpressionStatement(
+        Expression.Call(
+            name = "println",
+            args = listOf(VARIABLE_A),
+        ),
     )
 
 val CALL_PRINTLN_OPERATION_X_PLUS_1 =
-    ASTViejo.Call(
-        functionName = PrintScriptFunctions.PRINTLN,
-        args = listOf(OPERATION_X_PLUS_1),
+    AST.ExpressionStatement(
+        Expression.Call(
+            name = "println",
+            args = listOf(OPERATION_X_PLUS_1),
+        ),
     )

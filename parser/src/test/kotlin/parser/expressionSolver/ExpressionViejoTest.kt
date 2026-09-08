@@ -1,7 +1,7 @@
 package parser.expressionSolver
 
-import ast.ExpressionSolver
 import ast.ExpressionViejo
+import ast.OldExpressionSolver
 import domain.Either
 import domain.Failure
 import domain.PrintScriptOperator
@@ -14,7 +14,7 @@ import kotlin.test.assertEquals
 typealias Num = PrintScriptValue.NumberLiteral
 
 class ExpressionViejoTest {
-    private val solver = ExpressionSolver()
+    private val solver = OldExpressionSolver()
 
     private fun assertExpressionEquals(
         expressionViejo: ExpressionViejo,
