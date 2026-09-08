@@ -7,13 +7,12 @@ import domain.Failure
 import domain.PSLiteral
 import domain.PSType
 import domain.Success
-import interpreter.ExpressionSolver
 import interpreter.LanguageSemantics
 import interpreter.RuntimeError
 import interpreter.environment.RuntimeEnvironment
 
 // es necesario que estoo se instancie con cada nuevo interpreterimpl?
-val expressionSolver = ExpressionSolver()
+private val expressionSolver = ExpressionSolver()
 
 internal fun solveExpression(
     expressionViejo: Expression,
