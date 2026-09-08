@@ -8,5 +8,6 @@ import tokens.TokenType
 
 interface Builder {
     fun canParse(token: TokenType): Boolean
+
     fun parse(tokens: TokenList): Either<SyntaxError, AST>
 }
