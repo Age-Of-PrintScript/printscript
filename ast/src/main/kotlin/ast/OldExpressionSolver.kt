@@ -1,9 +1,5 @@
 package ast
 
-import ast.Expression.Call
-import ast.Expression.Literal
-import ast.Expression.Operation
-import ast.Expression.Variable
 import domain.Either
 import domain.Failure
 import domain.PrintScriptOperator
@@ -217,19 +213,3 @@ class OldExpressionSolver {
     }
 }
 
-class ExpressionSolver {
-    fun solve(
-        expression: Expression,
-        values: Map<String, Literal?>,
-    ): Either<String, Literal> {
-        return when (expression) {
-            is Call -> TODO()
-            is Literal -> Success(expression)
-            is Operation -> TODO()
-            is Variable -> {
-                val value = values[expression.name] ?: return Failure("")
-                Success(value)
-            }
-        }
-    }
-}

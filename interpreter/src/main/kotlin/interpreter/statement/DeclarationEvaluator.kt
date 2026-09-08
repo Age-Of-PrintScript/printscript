@@ -18,7 +18,7 @@ class DeclarationEvaluator : StatementEvaluator<AST.Declaration> {
     ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
         var currentEnv = env
         if (statement.value != null) {
-            when (val solvedResult = solveExpression(statement.value!!, env)) {
+            when (val solvedResult = solveExpression(statement.value!!, env, semantics)) {
                 is Failure -> return Failure(solvedResult.value)
                 is Success -> {
                     val newEnv =

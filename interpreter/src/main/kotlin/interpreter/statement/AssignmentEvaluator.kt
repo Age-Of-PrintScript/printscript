@@ -17,7 +17,7 @@ class AssignmentEvaluator : StatementEvaluator<AST.Assignment> {
         semantics: LanguageSemantics,
     ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
         var currentEnv = env
-        when (val newValue = solveExpression(statement.value, env)) {
+        when (val newValue = solveExpression(statement.value, env, semantics)) {
             is Failure -> return Failure(newValue.value)
             is Success -> {
                 when (val changedEnvResult = env.changeVariable(statement.id, newValue.value)) {

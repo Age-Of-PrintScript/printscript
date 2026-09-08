@@ -38,18 +38,13 @@ internal class InterpreterImpl(
             val result =
                 when (ast) {
                     is AST.Declaration ->
-                        declarationEvaluator.evaluate(
-                            ast, env, events,
-                            semantics,
-                        )
+                        declarationEvaluator.evaluate(ast, env, events, semantics)
 
                     is AST.Assignment ->
-                        assignmentEvaluator.evaluate(
-                            ast, env, events,
-                            semantics,
-                        )
+                        assignmentEvaluator.evaluate(ast, env, events, semantics)
 
-                    is AST.ExpressionStatement -> expressionStatementEvaluator.evaluate(ast, env, events, semantics)
+                    is AST.ExpressionStatement ->
+                        expressionStatementEvaluator.evaluate(ast, env, events, semantics)
                 }
 
             when (result) {
