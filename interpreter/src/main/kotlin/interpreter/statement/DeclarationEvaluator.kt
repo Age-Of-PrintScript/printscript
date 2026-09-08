@@ -33,13 +33,14 @@ class DeclarationEvaluator : StatementEvaluator<AST.Declaration> {
                     statement.id,
                     statement.type,
                     solvedResult.returnValue.toLiteral(),
+                    statement.mutable,
                 ).getOrReturn { return Failure(it) }
 
             currentEnv = newEnv
         } else {
             val newEnv =
                 currentEnv
-                    .addVariable(statement.id, statement.type, null)
+                    .addVariable(statement.id, statement.type, null, statement.mutable)
                     .getOrReturn { return Failure(it) }
 
             currentEnv = newEnv

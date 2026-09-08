@@ -39,13 +39,14 @@ internal fun updateEnvironmentWithNewDeclaration(
     id: String,
     type: PSType,
     value: Literal,
+    mutable: Boolean,
 ): Either<RuntimeError, RuntimeEnvironment> {
     if (type != value.type) {
         return Failure(RuntimeError.VARIABLE_HAS_DIFFERENT_TYPE)
     }
     val newEnv =
         env
-            .addVariable(id, type, value)
+            .addVariable(id, type, value, mutable)
             .getOrReturn { return Failure(it) }
 
     return Success(newEnv)
