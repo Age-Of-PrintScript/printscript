@@ -7,10 +7,6 @@ import domain.PSType
 import domain.Success
 import interpreter.RuntimeError
 
-data class OldRuntimeEnvironment(
-    val variableMap: Map<String, OldVariableInfo>,
-)
-
 data class RuntimeEnvironment(
     val variableMap: Map<String, VariableInfo>,
 ) {
