@@ -1,6 +1,7 @@
 package ast
 
 import domain.PSType
+import domain.Position
 
 enum class ASTType {
     DECLARATION,
@@ -25,3 +26,9 @@ sealed interface AST {
         val expression: Expression,
     ) : AST
 }
+
+data class Program(
+    val trees: List<AST>,
+    val start: Position,
+    val end: Position,
+)

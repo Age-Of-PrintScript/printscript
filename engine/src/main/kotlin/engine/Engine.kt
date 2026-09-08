@@ -1,18 +1,20 @@
 package engine
 
+import ast.Program
 import domain.Error
 import domain.Failure
+import domain.Position
 import domain.Success
-import interpreter.ExecutionResult
 import interpreter.Interpreter
-import interpreter.PrintEvent
+import interpreter.environment.ExecutionResult
+import interpreter.environment.PrintEvent
 import lexer.Lexer
 import parser.Parser
 
 class Engine {
     private val lexer = Lexer.new()
     private val parser = Parser.new()
-    private val interpreter = Interpreter.new()
+    private val interpreter = Interpreter.new(v1_0semantics)
 
     fun execute(
         source: String,
@@ -31,7 +33,8 @@ class Engine {
         }
         val executionResult =
             interpreter.executeWithEnvironment(
-                (programResult as Success).value,
+//                (programResult as Success).value,
+                Program(listOf(), Position(0, 0), Position(0, 0)),
                 context.environment,
             )
         return when (executionResult) {

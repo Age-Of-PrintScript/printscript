@@ -22,7 +22,7 @@ sealed interface ASTViejo {
     ) : ASTViejo
 }
 
-data class Program(
+data class OldProgram(
     val trees: List<ASTViejo>,
     val start: Position,
     val end: Position,

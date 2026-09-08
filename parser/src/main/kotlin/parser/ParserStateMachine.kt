@@ -1,7 +1,7 @@
 package parser
 
 import ast.ASTViejo
-import ast.Program
+import ast.OldProgram
 import domain.Either
 import domain.Failure
 import domain.Position
@@ -16,7 +16,7 @@ internal class ParserStateMachine {
     fun parse(
         tokens: TokenList,
         expressionParser: ExpressionParser,
-    ): Either<SyntaxError, Program> {
+    ): Either<SyntaxError, OldProgram> {
         var state: State = Start
         var builder = ASTBuilder()
         val trees = mutableListOf<ASTViejo>()
@@ -42,11 +42,11 @@ internal class ParserStateMachine {
         state: State,
         trees: List<ASTViejo>,
         tokens: TokenList,
-    ): Either<SyntaxError, Program> {
+    ): Either<SyntaxError, OldProgram> {
         if (state != Start) return Failure(SyntaxError.INCOMPLETE_STATEMENT)
 
         return Success(
-            Program(
+            OldProgram(
                 trees,
                 getInitialPosition(tokens),
                 getFinalPosition(tokens),

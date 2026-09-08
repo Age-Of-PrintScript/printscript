@@ -10,6 +10,7 @@ enum class RuntimeError(
     MATH_ERROR("cannot resolve operation"),
     VARIABLE_HAS_DIFFERENT_TYPE("That variable exists with a different type"),
     STRING_REPETITION_REQUIRES_INT("string repetition requires a positive integer"),
+    MISSING_ASSIGNATION("Variable cannot be assigned to void"),
     ;
 
     override fun getMessage(): String = reason

@@ -3,7 +3,7 @@ package engine.ps_versions.v1_0
 import domain.Success
 import interpreter.BuiltInFunction
 import interpreter.FunctionResult
-import interpreter.PrintEvent
+import interpreter.environment.PrintEvent
 
 val printlnFunction =
     BuiltInFunction { args ->
