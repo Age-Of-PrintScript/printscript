@@ -1,6 +1,7 @@
 package parser.testFramework
 
 import ast.AST
+import ast.ASTType
 import domain.Either
 import domain.Failure
 import domain.Success
@@ -28,10 +29,10 @@ internal class ParserFileTests {
     private val expressionParser = ExpressionParser()
     private val parser =
         Parser.new(
-            listOf(
-                DeclarationParser(expressionParser),
-                AssignmentParser(expressionParser),
-                ExpressionStatementParser(expressionParser),
+            mapOf(
+                ASTType.DECLARATION to DeclarationParser(expressionParser),
+                ASTType.ASSIGNMENT to AssignmentParser(expressionParser),
+                ASTType.EXPRESSION_STATEMENT to ExpressionStatementParser(expressionParser),
             ),
         )
 
