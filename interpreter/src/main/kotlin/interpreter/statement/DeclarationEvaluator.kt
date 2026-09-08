@@ -10,17 +10,21 @@ import interpreter.RuntimeError
 import interpreter.environment.RuntimeEnvironment
 import interpreter.environment.RuntimeEvents
 
-class DeclarationEvaluator : StatementEvaluator<AST.Declaration> {
+class DeclarationEvaluator : StatementEvaluator {
+    override fun canEvaluate(statement: AST): Boolean = statement is AST.Declaration
+
     override fun evaluate(
-        statement: AST.Declaration,
+        statement: AST,
         env: RuntimeEnvironment,
         events: RuntimeEvents,
         semantics: LanguageSemantics,
     ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
+        val declaration = statement as AST.Declaration
         var currentEnv = env
-        if (statement.value != null) {
+        val value = declaration.value
+        if (value != null) {
             val solvedResult =
-                solveExpression(statement.value!!, env, semantics)
+                solveExpression(value, env, semantics)
                     .getOrReturn { return Failure(it) }
 
             if (solvedResult.returnValue == null) {
@@ -30,17 +34,17 @@ class DeclarationEvaluator : StatementEvaluator<AST.Declaration> {
             val newEnv =
                 updateEnvironmentWithNewDeclaration(
                     env,
-                    statement.id,
-                    statement.type,
+                    declaration.id,
+                    declaration.type,
                     solvedResult.returnValue.toLiteral(),
-                    statement.mutable,
+                    declaration.mutable,
                 ).getOrReturn { return Failure(it) }
 
             currentEnv = newEnv
         } else {
             val newEnv =
                 currentEnv
-                    .addVariable(statement.id, statement.type, null, statement.mutable)
+                    .addVariable(declaration.id, declaration.type, null, declaration.mutable)
                     .getOrReturn { return Failure(it) }
 
             currentEnv = newEnv
