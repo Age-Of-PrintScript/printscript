@@ -17,7 +17,7 @@ import tokens.OperatorViejo
 import tokens.TokenViejo
 import java.util.Optional
 
-internal class ExpressionParser {
+internal class OldExpressionParser {
     fun parseExpression(expression: List<TokenViejo>): Either<SyntaxError, ExpressionViejo> =
         when (val result = createExpressionTree(expression)) {
             is Success -> Success(result.value.parsedResult)

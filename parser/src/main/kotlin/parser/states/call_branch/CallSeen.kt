@@ -5,7 +5,7 @@ import domain.Failure
 import domain.PrintScriptFunctions
 import domain.Success
 import parser.ASTBuilder
-import parser.ExpressionParser
+import parser.OldExpressionParser
 import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
@@ -18,7 +18,7 @@ internal data class CallSeen(
     override fun consume(
         tokenViejo: TokenViejo,
         builder: ASTBuilder,
-        expressionParser: ExpressionParser,
+        oldExpressionParser: OldExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
         when (tokenViejo.type) {
             OPEN_PARENTHESISViejo -> Success(CallArgsPending(function) to builder)

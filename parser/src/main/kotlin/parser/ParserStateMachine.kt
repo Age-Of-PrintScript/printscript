@@ -15,14 +15,14 @@ import tokens.TokenList
 internal class ParserStateMachine {
     fun parse(
         tokens: TokenList,
-        expressionParser: ExpressionParser,
+        oldExpressionParser: OldExpressionParser,
     ): Either<SyntaxError, OldProgram> {
         var state: State = Start
         var builder = ASTBuilder()
         val trees = mutableListOf<ASTViejo>()
 
         for (token in tokens) {
-            val result = state.consume(token, builder, expressionParser)
+            val result = state.consume(token, builder, oldExpressionParser)
 
             val pair = result.getOrReturn { return Failure(it) }
             state = pair.first

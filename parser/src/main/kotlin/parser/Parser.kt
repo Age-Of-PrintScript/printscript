@@ -13,10 +13,10 @@ interface Parser {
 }
 
 internal class ParserImpl : Parser {
-    private val expressionParser = ExpressionParser()
+    private val oldExpressionParser = OldExpressionParser()
 
     override fun parse(tokenViejos: List<TokenViejo>): Either<SyntaxError, OldProgram> {
         val stateMachine = ParserStateMachine()
-        return stateMachine.parse(tokenViejos, expressionParser)
+        return stateMachine.parse(tokenViejos, oldExpressionParser)
     }
 }

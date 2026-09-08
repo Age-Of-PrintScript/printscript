@@ -5,7 +5,7 @@ import domain.Either
 import domain.Failure
 import domain.Success
 import parser.ASTBuilder
-import parser.ExpressionParser
+import parser.OldExpressionParser
 import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
@@ -25,11 +25,11 @@ internal data class ExpressionPending(
     override fun consume(
         tokenViejo: TokenViejo,
         builder: ASTBuilder,
-        expressionParser: ExpressionParser,
+        oldExpressionParser: OldExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
         when (tokenViejo.type) {
             SEMICOLONViejo -> {
-                buildExpressionOnAst(expressionParser, builder)
+                buildExpressionOnAst(oldExpressionParser, builder)
             }
             is LiteralViejo, is IdentifierViejo, is OperatorViejo, is OPEN_PARENTHESISViejo, is CLOSED_PARENTHESISViejo ->
                 Success(copy(tokenViejos = tokenViejos + tokenViejo) to builder)
@@ -37,10 +37,10 @@ internal data class ExpressionPending(
         }
 
     private fun buildExpressionOnAst(
-        expressionParser: ExpressionParser,
+        oldExpressionParser: OldExpressionParser,
         builder: ASTBuilder,
     ): Either<SyntaxError, ConsumeResult> =
-        when (val result = expressionParser.parseExpression(tokenViejos)) {
+        when (val result = oldExpressionParser.parseExpression(tokenViejos)) {
             is Failure -> Failure(result.value)
             is Success -> {
                 val newBuilder = builder.addExpression(result.value)

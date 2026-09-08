@@ -6,7 +6,7 @@ import domain.Either
 import domain.Failure
 import domain.Success
 import parser.ASTBuilder
-import parser.ExpressionParser
+import parser.OldExpressionParser
 import parser.SyntaxError
 import parser.states.ConsumeResult
 import parser.states.State
@@ -23,7 +23,7 @@ internal data class DeclarationTypeSeen(
     override fun consume(
         tokenViejo: TokenViejo,
         builder: ASTBuilder,
-        expressionParser: ExpressionParser,
+        oldExpressionParser: OldExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
         when (tokenViejo.type) {
             ASSIGNViejo -> Success(ExpressionPending(id) to builder)

@@ -6,7 +6,7 @@ import domain.Failure
 import domain.Success
 import parser.ASTBuilder
 import parser.BuilderType
-import parser.ExpressionParser
+import parser.OldExpressionParser
 import parser.SyntaxError
 import parser.states.assignment_branch.AssignmentIdSeen
 import parser.states.call_branch.CallSeen
@@ -20,7 +20,7 @@ internal object Start : State {
     override fun consume(
         tokenViejo: TokenViejo,
         builder: ASTBuilder,
-        expressionParser: ExpressionParser,
+        oldExpressionParser: OldExpressionParser,
     ): Either<SyntaxError, ConsumeResult> =
         when (val t = tokenViejo.type) {
             is CallViejo -> Success(CallSeen(t.type) to ASTBuilder(type = BuilderType.CALL, functionName = t.type))
