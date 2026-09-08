@@ -15,7 +15,7 @@ internal class LexerStateMachine(
 ) {
     fun tokenize(source: String): Either<LexerError, TokenList> {
         var state: State = InitialState(lexicon)
-        var builder = TokenBuilder(null, lexicon)
+        var builder = TokenBuilder(lexicon)
 
         val tokenList = mutableListOf<Token>()
 
@@ -33,7 +33,7 @@ internal class LexerStateMachine(
             if (shouldCloseToken) {
                 val token = builder.build().getOrReturn { return Failure(it) }
                 tokenList.add(token)
-                builder = TokenBuilder(null, lexicon)
+                builder = TokenBuilder(lexicon)
                 state = InitialState(lexicon)
             }
         }

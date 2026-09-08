@@ -14,8 +14,8 @@ import tokens.TokenType
 import tokens.Whitespace
 
 internal data class TokenBuilder(
-    val type: TokenType? = null,
     val lexicon: Lexicon,
+    val type: TokenType? = null,
 ) {
     fun addChar(chr: Char): Either<LexerError, TokenBuilder> {
         if (type is Literal && !charIsQuote(chr)) {
