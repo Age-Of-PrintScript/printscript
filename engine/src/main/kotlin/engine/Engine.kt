@@ -24,8 +24,9 @@ class Engine {
         val version = PSVersion1_0()
 
         val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
-        val parser = Parser.new(version.statementParsers.keys.toList())
+        val parser = Parser.new(version.statementParsers)
         val interpreter = Interpreter.new(LanguageSemantics(version.builtInFunctions, version.binaryOperations))
+
         val tokensResult = lexer.tokenize(source)
         if (tokensResult is Failure) {
             logFailure(tokensResult.value, logger)
@@ -83,7 +84,8 @@ class Engine {
     ): ExitCode {
         val version = PSVersion1_0()
         val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
-        val parser = Parser.new(version.statementParsers.keys.toList())
+        val parser = Parser.new(version.statementParsers)
+
 
         val tokensResult = lexer.tokenize(source)
         if (tokensResult is Failure) {

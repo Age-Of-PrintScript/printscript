@@ -8,9 +8,6 @@ import domain.Failure
 import domain.Position
 import domain.Success
 import domain.getOrReturn
-import parser.builders.AssignmentParser
-import parser.builders.DeclarationParser
-import parser.builders.ExpressionStatementParser
 import parser.builders.StatementParser
 import tokens.Token
 import tokens.Whitespace
@@ -19,24 +16,15 @@ interface Parser {
     fun parse(tokens: List<Token>): Either<SyntaxError, Program>
 
     companion object {
-        fun new(validAsts: List<ASTType>): Parser = ParserImpl(validAsts)
+        fun new(statementParsers: Map<ASTType, StatementParser>): Parser = ParserImpl(statementParsers.values.toList())
+
+        fun new(statementParsers: List<StatementParser>): Parser = ParserImpl(statementParsers)
     }
 }
 
 internal class ParserImpl(
-    validAsts: List<ASTType>,
+    private val statementParsers: List<StatementParser>,
 ) : Parser {
-    private val expressionParser = ExpressionParser()
-
-    private val statementParsers: List<StatementParser> =
-        validAsts.map { astType ->
-            when (astType) {
-                ASTType.DECLARATION -> DeclarationParser(expressionParser)
-                ASTType.ASSIGNMENT -> AssignmentParser(expressionParser)
-                ASTType.EXPRESSION_STATEMENT -> ExpressionStatementParser(expressionParser)
-            }
-        }
-
     override fun parse(tokens: List<Token>): Either<SyntaxError, Program> {
         val cleanTokens = tokens.filterNot { it.type is Whitespace }
         if (cleanTokens.isEmpty()) {

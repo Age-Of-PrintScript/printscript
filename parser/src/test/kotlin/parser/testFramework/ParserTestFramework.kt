@@ -1,14 +1,17 @@
 package parser.testFramework
 
 import ast.AST
-import ast.ASTType
 import domain.Either
 import domain.Failure
 import domain.Success
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
+import parser.ExpressionParser
 import parser.Parser
 import parser.SyntaxError
+import parser.builders.AssignmentParser
+import parser.builders.DeclarationParser
+import parser.builders.ExpressionStatementParser
 import tokens.Token
 import java.io.File
 import java.util.stream.Stream
@@ -22,12 +25,13 @@ internal data class TestCase(
 )
 
 internal class ParserFileTests {
+    private val expressionParser = ExpressionParser()
     private val parser =
         Parser.new(
             listOf(
-                ASTType.DECLARATION,
-                ASTType.ASSIGNMENT,
-                ASTType.EXPRESSION_STATEMENT,
+                DeclarationParser(expressionParser),
+                AssignmentParser(expressionParser),
+                ExpressionStatementParser(expressionParser),
             ),
         )
 
