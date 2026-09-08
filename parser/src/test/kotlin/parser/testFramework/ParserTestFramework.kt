@@ -1,14 +1,15 @@
 package parser.testFramework
 
-import ast.ASTViejo
+import ast.AST
+import ast.ASTType
 import domain.Either
 import domain.Failure
 import domain.Success
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
-import parser.ParserImpl
+import parser.Parser
 import parser.SyntaxError
-import tokens.TokenViejo
+import tokens.Token
 import java.io.File
 import java.util.stream.Stream
 import kotlin.streams.asStream
@@ -16,11 +17,20 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 internal data class TestCase(
-    val inputTokenViejos: List<TokenViejo>,
-    val expected: Either<SyntaxError, List<ASTViejo>>,
+    val inputTokens: List<Token>,
+    val expected: Either<SyntaxError, List<AST>>,
 )
 
 internal class ParserFileTests {
+    private val parser =
+        Parser.new(
+            listOf(
+                ASTType.DECLARATION,
+                ASTType.ASSIGNMENT,
+                ASTType.EXPRESSION_STATEMENT,
+            ),
+        )
+
     @TestFactory
     fun runAllParserTests(): Stream<DynamicTest> {
         val dir = File("src/test/resources/parserTests")
@@ -41,8 +51,8 @@ internal class ParserFileTests {
 
     private fun runOneTest(file: File) {
         val testCase = parseTestFile(file.readText())
-        val actual = ParserImpl().parse(testCase.inputTokenViejos)
-        val actualTrees: Either<SyntaxError, List<ASTViejo>> =
+        val actual = parser.parse(testCase.inputTokens)
+        val actualTrees: Either<SyntaxError, List<AST>> =
             when (actual) {
                 is Success -> Success(actual.value.trees)
                 is Failure -> Failure(actual.value)
@@ -57,7 +67,7 @@ internal class ParserFileTests {
         // a complete key would be "Expected: SUCCESS" or "Expected: FAILURE"
         val expectedKey = getCompleteKey(sections, "Expected")
         val expectedResult = sections.getValue(expectedKey)
-        val expected: Either<SyntaxError, List<ASTViejo>> =
+        val expected: Either<SyntaxError, List<AST>> =
             when (val status = getStatus(expectedKey)) {
                 "SUCCESS" -> Success(parseExpectedTrees(expectedResult))
                 "FAILURE" -> Failure(getSyntaxError(expectedResult))
