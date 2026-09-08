@@ -37,4 +37,12 @@ class TokenConsumer(
         }
         return Success(consume())
     }
+
+    fun consumeUntil(delimiterType: KClass<out TokenType>): List<Token> {
+        val accumulated = mutableListOf<Token>()
+        while (hasNext() && !delimiterType.isInstance(peek().type)) {
+            accumulated.add(consume())
+        }
+        return accumulated
+    }
 }

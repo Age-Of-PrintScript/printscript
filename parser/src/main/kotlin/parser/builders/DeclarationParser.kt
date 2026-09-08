@@ -16,7 +16,6 @@ import tokens.DataType
 import tokens.Identifier
 import tokens.Let
 import tokens.Semicolon
-import tokens.Token
 import tokens.TokenType
 
 class DeclarationParser(
@@ -63,10 +62,7 @@ class DeclarationParser(
         isMutable: Boolean,
         consumer: TokenConsumer,
     ): Either<SyntaxError, AST> {
-        val exprTokens = mutableListOf<Token>()
-        while (consumer.hasNext() && consumer.peek().type !is Semicolon) {
-            exprTokens.add(consumer.consume())
-        }
+        val exprTokens = consumer.consumeUntil(Semicolon::class)
         consumer
             .consumeExpected(Semicolon::class, SyntaxError.MISSING_SEMICOLON)
             .getOrReturn { return Failure(it) }
