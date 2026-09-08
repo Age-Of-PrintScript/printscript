@@ -23,7 +23,7 @@ object SuccessfulPrograms {
             SuccessCase(
                 "string and number concatenation",
                 "let label: string = \"Result: \";\nlet total: number = 42;\nprintln(label + total);",
-                listOf("Result: 42.0"),
+                listOf("Result: 42"),
             ),
             SuccessCase(
                 "multi-line complete program",

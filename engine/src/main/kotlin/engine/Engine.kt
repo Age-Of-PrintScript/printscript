@@ -1,12 +1,11 @@
 package engine
 
-import ast.Program
 import domain.Error
 import domain.Failure
-import domain.Position
 import domain.Success
 import engine.ps_versions.v1_0.v1_0Keywords
 import engine.ps_versions.v1_0.v1_0Symbols
+import engine.ps_versions.v1_0.v1_0ValidAST
 import interpreter.Interpreter
 import interpreter.environment.ExecutionResult
 import interpreter.environment.PrintEvent
@@ -16,7 +15,7 @@ import parser.Parser
 
 class Engine {
     private val lexer = Lexer.new(Lexicon(v1_0Symbols, v1_0Keywords))
-    private val parser = Parser.new()
+    private val parser = Parser.new(v1_0ValidAST)
     private val interpreter = Interpreter.new(v1_0semantics)
 
     fun execute(
@@ -29,15 +28,14 @@ class Engine {
             logFailure(tokensResult.value, logger)
             return EngineResult(ExitCode.FAILURE, context)
         }
-        val programResult = parser.parse(listOf()) // hardcodeado
+        val programResult = parser.parse((tokensResult as Success).value)
         if (programResult is Failure) {
             logFailure(programResult.value, logger)
             return EngineResult(ExitCode.FAILURE, context)
         }
         val executionResult =
             interpreter.executeWithEnvironment(
-//                (programResult as Success).value,
-                Program(listOf(), Position(0, 0), Position(0, 0)),
+                (programResult as Success).value,
                 context.environment,
             )
         return when (executionResult) {
@@ -85,7 +83,7 @@ class Engine {
             logFailure(tokensResult.value, logger)
             return ExitCode.FAILURE
         }
-        val programResult = parser.parse(listOf())
+        val programResult = parser.parse((tokensResult as Success).value)
         if (programResult is Failure) {
             logFailure(programResult.value, logger)
             return ExitCode.FAILURE

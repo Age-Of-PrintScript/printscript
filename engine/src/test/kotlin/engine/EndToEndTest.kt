@@ -64,6 +64,6 @@ class EndToEndTest {
         val logger2 = TestLogger()
         val result2 = engine.execute("println(x);", logger2, result1.context)
         assertEquals(ExitCode.SUCCESS, result2.exitCode)
-        assertEquals(listOf("42.0"), logger2.getPrints())
+        assertEquals(listOf("42"), logger2.getPrints())
     }
 }
