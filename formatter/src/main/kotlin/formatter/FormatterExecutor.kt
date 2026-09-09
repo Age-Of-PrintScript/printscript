@@ -54,6 +54,7 @@ internal class FormatterExecutor : Formatter {
                             is AST.Declaration -> formatters["declaration"]
                             is AST.Assignment -> formatters["assignment"]
                             is AST.ExpressionStatement -> formatters["expressionStatement"]
+                            is AST.IfStatement -> formatters["ifStatement"]
                         } ?: return FormatResult.Failure(FormattingError.UNKNOWN_AST_TYPE.getMessage())
                     appendLine(formatter.format(tree))
                 }

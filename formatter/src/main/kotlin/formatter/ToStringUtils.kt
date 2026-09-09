@@ -10,6 +10,7 @@ internal fun astToString(ast: AST): String =
         is AST.Assignment -> assignmentToString(ast)
         is AST.ExpressionStatement -> expressionToString(ast.expression, 0)
         is AST.Declaration -> declarationToString(ast)
+        else -> TODO("Not implemented yet")
     }
 
 internal fun declarationToString(declaration: AST.Declaration): String {

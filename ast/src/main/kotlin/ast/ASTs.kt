@@ -7,6 +7,7 @@ enum class ASTType {
     DECLARATION,
     ASSIGNMENT,
     EXPRESSION_STATEMENT,
+    IF_STATEMENT,
 }
 
 sealed interface AST {
@@ -34,8 +35,9 @@ sealed interface AST {
     data class IfStatement(
         val condition: Expression,
         val ifBlock: Block,
-        val elseBlock: Block?,
-    )
+        val elseBlock: Block? = null,
+        override val astType: ASTType = ASTType.IF_STATEMENT,
+    ) : AST
 }
 
 data class Block(
