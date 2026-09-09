@@ -16,7 +16,7 @@ import testframework.createStringLiteralExpression
 
 // este framework testea las reglas, no el excecutor
 
-class DeclarationTests {
+class DeclarationStatementTests {
     // ------------------ Grupo A: combinaciones de reglas activas/inactivas ------------------
 
     @Test

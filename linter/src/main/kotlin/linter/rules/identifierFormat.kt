@@ -27,10 +27,10 @@ internal class IdentifierFormatRule(
 
     private fun extractIdentifier(ast: AST): String? =
         when (ast) {
-            is AST.Assignment -> ast.id
-            is AST.Declaration -> ast.id
+            is AST.AssignmentStatement -> ast.id
+            is AST.DeclarationStatement -> ast.id
             is AST.ExpressionStatement -> null
-            is AST.IfStatement -> null
+            is AST.ConditionalStatement -> null
         }
 }
 

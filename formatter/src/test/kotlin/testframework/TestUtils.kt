@@ -12,8 +12,8 @@ fun createDeclaration(
     name: String,
     type: PSType = StrType,
     value: Expression? = createStringLiteralExpression("test"),
-): AST.Declaration =
-    AST.Declaration(
+): AST.DeclarationStatement =
+    AST.DeclarationStatement(
         id = name,
         type = type,
         mutable = true,
@@ -23,8 +23,8 @@ fun createDeclaration(
 fun createAssignment(
     name: String,
     value: Expression = createNumberLiteralExpression(1),
-): AST.Assignment =
-    AST.Assignment(
+): AST.AssignmentStatement =
+    AST.AssignmentStatement(
         id = name,
         value = value,
     )
