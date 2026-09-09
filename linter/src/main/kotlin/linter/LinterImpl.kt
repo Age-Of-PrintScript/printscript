@@ -1,17 +1,18 @@
 package linter
 
+import domain.Position
 import domain.getOrReturn
 import lexer.Lexer
 import lexer.Lexicon
 import parser.Parser
-import versionfactory.version1_0
+import versionfactory.PSVersion
 import java.io.File
 import java.io.InputStream
 
 interface Linter {
     fun analyse(
         source: String,
-        version: String = "1.0",
+        version: String? = null,
     ): List<Warning>
 
     companion object {
@@ -42,9 +43,16 @@ internal class LinterImpl(
 ) : Linter {
     override fun analyse(
         source: String,
-        version: String,
+        version: String?,
     ): List<Warning> {
-        val psVersion = version1_0
+        val psVersion =
+            if (version != null) {
+                PSVersion.getVersion(version).getOrReturn {
+                    return listOf(Warning(it.message, Position(0, 0)))
+                }
+            } else {
+                PSVersion.getLatestVersion()
+            }
 
         val lexer: Lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
         val parser: Parser = Parser.new(psVersion.statementParsers)

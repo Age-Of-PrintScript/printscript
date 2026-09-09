@@ -5,14 +5,14 @@ import domain.getOrReturn
 import lexer.Lexer
 import lexer.Lexicon
 import parser.Parser
-import versionfactory.version1_0
+import versionfactory.PSVersion
 
 interface Formatter {
     fun format(
         sourcePath: String,
         path: String,
         fileReader: FileReader,
-        version: String,
+        version: String? = null,
     ): FormatResult
 
     companion object {
@@ -25,9 +25,16 @@ internal class FormatterExecutor : Formatter {
         sourcePath: String,
         path: String,
         fileReader: FileReader,
-        version: String,
+        version: String?,
     ): FormatResult {
-        val psVersion = version1_0
+        val psVersion =
+            if (version != null) {
+                PSVersion.getVersion(version).getOrReturn {
+                    return FormatResult.Failure(it.message)
+                }
+            } else {
+                PSVersion.getLatestVersion()
+            }
 
         val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
         val parser = Parser.new(psVersion.statementParsers)

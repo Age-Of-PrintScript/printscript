@@ -1,6 +1,9 @@
 package versionfactory
 
 import ast.ASTType
+import domain.Either
+import domain.Failure
+import domain.Success
 import interpreter.BinaryOperation
 import interpreter.BuiltInFunction
 import interpreter.OperationKey
@@ -15,6 +18,16 @@ interface PSVersion {
     val symbols: Map<Char, TokenType>
     val statementParsers: Map<ASTType, StatementParser>
     val statementEvaluators: Map<ASTType, StatementEvaluator>
+
+    companion object {
+        fun getVersion(version: String): Either<VersionError, PSVersion> =
+            when (version) {
+                "1.0" -> Success(version1_0)
+                else -> Failure(VersionError.VERSION_DOESNT_EXISTS)
+            }
+
+        fun getLatestVersion(): PSVersion = version1_0
+    }
 }
 
 val version1_0: PSVersion = PSVersion1_0()
