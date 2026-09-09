@@ -4,6 +4,7 @@ import cli.adapters.ConsoleLogger
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.help
+import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
 import engine.Engine
 import engine.Logger
@@ -16,8 +17,10 @@ class ValidateCommand(
         .file(mustExist = true, canBeFile = true, canBeDir = false, mustBeWritable = false, mustBeReadable = true)
         .help("Ruta al archivo .ps a validar")
 
+    private val version by option("-v", "--version", help = "Versión de PrintScript")
+
     override fun run() {
         val source = file.readText()
-        engine.validate(source, logger)
+        engine.validate(source, logger, version = version)
     }
 }
