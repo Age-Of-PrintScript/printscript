@@ -1,11 +1,12 @@
 package ast
 
-import domain.PrintScriptOperator
-import domain.PrintScriptValue
+import domain.PSOperator
+import domain.PSType
 
 sealed interface Expression {
     data class Literal(
-        val value: PrintScriptValue,
+        val value: String,
+        val type: PSType,
     ) : Expression
 
     data class Variable(
@@ -14,7 +15,12 @@ sealed interface Expression {
 
     data class Operation(
         val left: Expression,
+        val operator: PSOperator,
         val right: Expression,
-        val operator: PrintScriptOperator,
+    ) : Expression
+
+    data class Call(
+        val name: String,
+        val args: List<Expression>,
     ) : Expression
 }

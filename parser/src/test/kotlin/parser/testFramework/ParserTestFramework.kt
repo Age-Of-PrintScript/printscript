@@ -6,8 +6,12 @@ import domain.Failure
 import domain.Success
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
-import parser.ParserImpl
+import parser.ExpressionParser
+import parser.Parser
 import parser.SyntaxError
+import parser.builders.AssignmentParser
+import parser.builders.DeclarationParser
+import parser.builders.ExpressionStatementParser
 import tokens.Token
 import java.io.File
 import java.util.stream.Stream
@@ -21,6 +25,16 @@ internal data class TestCase(
 )
 
 internal class ParserFileTests {
+    private val expressionParser = ExpressionParser()
+    private val parser =
+        Parser.new(
+            listOf(
+                DeclarationParser(expressionParser),
+                AssignmentParser(expressionParser),
+                ExpressionStatementParser(expressionParser),
+            ),
+        )
+
     @TestFactory
     fun runAllParserTests(): Stream<DynamicTest> {
         val dir = File("src/test/resources/parserTests")
@@ -41,7 +55,7 @@ internal class ParserFileTests {
 
     private fun runOneTest(file: File) {
         val testCase = parseTestFile(file.readText())
-        val actual = ParserImpl().parse(testCase.inputTokens)
+        val actual = parser.parse(testCase.inputTokens)
         val actualTrees: Either<SyntaxError, List<AST>> =
             when (actual) {
                 is Success -> Success(actual.value.trees)

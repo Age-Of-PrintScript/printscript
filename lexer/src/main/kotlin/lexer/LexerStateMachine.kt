@@ -8,12 +8,14 @@ import lexer.states.InitialState
 import lexer.states.State
 import tokens.Token
 import tokens.TokenList
-import tokens.WHITESPACE
+import tokens.Whitespace
 
-internal class LexerStateMachine {
+internal class LexerStateMachine(
+    val lexicon: Lexicon,
+) {
     fun tokenize(source: String): Either<LexerError, TokenList> {
-        var state: State = InitialState()
-        var builder = TokenBuilder()
+        var state: State = InitialState(lexicon)
+        var builder = TokenBuilder(lexicon)
 
         val tokenList = mutableListOf<Token>()
 
@@ -31,11 +33,11 @@ internal class LexerStateMachine {
             if (shouldCloseToken) {
                 val token = builder.build().getOrReturn { return Failure(it) }
                 tokenList.add(token)
-                builder = TokenBuilder()
-                state = InitialState()
+                builder = TokenBuilder(lexicon)
+                state = InitialState(lexicon)
             }
         }
-        return Success(tokenList.filter { it.type != WHITESPACE })
+        return Success(tokenList.filter { it.type != Whitespace })
     }
 
     private fun cannotConsumeNextChar(

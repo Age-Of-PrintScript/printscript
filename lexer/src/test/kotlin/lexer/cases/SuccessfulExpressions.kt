@@ -1,14 +1,18 @@
 package lexer.cases
 
-import domain.PrintScriptOperator
+import domain.NumType
+import lexer.Divide
+import lexer.Multiply
+import lexer.Subtract
 import lexer.SuccessCase
-import tokens.ASSIGN
-import tokens.CLOSED_PARENTHESIS
+import lexer.Sum
+import tokens.Assign
+import tokens.CloseParen
 import tokens.Identifier
 import tokens.Literal
-import tokens.OPEN_PARENTHESIS
+import tokens.OpenParen
 import tokens.Operator
-import tokens.SEMICOLON
+import tokens.Semicolon
 
 object SuccessfulExpressions {
     fun cases() =
@@ -18,11 +22,11 @@ object SuccessfulExpressions {
                 "x = 5 + 2;",
                 listOf(
                     Identifier("x"),
-                    ASSIGN,
-                    Literal("5"),
-                    Operator(PrintScriptOperator.SUM),
-                    Literal("2"),
-                    SEMICOLON,
+                    Assign,
+                    Literal("5", NumType),
+                    Operator(Sum),
+                    Literal("2", NumType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
@@ -30,15 +34,15 @@ object SuccessfulExpressions {
                 "x = (5 + 2) * 3;",
                 listOf(
                     Identifier("x"),
-                    ASSIGN,
-                    OPEN_PARENTHESIS,
-                    Literal("5"),
-                    Operator(PrintScriptOperator.SUM),
-                    Literal("2"),
-                    CLOSED_PARENTHESIS,
-                    Operator(PrintScriptOperator.MULTIPLY),
-                    Literal("3"),
-                    SEMICOLON,
+                    Assign,
+                    OpenParen,
+                    Literal("5", NumType),
+                    Operator(Sum),
+                    Literal("2", NumType),
+                    CloseParen,
+                    Operator(Multiply),
+                    Literal("3", NumType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
@@ -46,17 +50,17 @@ object SuccessfulExpressions {
                 "x = 5 + 2 - 3 * 4 / 2;",
                 listOf(
                     Identifier("x"),
-                    ASSIGN,
-                    Literal("5"),
-                    Operator(PrintScriptOperator.SUM),
-                    Literal("2"),
-                    Operator(PrintScriptOperator.SUBTRACT),
-                    Literal("3"),
-                    Operator(PrintScriptOperator.MULTIPLY),
-                    Literal("4"),
-                    Operator(PrintScriptOperator.DIVIDE),
-                    Literal("2"),
-                    SEMICOLON,
+                    Assign,
+                    Literal("5", NumType),
+                    Operator(Sum),
+                    Literal("2", NumType),
+                    Operator(Subtract),
+                    Literal("3", NumType),
+                    Operator(Multiply),
+                    Literal("4", NumType),
+                    Operator(Divide),
+                    Literal("2", NumType),
+                    Semicolon,
                 ),
             ),
         )

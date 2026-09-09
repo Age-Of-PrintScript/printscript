@@ -1,10 +1,8 @@
 package linter.rules
 
 import ast.AST
-import ast.AST.Call
 import ast.Expression
 import domain.Position
-import domain.PrintScriptFunctions
 import kotlinx.serialization.json.JsonObject
 import linter.LinterRule
 import linter.LinterRuleFactory
@@ -12,10 +10,10 @@ import linter.Warning
 
 internal class PrintlnArgumentRule : LinterRule {
     override fun apply(ast: AST): Warning? {
-        if (notAPrintCall(ast)) return null
-        val astCall = ast as Call
-        val arg = astCall.args.firstOrNull() ?: return null
-        return if (argIsNotExpression(arg)) {
+        val call = extractPrintlnCall(ast) ?: return null
+        val arg = call.args.firstOrNull() ?: return null
+
+        return if (isValidArgument(arg)) {
             null
         } else {
             Warning(
@@ -25,9 +23,14 @@ internal class PrintlnArgumentRule : LinterRule {
         }
     }
 
-    private fun argIsNotExpression(arg: Expression) = arg is Expression.Variable || arg is Expression.Literal
+    private fun extractPrintlnCall(ast: AST): Expression.Call? {
+        if (ast !is AST.ExpressionStatement) return null
+        val expr = ast.expression
+        if (expr !is Expression.Call || expr.name != "println") return null
+        return expr
+    }
 
-    private fun notAPrintCall(ast: AST) = ast !is Call || ast.functionName != PrintScriptFunctions.PRINTLN
+    private fun isValidArgument(arg: Expression): Boolean = arg is Expression.Variable || arg is Expression.Literal
 }
 
 internal object PrintlnArgumentRuleFactory : LinterRuleFactory {

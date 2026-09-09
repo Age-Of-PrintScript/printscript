@@ -1,10 +1,12 @@
 package lexer.cases
 
+import domain.NumType
+import domain.StrType
 import lexer.SuccessCase
-import tokens.ASSIGN
+import tokens.Assign
 import tokens.Identifier
 import tokens.Literal
-import tokens.SEMICOLON
+import tokens.Semicolon
 
 object SuccessfulAssignments {
     fun cases() =
@@ -14,9 +16,9 @@ object SuccessfulAssignments {
                 "x = 5;",
                 listOf(
                     Identifier("x"),
-                    ASSIGN,
-                    Literal("5"),
-                    SEMICOLON,
+                    Assign,
+                    Literal("5", NumType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
@@ -24,9 +26,9 @@ object SuccessfulAssignments {
                 "x = \"5\";",
                 listOf(
                     Identifier("x"),
-                    ASSIGN,
-                    Literal("5"),
-                    SEMICOLON,
+                    Assign,
+                    Literal("5", StrType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
@@ -34,9 +36,9 @@ object SuccessfulAssignments {
                 "x = \"hola mundo;\";",
                 listOf(
                     Identifier("x"),
-                    ASSIGN,
-                    Literal("hola mundo;"),
-                    SEMICOLON,
+                    Assign,
+                    Literal("hola mundo;", StrType),
+                    Semicolon,
                 ),
             ),
             // ahora el lexer no lo va a pasar a 123, eso lo va a hacer el parser
@@ -45,9 +47,9 @@ object SuccessfulAssignments {
                 "x = 000123;",
                 listOf(
                     Identifier("x"),
-                    ASSIGN,
-                    Literal("000123"),
-                    SEMICOLON,
+                    Assign,
+                    Literal("000123", NumType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
@@ -55,9 +57,9 @@ object SuccessfulAssignments {
                 "x = 0;",
                 listOf(
                     Identifier("x"),
-                    ASSIGN,
-                    Literal("0"),
-                    SEMICOLON,
+                    Assign,
+                    Literal("0", NumType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
@@ -65,9 +67,9 @@ object SuccessfulAssignments {
                 "m1Variable1234 = 0;",
                 listOf(
                     Identifier("m1Variable1234"),
-                    ASSIGN,
-                    Literal("0"),
-                    SEMICOLON,
+                    Assign,
+                    Literal("0", NumType),
+                    Semicolon,
                 ),
             ),
             SuccessCase(
@@ -75,9 +77,9 @@ object SuccessfulAssignments {
                 "x = 5.5;",
                 listOf(
                     Identifier("x"),
-                    ASSIGN,
-                    Literal("5.5"),
-                    SEMICOLON,
+                    Assign,
+                    Literal("5.5", NumType),
+                    Semicolon,
                 ),
             ),
         )

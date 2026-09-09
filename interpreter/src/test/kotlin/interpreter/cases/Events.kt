@@ -1,7 +1,7 @@
 package interpreter.cases
 
-import interpreter.PrintEvent
-import interpreter.RuntimeEvents
+import interpreter.environment.PrintEvent
+import interpreter.environment.RuntimeEvents
 
 val EMPTY_EVENTS = RuntimeEvents(emptyList())
 

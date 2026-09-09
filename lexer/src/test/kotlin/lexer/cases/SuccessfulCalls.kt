@@ -1,15 +1,16 @@
 package lexer.cases
 
-import domain.PrintScriptFunctions
-import domain.PrintScriptOperator
+import domain.NumType
+import domain.StrType
 import lexer.SuccessCase
-import tokens.CLOSED_PARENTHESIS
+import lexer.Sum
 import tokens.Call
+import tokens.CloseParen
 import tokens.Identifier
 import tokens.Literal
-import tokens.OPEN_PARENTHESIS
+import tokens.OpenParen
 import tokens.Operator
-import tokens.SEMICOLON
+import tokens.Semicolon
 
 object SuccessfulCalls {
     fun cases() =
@@ -18,46 +19,46 @@ object SuccessfulCalls {
                 "println call with number",
                 "println(5);",
                 listOf(
-                    Call(PrintScriptFunctions.PRINTLN),
-                    OPEN_PARENTHESIS,
-                    Literal("5"),
-                    CLOSED_PARENTHESIS,
-                    SEMICOLON,
+                    Call("println"),
+                    OpenParen,
+                    Literal("5", NumType),
+                    CloseParen,
+                    Semicolon,
                 ),
             ),
             SuccessCase(
                 "println call with identifier",
                 "println(x);",
                 listOf(
-                    Call(PrintScriptFunctions.PRINTLN),
-                    OPEN_PARENTHESIS,
+                    Call("println"),
+                    OpenParen,
                     Identifier("x"),
-                    CLOSED_PARENTHESIS,
-                    SEMICOLON,
+                    CloseParen,
+                    Semicolon,
                 ),
             ),
             SuccessCase(
                 "println call with string",
                 "println(\"texto\");",
                 listOf(
-                    Call(PrintScriptFunctions.PRINTLN),
-                    OPEN_PARENTHESIS,
-                    Literal("texto"),
-                    CLOSED_PARENTHESIS,
-                    SEMICOLON,
+                    Call("println"),
+                    OpenParen,
+                    Literal("texto", StrType),
+                    CloseParen,
+                    Semicolon,
                 ),
             ),
             SuccessCase(
                 "println call with expression",
                 "println(5 + 2);",
                 listOf(
-                    Call(PrintScriptFunctions.PRINTLN),
-                    OPEN_PARENTHESIS,
-                    Literal("5"),
-                    Operator(PrintScriptOperator.SUM),
-                    Literal("2"),
-                    CLOSED_PARENTHESIS,
-                    SEMICOLON,
+                    Call("println"),
+                    OpenParen,
+                    Literal("5", NumType),
+                    Operator(Sum),
+                    Literal("2", NumType),
+                    CloseParen,
+                    Semicolon,
                 ),
             ),
         )

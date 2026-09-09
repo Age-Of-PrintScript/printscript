@@ -1,7 +1,7 @@
 package linter.rules
 
 import ast.AST
-import domain.PrintScriptOperator
+import versionfactory.v1_0.Operators
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -40,7 +40,7 @@ class TestPrintlnArgumentRule {
             createOperationExpression(
                 left = createLiteralExpression(1),
                 right = createLiteralExpression(2),
-                operator = PrintScriptOperator.SUM,
+                operator = Operators.SUM,
             )
         testWarning(createPrintln(operation))
     }
@@ -51,7 +51,7 @@ class TestPrintlnArgumentRule {
             createOperationExpression(
                 left = createVariableExpression("x"),
                 right = createLiteralExpression(10),
-                operator = PrintScriptOperator.SUM,
+                operator = Operators.SUM,
             )
         testWarning(createPrintln(operation))
     }
@@ -62,7 +62,7 @@ class TestPrintlnArgumentRule {
             createOperationExpression(
                 left = createVariableExpression("a"),
                 right = createVariableExpression("b"),
-                operator = PrintScriptOperator.MULTIPLY,
+                operator = Operators.MULTIPLY,
             )
         testWarning(createPrintln(operation))
     }
@@ -73,7 +73,7 @@ class TestPrintlnArgumentRule {
             createOperationExpression(
                 left = createLiteralExpression("Hello, "),
                 right = createVariableExpression("name"),
-                operator = PrintScriptOperator.SUM,
+                operator = Operators.SUM,
             )
         testWarning(createPrintln(operation))
     }
@@ -84,13 +84,13 @@ class TestPrintlnArgumentRule {
             createOperationExpression(
                 left = createVariableExpression("a"),
                 right = createVariableExpression("b"),
-                operator = PrintScriptOperator.SUM,
+                operator = Operators.SUM,
             )
         val outerMultiply =
             createOperationExpression(
                 left = innerSum,
                 right = createLiteralExpression(5),
-                operator = PrintScriptOperator.MULTIPLY,
+                operator = Operators.MULTIPLY,
             )
         testWarning(createPrintln(outerMultiply))
     }
@@ -103,7 +103,7 @@ class TestPrintlnArgumentRule {
             createOperationExpression(
                 left = createLiteralExpression(5),
                 right = createLiteralExpression(5),
-                operator = PrintScriptOperator.SUM,
+                operator = Operators.SUM,
             )
         val ast = createDeclaration(name = "x", value = operation)
         testNoWarning(ast)
@@ -115,7 +115,7 @@ class TestPrintlnArgumentRule {
             createOperationExpression(
                 left = createLiteralExpression(1),
                 right = createLiteralExpression(2),
-                operator = PrintScriptOperator.SUM,
+                operator = Operators.SUM,
             )
         val ast = createAssignment(name = "x", value = operation)
         testNoWarning(ast)

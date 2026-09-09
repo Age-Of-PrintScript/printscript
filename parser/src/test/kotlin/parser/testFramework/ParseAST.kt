@@ -1,13 +1,10 @@
 package parser.testFramework
 
 import ast.AST
-import ast.ASTDataType
-import ast.ASTIdentifier
 import ast.Expression
-import domain.PrintScriptFunctions
-import domain.PrintScriptOperator
-import domain.PrintScriptType
-import domain.PrintScriptValue
+import domain.NumType
+import domain.PSType
+import domain.StrType
 
 private data class Line(
     val depth: Int,
@@ -41,23 +38,30 @@ private fun parseAST(
 
     return when (head.content) {
         "DECLARATION" -> {
-            val id = ASTIdentifier(getContent(lines, index + 1))
-            val type = ASTDataType(PrintScriptType.valueOf(getContent(lines, index + 2)))
+            val id = getContent(lines, index + 1)
+            val type = parsePSType(getContent(lines, index + 2))
             createDeclaration(index + 3, lines, childDepth, id, type)
         }
         "ASSIGNMENT" -> {
-            val id = ASTIdentifier(getContent(lines, index + 1))
+            val id = getContent(lines, index + 1)
             val (value, next) = parseExpression(lines, index + 2)
             AST.Assignment(id, value) to next
         }
         "CALL" -> {
-            val functionName = PrintScriptFunctions.valueOf(getContent(lines, index + 1))
+            val functionName = getContent(lines, index + 1).lowercase()
             val (arg, next) = parseExpression(lines, index + 2)
-            AST.Call(functionName, listOf(arg)) to next
+            AST.ExpressionStatement(Expression.Call(functionName, listOf(arg))) to next
         }
         else -> throw IllegalArgumentException("AST desconocido: ${head.content}")
     }
 }
+
+private fun parsePSType(name: String): PSType =
+    when (name.uppercase()) {
+        "NUMBER" -> NumType
+        "STRING" -> StrType
+        else -> throw IllegalArgumentException("Tipo desconocido: $name")
+    }
 
 private fun parseExpression(
     lines: List<Line>,
@@ -67,12 +71,9 @@ private fun parseExpression(
 
     return when {
         line.content.startsWith("OPERATION") -> getOperation(line, lines, index)
-
         line.content.startsWith("LITERAL") -> getLiteral(line, index)
-
         line.content.startsWith("VARIABLE") ->
             Expression.Variable(getValue(line)) to index + 1
-
         else -> throw IllegalArgumentException("Expression desconocida: ${line.content}")
     }
 }
@@ -81,14 +82,14 @@ private fun createDeclaration(
     index: Int,
     lines: List<Line>,
     childDepth: Int,
-    id: ASTIdentifier,
-    type: ASTDataType,
+    id: String,
+    type: PSType,
 ): Pair<AST.Declaration, Int> {
     if (index < lines.size && lines[index].depth == childDepth) {
         val (value, next) = parseExpression(lines, index)
-        return AST.Declaration(id, type, value) to next
+        return AST.Declaration(id, type, mutable = true, value = value) to next
     } else {
-        return AST.Declaration(id, type, null) to index
+        return AST.Declaration(id, type, mutable = true, value = null) to index
     }
 }
 
@@ -104,13 +105,8 @@ private fun getLiteral(
     val rest = getValue(line)
     val literalType = rest.substringBefore(" ")
     val value = rest.substringAfter(" ")
-    val literal =
-        when (literalType) {
-            "NUMBER" -> PrintScriptValue.NumberLiteral(value.toDouble())
-            "STRING" -> PrintScriptValue.StringLiteral(value)
-            else -> throw IllegalArgumentException("Tipo de literal desconocido: $literalType")
-        }
-    return Expression.Literal(literal) to index + 1
+    val psType = parsePSType(literalType)
+    return Expression.Literal(value, psType) to index + 1
 }
 
 private fun getOperation(
@@ -118,10 +114,10 @@ private fun getOperation(
     lines: List<Line>,
     index: Int,
 ): Pair<Expression.Operation, Int> {
-    val op = PrintScriptOperator.valueOf(getValue(line))
+    val op = TestOperator.valueOf(getValue(line))
     val (left, afterLeft) = parseExpression(lines, index + 1)
     val (right, afterRight) = parseExpression(lines, afterLeft)
-    return Expression.Operation(left, right, op) to afterRight
+    return Expression.Operation(left, op, right) to afterRight
 }
 
 private fun getValue(line: Line): String = line.content.substringAfter(" ").trim()

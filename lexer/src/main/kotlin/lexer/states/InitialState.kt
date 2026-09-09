@@ -4,10 +4,15 @@ import domain.Either
 import domain.Failure
 import domain.Success
 import lexer.LexerError
-import lexer.createSymbolStateMap
+import lexer.Lexicon
 
-internal class InitialState : State {
-    private val stateMap = createSymbolStateMap()
+internal class InitialState(
+    lexicon: Lexicon,
+) : State {
+    private val stateMap =
+        lexicon.symbols.mapValues {
+            FinalState()
+        }
 
     override fun canConsume(chr: Char): Boolean =
         chr.isDigit() ||

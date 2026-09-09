@@ -1,6 +1,6 @@
 package cli.adapters
 
-import executor.Logger
+import engine.Logger
 
 class ConsoleLogger : Logger {
     override fun log(string: String) {

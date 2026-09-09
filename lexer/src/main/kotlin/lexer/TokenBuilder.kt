@@ -2,18 +2,20 @@ package lexer
 
 import domain.Either
 import domain.Failure
+import domain.NumType
 import domain.Position
+import domain.StrType
 import domain.Success
 import domain.getOrReturn
 import tokens.Identifier
 import tokens.Literal
 import tokens.Token
 import tokens.TokenType
-import tokens.WHITESPACE
+import tokens.Whitespace
 
 internal data class TokenBuilder(
+    val lexicon: Lexicon,
     val type: TokenType? = null,
-    val tokenMap: Map<Char, TokenType> = createSymbolTokenMap(),
 ) {
     fun addChar(chr: Char): Either<LexerError, TokenBuilder> {
         if (type is Literal && !charIsQuote(chr)) {
@@ -25,7 +27,7 @@ internal data class TokenBuilder(
             chr.isDigit() -> {
                 val newType =
                     if (type == null) {
-                        Literal(chr.toString())
+                        Literal(chr.toString(), NumType)
                     } else {
                         updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
                     }
@@ -48,7 +50,7 @@ internal data class TokenBuilder(
                 val newType =
                     when (type) {
                         is Literal -> updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
-                        null -> Literal(chr.toString())
+                        null -> Literal(chr.toString(), StrType)
                         else -> return Failure(LexerError.INVALID_CHARACTER)
                     }
 
@@ -57,11 +59,11 @@ internal data class TokenBuilder(
 
             chr == '.' -> return Failure(LexerError.INVALID_CHARACTER)
 
-            chr.isWhitespace() -> return Success(copy(type = WHITESPACE))
+            chr.isWhitespace() -> return Success(copy(type = Whitespace))
 
             else -> {
-                return if (tokenMap.containsKey(chr)) {
-                    Success(copy(type = tokenMap.getValue(chr)))
+                return if (lexicon.symbols.containsKey(chr)) {
+                    Success(copy(type = lexicon.symbols.getValue(chr)))
                 } else {
                     Failure(LexerError.INVALID_CHARACTER)
                 }
@@ -75,7 +77,8 @@ internal data class TokenBuilder(
     ): Either<LexerError, TokenType> =
         when (type) {
             is Identifier -> Success(Identifier(type.name + chr))
-            is Literal -> Success(Literal(type.value + chr))
+            is Literal -> Success(Literal(type.value + chr, type.type))
+            is Whitespace -> Success(Whitespace)
             else -> Failure(LexerError.INVALID_CHARACTER_FOR_TOKEN_TYPE)
         }
 
@@ -94,7 +97,7 @@ internal data class TokenBuilder(
         var finalType = actualType ?: return Failure(LexerError.UNDETERMINED_TOKEN_TYPE)
 
         if (finalType is Identifier) {
-            val keywordMap = createSymbolKeywordMap()
+            val keywordMap = lexicon.keywords
             if (keywordMap.contains(finalType.name)) {
                 finalType = keywordMap.getValue(finalType.name)
             }
@@ -108,7 +111,7 @@ internal data class TokenBuilder(
                 if (!charIsQuote(last)) {
                     return Failure(LexerError.UNTERMINATED_STRING)
                 } else {
-                    finalType = Literal(str.substring(1, str.length - 1))
+                    finalType = Literal(str.substring(1, str.length - 1), StrType)
                 }
             }
         }

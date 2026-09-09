@@ -26,7 +26,7 @@ data class FailureCase(
 )
 
 class TestLexer {
-    private val lexer = LexerImpl()
+    private val lexer = LexerImpl(Lexicon(testSymbolsV1_0, testKeywordsV1_0))
 
     @TestFactory
     fun `successful declarations`(): List<DynamicNode> =
