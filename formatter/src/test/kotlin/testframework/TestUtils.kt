@@ -1,22 +1,22 @@
 package testframework
 
 import ast.AST
-import ast.ASTDataType
-import ast.ASTIdentifier
 import ast.Expression
-import domain.PrintScriptFunctions
-import domain.PrintScriptOperator
-import domain.PrintScriptType
-import domain.PrintScriptValue
+import domain.NumType
+import domain.PSOperator
+import domain.PSType
+import domain.StrType
+import versionfactory.v1_0.Operators
 
 fun createDeclaration(
     name: String,
-    type: PrintScriptType = PrintScriptType.STRING,
+    type: PSType = StrType,
     value: Expression? = createStringLiteralExpression("test"),
 ): AST.Declaration =
     AST.Declaration(
-        id = ASTIdentifier(name),
-        type = ASTDataType(type),
+        id = name,
+        type = type,
+        mutable = true,
         value = value,
     )
 
@@ -25,24 +25,27 @@ fun createAssignment(
     value: Expression = createNumberLiteralExpression(1),
 ): AST.Assignment =
     AST.Assignment(
-        id = ASTIdentifier(name),
+        id = name,
         value = value,
     )
 
-fun createPrintln(vararg args: Expression): AST.Call =
-    AST.Call(
-        functionName = PrintScriptFunctions.PRINTLN,
-        args = args.toList(),
+fun createPrintln(vararg args: Expression): AST.ExpressionStatement =
+    AST.ExpressionStatement(
+        expression =
+            Expression.Call(
+                name = "println",
+                args = args.toList(),
+            ),
     )
 
-fun createNumberLiteralExpression(value: Number): Expression.Literal = Expression.Literal(PrintScriptValue.NumberLiteral(value))
+fun createNumberLiteralExpression(value: Number): Expression.Literal = Expression.Literal(value.toString(), NumType)
 
-fun createStringLiteralExpression(value: String): Expression.Literal = Expression.Literal(PrintScriptValue.StringLiteral(value))
+fun createStringLiteralExpression(value: String): Expression.Literal = Expression.Literal(value, StrType)
 
 fun createVariableExpression(name: String): Expression.Variable = Expression.Variable(name)
 
 fun createOperationExpression(
     left: Expression,
     right: Expression,
-    operator: PrintScriptOperator = PrintScriptOperator.SUM,
-): Expression.Operation = Expression.Operation(left, right, operator)
+    operator: PSOperator = Operators.SUM,
+): Expression.Operation = Expression.Operation(left, operator, right)

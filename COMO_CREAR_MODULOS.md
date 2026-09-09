@@ -15,7 +15,7 @@ plugins {
 4. Agregar la estructura de carpetas: `src/main/kotlin` (dentro de esta va todo el código).
 5. En el archivo `settings.gradle.kts` agregar el nuevo módulo en `include(...)`:
 ```kotlin
-include("domain", "lexer", "parser", "interpreter", "tokens", "ast", "executor", "nombre_del_nuevo")
+include("domain", "lexer", "parser", "interpreter", "tokens", "ast", "engine", "nombre_del_nuevo")
 ```
 6. Rebuildear Gradle / hacer click en el elefante de Gradle en IntelliJ IDEA.
 

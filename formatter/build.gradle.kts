@@ -4,10 +4,9 @@ plugins {
 
 
 dependencies {
-    implementation(project(":ast"))
-    implementation(project(":domain"))
     implementation(project(":lexer"))
     implementation(project(":parser"))
+    implementation(project(":versionFactory"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
 

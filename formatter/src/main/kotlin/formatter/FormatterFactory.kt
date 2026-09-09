@@ -61,7 +61,7 @@ internal class FormatterFactory( // implementación fea, pero que por ahora anda
                         rulesByKey,
                         fixedRules,
                     ),
-                "call" to
+                "expressionStatement" to
                     buildFormatter(
                         listOf("lines before call"),
                         rulesByKey,

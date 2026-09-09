@@ -1,6 +1,7 @@
 package formattest
 
-import domain.PrintScriptType
+import domain.NumType
+import domain.StrType
 import formatter.FormatterImplementation
 import formatter.FormattingRules
 import formatter.SemiColonAtTheEndRule
@@ -20,7 +21,7 @@ class DeclarationTests {
 
     @Test
     fun `todas las reglas activas - caso base`() {
-        val declaration = createDeclaration("x", PrintScriptType.STRING, createStringLiteralExpression("hello"))
+        val declaration = createDeclaration("x", StrType, createStringLiteralExpression("hello"))
         val rules =
             listOf(
                 SpaceBeforeColonRule(true),
@@ -30,12 +31,12 @@ class DeclarationTests {
             )
         val result = FormatterImplementation(FormattingRules(rules)).format(declaration)
 
-        assertEquals("let x : String = \"hello\";", result)
+        assertEquals("let x : string = \"hello\";", result)
     }
 
     @Test
     fun `todas las reglas inactivas`() {
-        val declaration = createDeclaration("x", PrintScriptType.STRING, createStringLiteralExpression("hello"))
+        val declaration = createDeclaration("x", StrType, createStringLiteralExpression("hello"))
         val rules =
             listOf(
                 SpaceBeforeColonRule(false),
@@ -45,12 +46,12 @@ class DeclarationTests {
             )
         val result = FormatterImplementation(FormattingRules(rules)).format(declaration)
 
-        assertEquals("let x:String=\"hello\"", result)
+        assertEquals("let x:string=\"hello\"", result)
     }
 
     @Test
     fun `solo espacio antes de los dos puntos activo`() {
-        val declaration = createDeclaration("x", PrintScriptType.STRING, createStringLiteralExpression("hello"))
+        val declaration = createDeclaration("x", StrType, createStringLiteralExpression("hello"))
         val rules =
             listOf(
                 SpaceBeforeColonRule(true),
@@ -60,12 +61,12 @@ class DeclarationTests {
             )
         val result = FormatterImplementation(FormattingRules(rules)).format(declaration)
 
-        assertEquals("let x :String=\"hello\"", result)
+        assertEquals("let x :string=\"hello\"", result)
     }
 
     @Test
     fun `solo espacio despues de los dos puntos activo`() {
-        val declaration = createDeclaration("x", PrintScriptType.STRING, createStringLiteralExpression("hello"))
+        val declaration = createDeclaration("x", StrType, createStringLiteralExpression("hello"))
         val rules =
             listOf(
                 SpaceBeforeColonRule(false),
@@ -75,12 +76,12 @@ class DeclarationTests {
             )
         val result = FormatterImplementation(FormattingRules(rules)).format(declaration)
 
-        assertEquals("let x: String=\"hello\"", result)
+        assertEquals("let x: string=\"hello\"", result)
     }
 
     @Test
     fun `solo espacios alrededor del igual activo`() {
-        val declaration = createDeclaration("x", PrintScriptType.STRING, createStringLiteralExpression("hello"))
+        val declaration = createDeclaration("x", StrType, createStringLiteralExpression("hello"))
         val rules =
             listOf(
                 SpaceBeforeColonRule(false),
@@ -90,12 +91,12 @@ class DeclarationTests {
             )
         val result = FormatterImplementation(FormattingRules(rules)).format(declaration)
 
-        assertEquals("let x:String = \"hello\"", result)
+        assertEquals("let x:string = \"hello\"", result)
     }
 
     @Test
     fun `solo punto y coma activo`() {
-        val declaration = createDeclaration("x", PrintScriptType.STRING, createStringLiteralExpression("hello"))
+        val declaration = createDeclaration("x", StrType, createStringLiteralExpression("hello"))
         val rules =
             listOf(
                 SpaceBeforeColonRule(false),
@@ -105,7 +106,7 @@ class DeclarationTests {
             )
         val result = FormatterImplementation(FormattingRules(rules)).format(declaration)
 
-        assertEquals("let x:String=\"hello\";", result)
+        assertEquals("let x:string=\"hello\";", result)
     }
 
     // ------------------ Grupo B: contenido del string (todas las reglas activas) ------------------
@@ -120,121 +121,121 @@ class DeclarationTests {
 
     @Test
     fun `string vacio`() {
-        val declaration = createDeclaration("x", PrintScriptType.STRING, createStringLiteralExpression(""))
+        val declaration = createDeclaration("x", StrType, createStringLiteralExpression(""))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let x : String = \"\";", result)
+        assertEquals("let x : string = \"\";", result)
     }
 
     @Test
     fun `string con comillas dentro`() {
-        val declaration = createDeclaration("x", PrintScriptType.STRING, createStringLiteralExpression("Dijo \"hola\""))
+        val declaration = createDeclaration("x", StrType, createStringLiteralExpression("Dijo \"hola\""))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let x : String = \"Dijo \"hola\"\";", result)
+        assertEquals("let x : string = \"Dijo \"hola\"\";", result)
     }
 
     @Test
     fun `string con dos puntos dentro`() {
-        val declaration = createDeclaration("x", PrintScriptType.STRING, createStringLiteralExpression("10:30"))
+        val declaration = createDeclaration("x", StrType, createStringLiteralExpression("10:30"))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let x : String = \"10:30\";", result)
+        assertEquals("let x : string = \"10:30\";", result)
     }
 
     @Test
     fun `string con signo igual dentro`() {
-        val declaration = createDeclaration("x", PrintScriptType.STRING, createStringLiteralExpression("a=b"))
+        val declaration = createDeclaration("x", StrType, createStringLiteralExpression("a=b"))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let x : String = \"a=b\";", result)
+        assertEquals("let x : string = \"a=b\";", result)
     }
 
     @Test
     fun `string con espacios multiples dentro`() {
         val declaration =
-            createDeclaration("x", PrintScriptType.STRING, createStringLiteralExpression("  con   espacios  "))
+            createDeclaration("x", StrType, createStringLiteralExpression("  con   espacios  "))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let x : String = \"  con   espacios  \";", result)
+        assertEquals("let x : string = \"  con   espacios  \";", result)
     }
 
     @Test
     fun `string con salto de linea dentro`() {
         val declaration =
-            createDeclaration("x", PrintScriptType.STRING, createStringLiteralExpression("linea1\nlinea2"))
+            createDeclaration("x", StrType, createStringLiteralExpression("linea1\nlinea2"))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let x : String = \"linea1\nlinea2\";", result)
+        assertEquals("let x : string = \"linea1\nlinea2\";", result)
     }
 
     // ------------------ Grupo C: variaciones de identificador (todas las reglas activas) ------------------
 
     @Test
     fun `identificador de una sola letra`() {
-        val declaration = createDeclaration("a", PrintScriptType.NUMBER, createNumberLiteralExpression(1))
+        val declaration = createDeclaration("a", NumType, createNumberLiteralExpression(1))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let a : Number = 1;", result)
+        assertEquals("let a : number = 1;", result)
     }
 
     @Test
     fun `identificador largo`() {
         val declaration =
-            createDeclaration("unNombreDeVariableMuyLargoParaProbar", PrintScriptType.NUMBER, createNumberLiteralExpression(1))
+            createDeclaration("unNombreDeVariableMuyLargoParaProbar", NumType, createNumberLiteralExpression(1))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let unNombreDeVariableMuyLargoParaProbar : Number = 1;", result)
+        assertEquals("let unNombreDeVariableMuyLargoParaProbar : number = 1;", result)
     }
 
     @Test
     fun `identificador en snake_case`() {
         val declaration =
-            createDeclaration("mi_variable_con_guiones_bajos", PrintScriptType.NUMBER, createNumberLiteralExpression(1))
+            createDeclaration("mi_variable_con_guiones_bajos", NumType, createNumberLiteralExpression(1))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let mi_variable_con_guiones_bajos : Number = 1;", result)
+        assertEquals("let mi_variable_con_guiones_bajos : number = 1;", result)
     }
 
     @Test
     fun `identificador con numeros al final`() {
-        val declaration = createDeclaration("variable2", PrintScriptType.NUMBER, createNumberLiteralExpression(1))
+        val declaration = createDeclaration("variable2", NumType, createNumberLiteralExpression(1))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let variable2 : Number = 1;", result)
+        assertEquals("let variable2 : number = 1;", result)
     }
 
     // ------------------ Grupo D: valores numericos (todas las reglas activas) ------------------
 
     @Test
     fun `numero cero`() {
-        val declaration = createDeclaration("x", PrintScriptType.NUMBER, createNumberLiteralExpression(0))
+        val declaration = createDeclaration("x", NumType, createNumberLiteralExpression(0))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let x : Number = 0;", result)
+        assertEquals("let x : number = 0;", result)
     }
 
     @Test
     fun `numero negativo`() {
-        val declaration = createDeclaration("x", PrintScriptType.NUMBER, createNumberLiteralExpression(-5))
+        val declaration = createDeclaration("x", NumType, createNumberLiteralExpression(-5))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let x : Number = -5;", result)
+        assertEquals("let x : number = -5;", result)
     }
 
     @Test
     fun `numero grande`() {
-        val declaration = createDeclaration("x", PrintScriptType.NUMBER, createNumberLiteralExpression(999999999))
+        val declaration = createDeclaration("x", NumType, createNumberLiteralExpression(999999999))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let x : Number = 999999999;", result)
+        assertEquals("let x : number = 999999999;", result)
     }
 
     @Test
     fun `numero decimal`() {
-        val declaration = createDeclaration("x", PrintScriptType.NUMBER, createNumberLiteralExpression(3.14))
+        val declaration = createDeclaration("x", NumType, createNumberLiteralExpression(3.14))
         val result = FormatterImplementation(FormattingRules(allRules)).format(declaration)
 
-        assertEquals("let x : Number = 3.14;", result)
+        assertEquals("let x : number = 3.14;", result)
     }
 }

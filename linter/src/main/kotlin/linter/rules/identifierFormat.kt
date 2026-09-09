@@ -27,9 +27,9 @@ internal class IdentifierFormatRule(
 
     private fun extractIdentifier(ast: AST): String? =
         when (ast) {
-            is AST.Assignment -> ast.id.name
-            is AST.Call -> null
-            is AST.Declaration -> ast.id.name
+            is AST.Assignment -> ast.id
+            is AST.Declaration -> ast.id
+            is AST.ExpressionStatement -> null
         }
 }
 
