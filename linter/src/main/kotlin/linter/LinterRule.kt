@@ -1,10 +1,10 @@
 package linter
 
-import ast.ASTViejo
+import ast.AST
 import kotlinx.serialization.json.JsonObject
 
 internal interface LinterRule {
-    fun apply(astViejo: ASTViejo): Warning?
+    fun apply(ast: AST): Warning?
 }
 
 internal interface LinterRuleFactory {
