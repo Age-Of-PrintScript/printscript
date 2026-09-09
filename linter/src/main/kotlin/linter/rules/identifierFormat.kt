@@ -1,7 +1,6 @@
 package linter.rules
 
 import ast.AST
-import ast.ASTViejo
 import domain.Position
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive

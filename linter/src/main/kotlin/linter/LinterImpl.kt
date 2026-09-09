@@ -9,7 +9,10 @@ import java.io.File
 import java.io.InputStream
 
 interface Linter {
-    fun analyse(source: String, version: String): List<Warning>
+    fun analyse(
+        source: String,
+        version: String = "1.0",
+    ): List<Warning>
 
     companion object {
         fun createDefault(): Linter {
@@ -37,9 +40,10 @@ internal class LinterImpl(
     private val rulesConfig: RulesConfig,
     private val analyser: Analyser = Analyser(),
 ) : Linter {
-
-
-    override fun analyse(source: String, version: String): List<Warning> {
+    override fun analyse(
+        source: String,
+        version: String,
+    ): List<Warning> {
         val psVersion = PSVersion1_0()
 
         val lexer: Lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))

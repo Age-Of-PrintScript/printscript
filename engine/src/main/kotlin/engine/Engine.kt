@@ -86,7 +86,6 @@ class Engine {
         val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
         val parser = Parser.new(version.statementParsers)
 
-
         val tokensResult = lexer.tokenize(source)
         if (tokensResult is Failure) {
             logFailure(tokensResult.value, logger)

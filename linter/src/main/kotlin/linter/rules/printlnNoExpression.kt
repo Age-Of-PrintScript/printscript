@@ -30,8 +30,7 @@ internal class PrintlnArgumentRule : LinterRule {
         return expr
     }
 
-    private fun isValidArgument(arg: Expression): Boolean =
-        arg is Expression.Variable || arg is Expression.Literal
+    private fun isValidArgument(arg: Expression): Boolean = arg is Expression.Variable || arg is Expression.Literal
 }
 
 internal object PrintlnArgumentRuleFactory : LinterRuleFactory {
@@ -39,4 +38,3 @@ internal object PrintlnArgumentRuleFactory : LinterRuleFactory {
 
     override fun fromConfig(params: JsonObject): LinterRule = PrintlnArgumentRule()
 }
-
