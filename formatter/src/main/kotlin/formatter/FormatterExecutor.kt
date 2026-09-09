@@ -51,9 +51,10 @@ internal class FormatterExecutor : Formatter {
                 for (tree in program.trees) {
                     val formatter =
                         when (tree) {
-                            is AST.Declaration -> formatters["declaration"]
-                            is AST.Assignment -> formatters["assignment"]
+                            is AST.DeclarationStatement -> formatters["declaration"]
+                            is AST.AssignmentStatement -> formatters["assignment"]
                             is AST.ExpressionStatement -> formatters["expressionStatement"]
+                            is AST.ConditionalStatement -> formatters["ifStatement"]
                         } ?: return FormatResult.Failure(FormattingError.UNKNOWN_AST_TYPE.getMessage())
                     appendLine(formatter.format(tree))
                 }

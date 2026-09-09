@@ -46,7 +46,7 @@ class DeclarationParser(
 
         if (consumer.consumeIf(Semicolon::class) != null) {
             if (!isMutable) return Failure(SyntaxError.INVALID_TOKEN)
-            return Success(AST.Declaration(id, psType, mutable = true, value = null))
+            return Success(AST.DeclarationStatement(id, psType, mutable = true, value = null))
         }
 
         consumer
@@ -68,6 +68,6 @@ class DeclarationParser(
             .getOrReturn { return Failure(it) }
 
         val expr = expressionParser.parse(exprTokens).getOrReturn { return Failure(it) }
-        return Success(AST.Declaration(id, type, mutable = isMutable, value = expr))
+        return Success(AST.DeclarationStatement(id, type, mutable = isMutable, value = expr))
     }
 }

@@ -8,37 +8,37 @@ val SUCCESS_CASES =
     listOf(
         SuccessCase(
             name = "declaration with number initialization",
-            program = Program(listOf(DECLARATION_X_NUMBER_5), POS, POS),
+            program = Program(listOf(DECLARATION_Statement_X_NUMBER_5), POS, POS),
             expectedEnv = ENV_WITH_X_EQUAL_TO_5,
             expectedEvents = EMPTY_EVENTS,
         ),
         SuccessCase(
             name = "declaration with string initialization",
-            program = Program(listOf(DECLARATION_X_STRING_HOLA), POS, POS),
+            program = Program(listOf(DECLARATION_Statement_X_STRING_HOLA), POS, POS),
             expectedEnv = ENV_WITH_X_STRING_HOLA,
             expectedEvents = EMPTY_EVENTS,
         ),
         SuccessCase(
             name = "declaration without initialization (number)",
-            program = Program(listOf(DECLARATION_X_NUMBER_NO_VALUE), POS, POS),
+            program = Program(listOf(DECLARATION_Statement_X_NUMBER_NO_VALUE), POS, POS),
             expectedEnv = ENV_WITH_X_NUMBER_NO_VALUE,
             expectedEvents = EMPTY_EVENTS,
         ),
         SuccessCase(
             name = "declaration without initialization (string)",
-            program = Program(listOf(DECLARATION_X_STRING_NO_VALUE), POS, POS),
+            program = Program(listOf(DECLARATION_Statement_X_STRING_NO_VALUE), POS, POS),
             expectedEnv = ENV_WITH_X_STRING_NO_VALUE,
             expectedEvents = EMPTY_EVENTS,
         ),
         SuccessCase(
             name = "declaration without value, then valid assignment",
-            program = Program(listOf(DECLARATION_X_NUMBER_NO_VALUE, ASSIGNMENT_X_TO_10), POS, POS),
+            program = Program(listOf(DECLARATION_Statement_X_NUMBER_NO_VALUE, ASSIGNMENT_Statement_X_TO_10), POS, POS),
             expectedEnv = ENV_WITH_X_EQUAL_TO_10,
             expectedEvents = EMPTY_EVENTS,
         ),
         SuccessCase(
             name = "declaration with value, then reassignment",
-            program = Program(listOf(DECLARATION_X_NUMBER_5, ASSIGNMENT_X_TO_2), POS, POS),
+            program = Program(listOf(DECLARATION_Statement_X_NUMBER_5, ASSIGNMENT_Statement_X_TO_2), POS, POS),
             expectedEnv = ENV_WITH_X_EQUAL_TO_2,
             expectedEvents = EMPTY_EVENTS,
         ),
@@ -50,7 +50,7 @@ val SUCCESS_CASES =
         ),
         SuccessCase(
             name = "println with declared variable",
-            program = Program(listOf(DECLARATION_X_NUMBER_5, CALL_PRINTLN_X), POS, POS),
+            program = Program(listOf(DECLARATION_Statement_X_NUMBER_5, CALL_PRINTLN_X), POS, POS),
             expectedEnv = ENV_WITH_X_EQUAL_TO_5,
             expectedEvents = EVENTS_WITH_PRINT_5,
         ),
@@ -64,7 +64,7 @@ val SUCCESS_CASES =
             name = "declaration, reassignment and println combined",
             program =
                 Program(
-                    listOf(DECLARATION_X_NUMBER_5, ASSIGNMENT_X_TO_10, CALL_PRINTLN_X),
+                    listOf(DECLARATION_Statement_X_NUMBER_5, ASSIGNMENT_Statement_X_TO_10, CALL_PRINTLN_X),
                     POS, POS,
                 ),
             expectedEnv = ENV_WITH_X_EQUAL_TO_10,
@@ -72,13 +72,13 @@ val SUCCESS_CASES =
         ),
         SuccessCase(
             name = "two independent variables declared",
-            program = Program(listOf(DECLARATION_X_NUMBER_5, DECLARATION_A_NUMBER_1), POS, POS),
+            program = Program(listOf(DECLARATION_Statement_X_NUMBER_5, DECLARATION_Statement_A_NUMBER_1), POS, POS),
             expectedEnv = ENV_WITH_X_5_AND_A_1,
             expectedEvents = EMPTY_EVENTS,
         ),
         SuccessCase(
             name = "declaration initializing variable with another declared variable",
-            program = Program(listOf(DECLARATION_X_NUMBER_5, DECLARATION_Y_NUMBER_WITH_X_VALUE), POS, POS),
+            program = Program(listOf(DECLARATION_Statement_X_NUMBER_5, DECLARATION_Statement_Y_NUMBER_WITH_X_VALUE), POS, POS),
             expectedEnv = ENV_WITH_X_5_AND_Y_5,
             expectedEvents = EMPTY_EVENTS,
         ),
@@ -86,7 +86,7 @@ val SUCCESS_CASES =
             name = "assignment to variable using another declared variable",
             program =
                 Program(
-                    listOf(DECLARATION_X_NUMBER_5, DECLARATION_Y_NUMBER_NO_VALUE, ASSIGNMENT_Y_TO_X),
+                    listOf(DECLARATION_Statement_X_NUMBER_5, DECLARATION_Statement_Y_NUMBER_NO_VALUE, ASSIGNMENT_Statement_Y_TO_X),
                     POS, POS,
                 ),
             expectedEnv = ENV_WITH_X_5_AND_Y_5,
@@ -120,7 +120,7 @@ val SUCCESS_CASES =
             name = "multiple println calls showing variable state before and after reassignment",
             program =
                 Program(
-                    listOf(DECLARATION_X_NUMBER_5, CALL_PRINTLN_X, ASSIGNMENT_X_TO_10, CALL_PRINTLN_X),
+                    listOf(DECLARATION_Statement_X_NUMBER_5, CALL_PRINTLN_X, ASSIGNMENT_Statement_X_TO_10, CALL_PRINTLN_X),
                     POS, POS,
                 ),
             expectedEnv = ENV_WITH_X_EQUAL_TO_10,

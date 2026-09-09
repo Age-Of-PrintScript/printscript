@@ -45,7 +45,7 @@ private fun parseAST(
         "ASSIGNMENT" -> {
             val id = getContent(lines, index + 1)
             val (value, next) = parseExpression(lines, index + 2)
-            AST.Assignment(id, value) to next
+            AST.AssignmentStatement(id, value) to next
         }
         "CALL" -> {
             val functionName = getContent(lines, index + 1).lowercase()
@@ -84,12 +84,12 @@ private fun createDeclaration(
     childDepth: Int,
     id: String,
     type: PSType,
-): Pair<AST.Declaration, Int> {
+): Pair<AST.DeclarationStatement, Int> {
     if (index < lines.size && lines[index].depth == childDepth) {
         val (value, next) = parseExpression(lines, index)
-        return AST.Declaration(id, type, mutable = true, value = value) to next
+        return AST.DeclarationStatement(id, type, mutable = true, value = value) to next
     } else {
-        return AST.Declaration(id, type, mutable = true, value = null) to index
+        return AST.DeclarationStatement(id, type, mutable = true, value = null) to index
     }
 }
 

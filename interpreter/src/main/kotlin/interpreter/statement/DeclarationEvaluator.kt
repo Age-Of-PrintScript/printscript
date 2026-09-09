@@ -17,10 +17,10 @@ class DeclarationEvaluator : StatementEvaluator {
         events: RuntimeEvents,
         semantics: LanguageSemantics,
     ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
-        val declaration = statement as AST.Declaration
+        val declarationStatement = statement as AST.DeclarationStatement
         var currentEnv = env
         var newEvents = events
-        val value = declaration.value
+        val value = declarationStatement.value
         if (value != null) {
             val solvedResult =
                 solveExpression(value, env, semantics)
@@ -35,17 +35,17 @@ class DeclarationEvaluator : StatementEvaluator {
             val newEnv =
                 updateEnvironmentWithNewDeclaration(
                     env,
-                    declaration.id,
-                    declaration.type,
+                    declarationStatement.id,
+                    declarationStatement.type,
                     solvedResult.returnValue.toLiteral(),
-                    declaration.mutable,
+                    declarationStatement.mutable,
                 ).getOrReturn { return Failure(it) }
 
             currentEnv = newEnv
         } else {
             val newEnv =
                 currentEnv
-                    .addVariable(declaration.id, declaration.type, null, declaration.mutable)
+                    .addVariable(declarationStatement.id, declarationStatement.type, null, declarationStatement.mutable)
                     .getOrReturn { return Failure(it) }
 
             currentEnv = newEnv
