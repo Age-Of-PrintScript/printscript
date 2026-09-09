@@ -1,4 +1,4 @@
-package versionFactory
+package versionfactory
 
 import ast.ASTType
 import interpreter.BinaryOperation
@@ -17,4 +17,4 @@ interface PSVersion {
     val statementEvaluators: Map<ASTType, StatementEvaluator>
 }
 
-val version1_1 = PSVersion1_0()
+val version1_0: PSVersion = PSVersion1_0()

@@ -1,4 +1,4 @@
-package versionFactory.v1_0
+package versionfactory.v1_0
 
 import tokens.Assign
 import tokens.CloseParen
@@ -8,7 +8,7 @@ import tokens.Operator
 import tokens.Semicolon
 import tokens.TokenType
 
-val v1_0Symbols: Map<Char, TokenType> =
+internal val v1_0Symbols: Map<Char, TokenType> =
     mapOf(
         '+' to Operator(Operators.SUM),
         '-' to Operator(Operators.SUBTRACT),

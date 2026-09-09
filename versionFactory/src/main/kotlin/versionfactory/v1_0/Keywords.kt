@@ -1,4 +1,4 @@
-package versionFactory.v1_0
+package versionfactory.v1_0
 
 import domain.NumType
 import domain.StrType
@@ -7,7 +7,7 @@ import tokens.DataType
 import tokens.Let
 import tokens.TokenType
 
-val v1_0Keywords: Map<String, TokenType> =
+internal val v1_0Keywords: Map<String, TokenType> =
     mapOf(
         "let" to Let,
         "println" to Call("println"),

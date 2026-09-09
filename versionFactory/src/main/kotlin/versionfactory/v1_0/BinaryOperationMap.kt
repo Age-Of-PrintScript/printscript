@@ -1,11 +1,11 @@
-package versionFactory.v1_0
+package versionfactory.v1_0
 
 import domain.NumType
 import domain.StrType
 import interpreter.BinaryOperation
 import interpreter.OperationKey
 
-val v1_0BinaryOperations: Map<OperationKey, BinaryOperation> =
+internal val v1_0BinaryOperations: Map<OperationKey, BinaryOperation> =
     mapOf(
         OperationKey(Operators.SUM, NumType, NumType) to sumNumAndNum,
         OperationKey(Operators.SUM, StrType, StrType) to sumStrAndStr,

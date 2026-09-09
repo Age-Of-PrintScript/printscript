@@ -4,7 +4,7 @@ import domain.getOrReturn
 import lexer.Lexer
 import lexer.Lexicon
 import parser.Parser
-import versionFactory.PSVersion1_0
+import versionfactory.version1_0
 import java.io.File
 import java.io.InputStream
 
@@ -44,7 +44,7 @@ internal class LinterImpl(
         source: String,
         version: String,
     ): List<Warning> {
-        val psVersion = PSVersion1_0()
+        val psVersion = version1_0
 
         val lexer: Lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
         val parser: Parser = Parser.new(psVersion.statementParsers)

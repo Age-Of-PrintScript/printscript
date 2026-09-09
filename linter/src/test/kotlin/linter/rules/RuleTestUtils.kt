@@ -6,7 +6,7 @@ import domain.NumType
 import domain.PSOperator
 import domain.PSType
 import domain.StrType
-import versionFactory.v1_0.Operators
+import versionfactory.v1_0.Operators
 
 fun createDeclaration(
     name: String,

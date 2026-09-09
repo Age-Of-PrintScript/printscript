@@ -1,11 +1,11 @@
-package versionFactory.v1_0
+package versionfactory.v1_0
 
 import domain.Success
 import interpreter.BuiltInFunction
 import interpreter.FunctionResult
 import interpreter.environment.PrintEvent
 
-val printlnFunction =
+internal val printlnFunction =
     BuiltInFunction { args ->
         val message = if (args.isNotEmpty()) args.first().raw else ""
         Success(
@@ -16,7 +16,7 @@ val printlnFunction =
         )
     }
 
-val v1_0builtInFunctions: Map<String, BuiltInFunction> =
+internal val v1_0builtInFunctions: Map<String, BuiltInFunction> =
     mapOf(
         "println" to printlnFunction,
     )

@@ -1,4 +1,4 @@
-package versionFactory.v1_0
+package versionfactory.v1_0
 
 import domain.PSOperator
 

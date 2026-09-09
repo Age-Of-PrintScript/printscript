@@ -1,7 +1,7 @@
 package linter.rules
 
 import ast.AST
-import versionFactory.v1_0.Operators
+import versionfactory.v1_0.Operators
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

@@ -1,4 +1,4 @@
-package versionFactory.v1_0
+package versionfactory.v1_0
 
 import domain.Failure
 import domain.NumType
@@ -8,40 +8,40 @@ import domain.Success
 import interpreter.BinaryOperation
 import interpreter.RuntimeError
 
-val sumNumAndNum =
+internal val sumNumAndNum =
     BinaryOperation { l, r ->
         val result = l.raw.toDouble() + r.raw.toDouble()
         Success(PSLiteral(result.toString(), NumType))
     }
 
-val sumStrAndStr =
+internal val sumStrAndStr =
     BinaryOperation { l, r ->
         Success(PSLiteral(l.raw + r.raw, StrType))
     }
 
-val sumStrAndNum =
+internal val sumStrAndNum =
     BinaryOperation { l, r ->
         Success(PSLiteral(l.raw + r.raw, StrType))
     }
 
-val sumNumAndStr =
+internal val sumNumAndStr =
     BinaryOperation { l, r ->
         Success(PSLiteral(l.raw + r.raw, StrType))
     }
 
-val subNumAndNum =
+internal val subNumAndNum =
     BinaryOperation { l, r ->
         val result = l.raw.toDouble() - r.raw.toDouble()
         Success(PSLiteral(result.toString(), NumType))
     }
 
-val multNumAndNum =
+internal val multNumAndNum =
     BinaryOperation { l, r ->
         val result = l.raw.toDouble() * r.raw.toDouble()
         Success(PSLiteral(result.toString(), NumType))
     }
 
-val divNumAndNum =
+internal val divNumAndNum =
     BinaryOperation { l, r ->
         val rightVal = r.raw.toDouble()
         if (rightVal == 0.0) {
@@ -52,7 +52,7 @@ val divNumAndNum =
         }
     }
 
-val multNumAndString =
+internal val multNumAndString =
     BinaryOperation { l, r ->
         val times =
             l.raw
@@ -62,7 +62,7 @@ val multNumAndString =
         Success(PSLiteral(r.raw.repeat(times.toInt()), StrType))
     }
 
-val multStringAndNum =
+internal val multStringAndNum =
     BinaryOperation { l, r ->
         val times =
             r.raw

@@ -1,4 +1,4 @@
-package versionFactory.v1_1
+package versionfactory.v1_1
 
 import tokens.Call
 import tokens.Const
@@ -6,9 +6,9 @@ import tokens.DataType
 import tokens.Else
 import tokens.If
 import tokens.TokenType
-import versionFactory.v1_0.v1_0Keywords
+import versionfactory.v1_0.v1_0Keywords
 
-val v1_1Keywords: Map<String, TokenType> =
+internal val v1_1Keywords: Map<String, TokenType> =
     v1_0Keywords +
         mapOf(
             "const" to Const,

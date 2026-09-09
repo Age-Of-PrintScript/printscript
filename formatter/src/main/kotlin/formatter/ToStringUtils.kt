@@ -1,89 +1,67 @@
 package formatter
 
-import ast.ASTViejo
-import ast.ExpressionViejo
-import domain.PrintScriptFunctions
-import domain.PrintScriptOperator
-import domain.PrintScriptType
-import domain.PrintScriptValue
+import ast.AST
+import ast.Expression
+import domain.PSType
+import domain.StrType
 
-internal fun astToString(astViejo: ASTViejo): String =
-    when (astViejo) {
-        is ASTViejo.Assignment -> assignmentToString(astViejo)
-        is ASTViejo.Call -> callToString(astViejo)
-        is ASTViejo.Declaration -> declarationToString(astViejo)
+internal fun astToString(ast: AST): String =
+    when (ast) {
+        is AST.Assignment -> assignmentToString(ast)
+        is AST.ExpressionStatement -> expressionToString(ast.expression, 0)
+        is AST.Declaration -> declarationToString(ast)
     }
 
-internal fun declarationToString(declaration: ASTViejo.Declaration): String {
+internal fun declarationToString(declaration: AST.Declaration): String {
+    val keyword = if (declaration.mutable) "let" else "const"
     var assignPart = ""
     if (declaration.value != null) {
         val string = expressionToString(declaration.value, 0)
         assignPart = "=$string"
     }
-    return "let ${declaration.id.name}:${typeToString(declaration.type.name)}$assignPart"
+    return "$keyword ${declaration.id}:${typeToString(declaration.type)}$assignPart"
 }
 
-internal fun assignmentToString(assignment: ASTViejo.Assignment): String = "${assignment.id.name}=${expressionToString(assignment.value, 0)}"
+internal fun assignmentToString(assignment: AST.Assignment): String = "${assignment.id}=${expressionToString(assignment.value, 0)}"
 
-internal fun callToString(call: ASTViejo.Call): String {
+internal fun callToString(call: Expression.Call): String {
     val argsStr = call.args.joinToString(", ") { expressionToString(it, 0) }
-    return "${functionNameToString(call.functionName)}($argsStr)"
+    return "${call.name}($argsStr)"
 }
 
 internal fun expressionToString(
-    expressionViejo: ExpressionViejo?,
-    parentPrecedence: Int,
+    expression: Expression?,
+    parentPrecedence: Int = 0,
 ): String {
-    if (expressionViejo == null) return ""
+    if (expression == null) return ""
 
-    return when (expressionViejo) {
-        is ExpressionViejo.Literal -> literalToString(expressionViejo.value)
-        is ExpressionViejo.Operation -> operationToString(expressionViejo, parentPrecedence)
-        is ExpressionViejo.Variable -> expressionViejo.name
+    return when (expression) {
+        is Expression.Literal -> literalToString(expression)
+        is Expression.Operation -> operationToString(expression, parentPrecedence)
+        is Expression.Variable -> expression.name
+        is Expression.Call -> callToString(expression)
     }
 }
 
 internal fun operationToString(
-    operation: ExpressionViejo.Operation,
+    operation: Expression.Operation,
     parentPrecedence: Int,
 ): String {
-    val precedence = precedenceOf(operation.operator)
+    val precedence = operation.operator.precedence
 
     val left = expressionToString(operation.left, precedence)
     val right = expressionToString(operation.right, precedence + 1) // +1 fuerza paréntesis en empates, por la asociatividad a izquierda
 
-    val result = "$left ${operatorToString(operation.operator)} $right"
+    val result = "$left ${operation.operator.symbol} $right"
 
     return if (precedence < parentPrecedence) "($result)" else result // si la operación de ahora es una suma o resta, ponele parentesis
 }
 
-internal fun operatorToString(operator: PrintScriptOperator): String =
-    when (operator) {
-        PrintScriptOperator.SUM -> "+"
-        PrintScriptOperator.SUBTRACT -> "-"
-        PrintScriptOperator.MULTIPLY -> "*"
-        PrintScriptOperator.DIVIDE -> "/"
-    }
+internal fun typeToString(type: PSType): String = type.name
 
-internal fun typeToString(type: PrintScriptType): String =
-    when (type) {
-        PrintScriptType.NUMBER -> "Number"
-        PrintScriptType.STRING -> "String"
-    }
-
-internal fun functionNameToString(function: PrintScriptFunctions): String =
-    when (function) {
-        PrintScriptFunctions.PRINTLN -> "println"
-    }
-
-internal fun literalToString(value: PrintScriptValue): String =
-    when (value) {
-        is PrintScriptValue.NumberLiteral -> value.value.toString()
-        is PrintScriptValue.StringLiteral -> "\"${value.value}\""
-    }
-
-private fun precedenceOf(operator: PrintScriptOperator): Int =
-    when (operator) {
-        PrintScriptOperator.SUM, PrintScriptOperator.SUBTRACT -> 1
-        PrintScriptOperator.MULTIPLY, PrintScriptOperator.DIVIDE -> 2
+internal fun literalToString(literal: Expression.Literal): String =
+    if (literal.type == StrType || literal.type.name == "string") {
+        "\"${literal.value}\""
+    } else {
+        literal.value
     }

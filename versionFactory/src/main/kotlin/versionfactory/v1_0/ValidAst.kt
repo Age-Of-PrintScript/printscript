@@ -1,4 +1,4 @@
-package versionFactory.v1_0
+package versionfactory.v1_0
 
 import ast.ASTType
 import interpreter.statement.AssignmentEvaluator
@@ -11,16 +11,16 @@ import parser.builders.DeclarationParser
 import parser.builders.ExpressionStatementParser
 import parser.builders.StatementParser
 
-val expressionParser = ExpressionParser()
+internal val expressionParser = ExpressionParser()
 
-val v1_0StatementParsers: Map<ASTType, StatementParser> =
+internal val v1_0StatementParsers: Map<ASTType, StatementParser> =
     mapOf(
         ASTType.DECLARATION to DeclarationParser(expressionParser),
         ASTType.ASSIGNMENT to AssignmentParser(expressionParser),
         ASTType.EXPRESSION_STATEMENT to ExpressionStatementParser(expressionParser),
     )
 
-val v1_0StatementEvaluators: Map<ASTType, StatementEvaluator> =
+internal val v1_0StatementEvaluators: Map<ASTType, StatementEvaluator> =
     mapOf(
         ASTType.ASSIGNMENT to AssignmentEvaluator(),
         ASTType.DECLARATION to DeclarationEvaluator(),

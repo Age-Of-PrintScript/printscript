@@ -1,6 +1,5 @@
 package formattest
 
-import domain.PrintScriptOperator
 import formatter.FormatterImplementation
 import formatter.FormattingRules
 import formatter.SemiColonAtTheEndRule
@@ -95,7 +94,7 @@ class AssignmentTests {
         val assignment =
             createAssignment(
                 "x",
-                createOperationExpression(createVariableExpression("y"), createNumberLiteralExpression(3), PrintScriptOperator.SUM),
+                createOperationExpression(createVariableExpression("y"), createNumberLiteralExpression(3)),
             )
         val result = FormatterImplementation(FormattingRules(allAssignmentRules)).format(assignment)
 

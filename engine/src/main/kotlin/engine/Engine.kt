@@ -4,6 +4,7 @@ import domain.Either
 import domain.Error
 import domain.Failure
 import domain.Success
+import domain.getOrReturn
 import interpreter.Interpreter
 import interpreter.LanguageSemantics
 import interpreter.environment.ExecutionResult
@@ -11,8 +12,8 @@ import interpreter.environment.PrintEvent
 import lexer.Lexer
 import lexer.Lexicon
 import parser.Parser
-import versionFactory.PSVersion
-import versionFactory.PSVersion1_0
+import versionfactory.PSVersion
+import versionfactory.version1_0
 
 class Engine {
     fun execute(
@@ -21,8 +22,15 @@ class Engine {
         context: ExecutionContext = ExecutionContext(),
         version: String? = null,
     ): EngineResult {
-        val version = PSVersion1_0()
-
+        val version =
+            if (version != null) {
+                getVersion(version).getOrReturn {
+                    logFailure("version $version not found", logger)
+                    return EngineResult(ExitCode.FAILURE, context)
+                }
+            } else {
+                getLatestVersion()
+            }
         val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
         val parser = Parser.new(version.statementParsers)
         val interpreter = Interpreter.new(LanguageSemantics(version.builtInFunctions, version.binaryOperations, version.statementEvaluators))
@@ -74,6 +82,13 @@ class Engine {
         error: Error,
         logger: Logger,
     ) {
+        logFailure(error.toString(), logger)
+    }
+
+    private fun logFailure(
+        error: String,
+        logger: Logger,
+    ) {
         logger.log(error.toString())
         logger.log("Build Failed")
     }
@@ -81,8 +96,17 @@ class Engine {
     fun validate(
         source: String,
         logger: Logger,
+        version: String? = null,
     ): ExitCode {
-        val version = PSVersion1_0()
+        val version =
+            if (version != null) {
+                getVersion(version).getOrReturn {
+                    logFailure("version $version not found", logger)
+                    return ExitCode.FAILURE
+                }
+            } else {
+                getLatestVersion()
+            }
         val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
         val parser = Parser.new(version.statementParsers)
 
@@ -100,11 +124,11 @@ class Engine {
         return ExitCode.SUCCESS
     }
 
-    private fun getVersion(version: String): Either<String, PSVersion> {
-        return when (version) {
-            "1.0" -> Success(PSVersion1_0())
+    private fun getVersion(version: String): Either<String, PSVersion> =
+        when (version) {
+            "1.0" -> Success(version1_0)
             else -> Failure("Unknown version")
         }
-    }
-    private fun getLatestVersion() = PSVersion1_0()
+
+    private fun getLatestVersion() = version1_0
 }
