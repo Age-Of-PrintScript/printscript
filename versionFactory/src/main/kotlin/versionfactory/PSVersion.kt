@@ -16,7 +16,7 @@ interface PSVersion {
     val builtInFunctions: Map<String, BuiltInFunction>
     val keywords: Map<String, TokenType>
     val symbols: Map<Char, TokenType>
-    val statementParsers: Map<ASTType, StatementParser>
+    val statementParsers: List<StatementParser>
     val statementEvaluators: Map<ASTType, StatementEvaluator>
 
     companion object {

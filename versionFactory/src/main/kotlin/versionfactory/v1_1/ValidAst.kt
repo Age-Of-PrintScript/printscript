@@ -9,7 +9,7 @@ import versionfactory.v1_0.v1_0StatementParsers
 
 internal val expressionParser = ExpressionParser()
 
-internal val v1_1StatementParsers: Map<ASTType, StatementParser> =
+internal val v1_1StatementParsers: List<StatementParser> =
     v1_0StatementParsers
 
 internal val v1_1StatementEvaluators: Map<ASTType, StatementEvaluator> =

@@ -46,16 +46,18 @@ internal class FormatterExecutor : Formatter {
         val config = parseConfig(path).getOrReturn { return FormatResult.Failure(it.getMessage()) }
         val formatters = FormatterFactory(config).constructFormatters().getOrReturn { return FormatResult.Failure(it.getMessage()) }
 
-        var finalString = ""
-        for (tree in program.trees) {
-            val formatter =
-                when (tree) { // el map.get siempre devuelve un nullable, tengo que manejar ese caso tambien
-                    is AST.Declaration -> formatters["declaration"]
-                    is AST.Assignment -> formatters["assignment"]
-                    is AST.ExpressionStatement -> formatters["call"]
-                } ?: return FormatResult.Failure(FormattingError.UNKNOWN_AST_TYPE.getMessage())
-            finalString += formatter.format(tree) + "\n"
-        }
+        val finalString =
+            buildString {
+                for (tree in program.trees) {
+                    val formatter =
+                        when (tree) {
+                            is AST.Declaration -> formatters["declaration"]
+                            is AST.Assignment -> formatters["assignment"]
+                            is AST.ExpressionStatement -> formatters["expressionStatement"]
+                        } ?: return FormatResult.Failure(FormattingError.UNKNOWN_AST_TYPE.getMessage())
+                    appendLine(formatter.format(tree))
+                }
+            }
 
         return FormatResult.Success(finalString)
     }

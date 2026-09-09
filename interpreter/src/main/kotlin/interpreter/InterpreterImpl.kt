@@ -1,7 +1,5 @@
 package interpreter
 
-import ast.AST
-import ast.ASTType
 import ast.Program
 import domain.Either
 import domain.Failure
@@ -29,7 +27,7 @@ internal class InterpreterImpl(
         var events = runtimeEvents
         var env = runtimeEnvironment
         for (ast in asts) {
-            val astType = getASTType(ast)
+            val astType = ast.astType
             val evaluator =
                 semantics.statementEvaluators[astType]
                     ?: return Failure(RuntimeError.MISSING_EVALUATOR_FOR_AST)
@@ -46,11 +44,4 @@ internal class InterpreterImpl(
         }
         return Success(ExecutionResult(env, events))
     }
-
-    private fun getASTType(ast: AST): ASTType =
-        when (ast) {
-            is AST.Declaration -> ASTType.DECLARATION
-            is AST.Assignment -> ASTType.ASSIGNMENT
-            is AST.ExpressionStatement -> ASTType.EXPRESSION_STATEMENT
-        }
 }

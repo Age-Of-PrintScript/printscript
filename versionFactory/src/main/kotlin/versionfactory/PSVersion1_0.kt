@@ -23,7 +23,7 @@ internal class PSVersion1_0 : PSVersion {
         get() = v1_0Keywords
     override val symbols: Map<Char, TokenType>
         get() = v1_0Symbols
-    override val statementParsers: Map<ASTType, StatementParser>
+    override val statementParsers: List<StatementParser>
         get() = v1_0StatementParsers
     override val statementEvaluators: Map<ASTType, StatementEvaluator>
         get() = v1_0StatementEvaluators

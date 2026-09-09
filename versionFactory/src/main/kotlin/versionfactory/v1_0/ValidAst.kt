@@ -13,11 +13,11 @@ import parser.builders.StatementParser
 
 internal val expressionParser = ExpressionParser()
 
-internal val v1_0StatementParsers: Map<ASTType, StatementParser> =
-    mapOf(
-        ASTType.DECLARATION to DeclarationParser(expressionParser),
-        ASTType.ASSIGNMENT to AssignmentParser(expressionParser),
-        ASTType.EXPRESSION_STATEMENT to ExpressionStatementParser(expressionParser),
+internal val v1_0StatementParsers: List<StatementParser> =
+    listOf(
+        DeclarationParser(expressionParser),
+        AssignmentParser(expressionParser),
+        ExpressionStatementParser(expressionParser),
     )
 
 internal val v1_0StatementEvaluators: Map<ASTType, StatementEvaluator> =
