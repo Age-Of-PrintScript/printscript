@@ -56,3 +56,5 @@ data class DataType(
 data class Call(
     val name: String,
 ) : TokenType
+
+typealias TokenList = List<Token>
