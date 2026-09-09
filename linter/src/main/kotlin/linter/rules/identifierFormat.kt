@@ -30,7 +30,7 @@ internal class IdentifierFormatRule(
             is AST.Assignment -> ast.id
             is AST.Declaration -> ast.id
             is AST.ExpressionStatement -> null
-            is AST.IfStatement -> TODO()
+            is AST.IfStatement -> null
         }
 }
 
