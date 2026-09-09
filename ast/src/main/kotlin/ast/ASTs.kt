@@ -30,7 +30,17 @@ sealed interface AST {
         val expression: Expression,
         override val astType: ASTType = ASTType.EXPRESSION_STATEMENT,
     ) : AST
+
+    data class IfStatement(
+        val condition: Expression,
+        val ifBlock: Block,
+        val elseBlock: Block?,
+    )
 }
+
+data class Block(
+    val statements: List<AST>,
+)
 
 data class Program(
     val trees: List<AST>,
