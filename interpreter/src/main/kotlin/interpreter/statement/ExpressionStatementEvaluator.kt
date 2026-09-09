@@ -10,15 +10,16 @@ import interpreter.RuntimeError
 import interpreter.environment.RuntimeEnvironment
 import interpreter.environment.RuntimeEvents
 
-class ExpressionStatementEvaluator : StatementEvaluator<AST.ExpressionStatement> {
+class ExpressionStatementEvaluator : StatementEvaluator {
     override fun evaluate(
-        statement: AST.ExpressionStatement,
+        statement: AST,
         env: RuntimeEnvironment,
         events: RuntimeEvents,
         semantics: LanguageSemantics,
     ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
+        val exprStatement = statement as AST.ExpressionStatement
         val result =
-            solveExpression(statement.expression, env, semantics)
+            solveExpression(exprStatement.expression, env, semantics)
                 .getOrReturn { return Failure(it) }
         val updatedEvents = events + result.events
         return Success(Pair(env, updatedEvents))

@@ -1,48 +1,51 @@
 package testframework
 
-import ast.ASTDataType
-import ast.ASTIdentifier
-import ast.ASTViejo
-import ast.ExpressionViejo
-import domain.PrintScriptFunctions
-import domain.PrintScriptOperator
-import domain.PrintScriptType
-import domain.PrintScriptValue
+import ast.AST
+import ast.Expression
+import domain.NumType
+import domain.PSOperator
+import domain.PSType
+import domain.StrType
+import versionfactory.v1_0.Operators
 
 fun createDeclaration(
     name: String,
-    type: PrintScriptType = PrintScriptType.STRING,
-    value: ExpressionViejo? = createStringLiteralExpression("test"),
-): ASTViejo.Declaration =
-    ASTViejo.Declaration(
-        id = ASTIdentifier(name),
-        type = ASTDataType(type),
+    type: PSType = StrType,
+    value: Expression? = createStringLiteralExpression("test"),
+): AST.Declaration =
+    AST.Declaration(
+        id = name,
+        type = type,
+        mutable = true,
         value = value,
     )
 
 fun createAssignment(
     name: String,
-    value: ExpressionViejo = createNumberLiteralExpression(1),
-): ASTViejo.Assignment =
-    ASTViejo.Assignment(
-        id = ASTIdentifier(name),
+    value: Expression = createNumberLiteralExpression(1),
+): AST.Assignment =
+    AST.Assignment(
+        id = name,
         value = value,
     )
 
-fun createPrintln(vararg args: ExpressionViejo): ASTViejo.Call =
-    ASTViejo.Call(
-        functionName = PrintScriptFunctions.PRINTLN,
-        args = args.toList(),
+fun createPrintln(vararg args: Expression): AST.ExpressionStatement =
+    AST.ExpressionStatement(
+        expression =
+            Expression.Call(
+                name = "println",
+                args = args.toList(),
+            ),
     )
 
-fun createNumberLiteralExpression(value: Number): ExpressionViejo.Literal = ExpressionViejo.Literal(PrintScriptValue.NumberLiteral(value))
+fun createNumberLiteralExpression(value: Number): Expression.Literal = Expression.Literal(value.toString(), NumType)
 
-fun createStringLiteralExpression(value: String): ExpressionViejo.Literal = ExpressionViejo.Literal(PrintScriptValue.StringLiteral(value))
+fun createStringLiteralExpression(value: String): Expression.Literal = Expression.Literal(value, StrType)
 
-fun createVariableExpression(name: String): ExpressionViejo.Variable = ExpressionViejo.Variable(name)
+fun createVariableExpression(name: String): Expression.Variable = Expression.Variable(name)
 
 fun createOperationExpression(
-    left: ExpressionViejo,
-    right: ExpressionViejo,
-    operator: PrintScriptOperator = PrintScriptOperator.SUM,
-): ExpressionViejo.Operation = ExpressionViejo.Operation(left, right, operator)
+    left: Expression,
+    right: Expression,
+    operator: PSOperator = Operators.SUM,
+): Expression.Operation = Expression.Operation(left, operator, right)

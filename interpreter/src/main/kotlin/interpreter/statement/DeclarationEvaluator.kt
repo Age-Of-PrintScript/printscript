@@ -10,18 +10,23 @@ import interpreter.RuntimeError
 import interpreter.environment.RuntimeEnvironment
 import interpreter.environment.RuntimeEvents
 
-class DeclarationEvaluator : StatementEvaluator<AST.Declaration> {
+class DeclarationEvaluator : StatementEvaluator {
     override fun evaluate(
-        statement: AST.Declaration,
+        statement: AST,
         env: RuntimeEnvironment,
         events: RuntimeEvents,
         semantics: LanguageSemantics,
     ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
+        val declaration = statement as AST.Declaration
         var currentEnv = env
-        if (statement.value != null) {
+        var newEvents = events
+        val value = declaration.value
+        if (value != null) {
             val solvedResult =
-                solveExpression(statement.value!!, env, semantics)
+                solveExpression(value, env, semantics)
                     .getOrReturn { return Failure(it) }
+
+            newEvents += solvedResult.events
 
             if (solvedResult.returnValue == null) {
                 return Failure(RuntimeError.MISSING_ASSIGNATION)
@@ -30,21 +35,21 @@ class DeclarationEvaluator : StatementEvaluator<AST.Declaration> {
             val newEnv =
                 updateEnvironmentWithNewDeclaration(
                     env,
-                    statement.id,
-                    statement.type,
+                    declaration.id,
+                    declaration.type,
                     solvedResult.returnValue.toLiteral(),
-                    statement.mutable,
+                    declaration.mutable,
                 ).getOrReturn { return Failure(it) }
 
             currentEnv = newEnv
         } else {
             val newEnv =
                 currentEnv
-                    .addVariable(statement.id, statement.type, null, statement.mutable)
+                    .addVariable(declaration.id, declaration.type, null, declaration.mutable)
                     .getOrReturn { return Failure(it) }
 
             currentEnv = newEnv
         }
-        return Success(Pair(currentEnv, events))
+        return Success(Pair(currentEnv, newEvents))
     }
 }

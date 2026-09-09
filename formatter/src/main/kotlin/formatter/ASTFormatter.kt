@@ -1,16 +1,16 @@
 package formatter
 
-import ast.ASTViejo
+import ast.AST
 
 internal interface ASTFormatter {
-    fun format(astViejo: ASTViejo): String
+    fun format(ast: AST): String
 }
 
 internal class FormatterImplementation(
     val rules: FormattingRules,
 ) : ASTFormatter {
-    override fun format(astViejo: ASTViejo): String {
-        val astToString = astToString(astViejo)
+    override fun format(ast: AST): String {
+        val astToString = astToString(ast)
         var result = astToString
 
         for (rule in rules.rulesList) {

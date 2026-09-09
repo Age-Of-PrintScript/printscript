@@ -1,43 +1,51 @@
 package engine
 
-import ast.Program
 import domain.Error
 import domain.Failure
-import domain.Position
 import domain.Success
-import engine.ps_versions.v1_0.v1_0Keywords
-import engine.ps_versions.v1_0.v1_0Symbols
+import domain.getOrReturn
 import interpreter.Interpreter
+import interpreter.LanguageSemantics
 import interpreter.environment.ExecutionResult
 import interpreter.environment.PrintEvent
 import lexer.Lexer
 import lexer.Lexicon
 import parser.Parser
+import versionfactory.PSVersion
 
 class Engine {
-    private val lexer = Lexer.new(Lexicon(v1_0Symbols, v1_0Keywords))
-    private val parser = Parser.new()
-    private val interpreter = Interpreter.new(v1_0semantics)
-
     fun execute(
         source: String,
         logger: Logger,
         context: ExecutionContext = ExecutionContext(),
+        version: String? = null,
     ): EngineResult {
+        val psVersion =
+            if (version != null) {
+                PSVersion.getVersion(version).getOrReturn {
+                    logFailure(it.message, logger)
+                    return EngineResult(ExitCode.FAILURE, context)
+                }
+            } else {
+                PSVersion.getLatestVersion()
+            }
+        val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
+        val parser = Parser.new(psVersion.statementParsers)
+        val interpreter = Interpreter.new(LanguageSemantics(psVersion.builtInFunctions, psVersion.binaryOperations, psVersion.statementEvaluators))
+
         val tokensResult = lexer.tokenize(source)
         if (tokensResult is Failure) {
             logFailure(tokensResult.value, logger)
             return EngineResult(ExitCode.FAILURE, context)
         }
-        val programResult = parser.parse(listOf()) // hardcodeado
+        val programResult = parser.parse((tokensResult as Success).value)
         if (programResult is Failure) {
             logFailure(programResult.value, logger)
             return EngineResult(ExitCode.FAILURE, context)
         }
         val executionResult =
             interpreter.executeWithEnvironment(
-//                (programResult as Success).value,
-                Program(listOf(), Position(0, 0), Position(0, 0)),
+                (programResult as Success).value,
                 context.environment,
             )
         return when (executionResult) {
@@ -72,20 +80,40 @@ class Engine {
         error: Error,
         logger: Logger,
     ) {
-        logger.log(error.toString())
+        logFailure(error.toString(), logger)
+    }
+
+    private fun logFailure(
+        error: String,
+        logger: Logger,
+    ) {
+        logger.log(error)
         logger.log("Build Failed")
     }
 
     fun validate(
         source: String,
         logger: Logger,
+        version: String? = null,
     ): ExitCode {
+        val psVersion =
+            if (version != null) {
+                PSVersion.getVersion(version).getOrReturn {
+                    logFailure(it.message, logger)
+                    return ExitCode.FAILURE
+                }
+            } else {
+                PSVersion.getLatestVersion()
+            }
+        val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
+        val parser = Parser.new(psVersion.statementParsers)
+
         val tokensResult = lexer.tokenize(source)
         if (tokensResult is Failure) {
             logFailure(tokensResult.value, logger)
             return ExitCode.FAILURE
         }
-        val programResult = parser.parse(listOf())
+        val programResult = parser.parse((tokensResult as Success).value)
         if (programResult is Failure) {
             logFailure(programResult.value, logger)
             return ExitCode.FAILURE

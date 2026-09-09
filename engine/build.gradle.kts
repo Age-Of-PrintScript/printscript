@@ -6,4 +6,5 @@ dependencies {
     implementation(project(":interpreter"))
     implementation(project(":lexer"))
     implementation(project(":parser"))
+    implementation(project(":versionFactory"))
 }

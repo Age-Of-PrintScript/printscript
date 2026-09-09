@@ -1,16 +1,18 @@
 package formatter
 
-import ast.ASTViejo
+import ast.AST
 import domain.getOrReturn
 import lexer.Lexer
 import lexer.Lexicon
 import parser.Parser
+import versionfactory.PSVersion
 
 interface Formatter {
     fun format(
         sourcePath: String,
         path: String,
         fileReader: FileReader,
+        version: String? = null,
     ): FormatResult
 
     companion object {
@@ -19,31 +21,43 @@ interface Formatter {
 }
 
 internal class FormatterExecutor : Formatter {
-    private val lexer = Lexer.new(Lexicon(mapOf(), mapOf())) // dummy
-    private val parser = Parser.new()
-
     override fun format(
         sourcePath: String,
         path: String,
         fileReader: FileReader,
+        version: String?,
     ): FormatResult {
+        val psVersion =
+            if (version != null) {
+                PSVersion.getVersion(version).getOrReturn {
+                    return FormatResult.Failure(it.message)
+                }
+            } else {
+                PSVersion.getLatestVersion()
+            }
+
+        val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
+        val parser = Parser.new(psVersion.statementParsers)
+
         val source = fileReader.readText(sourcePath)
 
-        lexer.tokenize(source).getOrReturn { return FormatResult.Failure(it.getMessage()) }
-        val program = parser.parse(listOf()).getOrReturn { return FormatResult.Failure(it.getMessage()) } // dummy, TODO(implementarlos bien cuando integremos estos modulos)
+        val tokens = lexer.tokenize(source).getOrReturn { return FormatResult.Failure(it.getMessage()) }
+        val program = parser.parse(tokens).getOrReturn { return FormatResult.Failure(it.getMessage()) }
         val config = parseConfig(path).getOrReturn { return FormatResult.Failure(it.getMessage()) }
         val formatters = FormatterFactory(config).constructFormatters().getOrReturn { return FormatResult.Failure(it.getMessage()) }
 
-        var finalString = ""
-        for (tree in program.trees) {
-            val formatter =
-                when (tree) { // el map.get siempre devuelve un nullable, tengo que manejar ese caso tambien
-                    is ASTViejo.Declaration -> formatters["declaration"]
-                    is ASTViejo.Assignment -> formatters["assignment"]
-                    is ASTViejo.Call -> formatters["call"]
-                } ?: return FormatResult.Failure(FormattingError.UNKNOWN_AST_TYPE.getMessage())
-            finalString += formatter.format(tree) + "\n"
-        }
+        val finalString =
+            buildString {
+                for (tree in program.trees) {
+                    val formatter =
+                        when (tree) {
+                            is AST.Declaration -> formatters["declaration"]
+                            is AST.Assignment -> formatters["assignment"]
+                            is AST.ExpressionStatement -> formatters["expressionStatement"]
+                        } ?: return FormatResult.Failure(FormattingError.UNKNOWN_AST_TYPE.getMessage())
+                    appendLine(formatter.format(tree))
+                }
+            }
 
         return FormatResult.Success(finalString)
     }

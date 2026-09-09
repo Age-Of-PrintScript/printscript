@@ -7,9 +7,9 @@ import interpreter.RuntimeError
 import interpreter.environment.RuntimeEnvironment
 import interpreter.environment.RuntimeEvents
 
-interface StatementEvaluator<T : AST> {
+interface StatementEvaluator {
     fun evaluate(
-        statement: T,
+        statement: AST,
         env: RuntimeEnvironment,
         events: RuntimeEvents,
         semantics: LanguageSemantics,

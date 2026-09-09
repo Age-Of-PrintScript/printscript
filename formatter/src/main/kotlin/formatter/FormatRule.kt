@@ -12,6 +12,7 @@ internal class LineBeforeCallRule(
     val lines: Int,
 ) : FormatRule {
     override fun apply(line: String): String {
+        if (!line.startsWith("println")) return line
         val newlines = "\n".repeat(lines.coerceAtLeast(0)) // "".repeat(n: Int) te devuelve el string "" repetido n veces
         return newlines + line
     }

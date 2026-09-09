@@ -1,5 +1,6 @@
 package interpreter
 
+import ast.ASTType
 import domain.Failure
 import domain.NumType
 import domain.PSLiteral
@@ -7,6 +8,10 @@ import domain.PSOperator
 import domain.StrType
 import domain.Success
 import interpreter.environment.PrintEvent
+import interpreter.statement.AssignmentEvaluator
+import interpreter.statement.DeclarationEvaluator
+import interpreter.statement.ExpressionStatementEvaluator
+import interpreter.statement.StatementEvaluator
 
 val printlnFunction =
     BuiltInFunction { args ->
@@ -112,4 +117,16 @@ val testBinaryOperations: Map<OperationKey, BinaryOperation> =
         OperationKey(Operators.DIVIDE, NumType, NumType) to divNumAndNum,
     )
 
-val testSemantics: LanguageSemantics = LanguageSemantics(testBuiltInFunctions, testBinaryOperations)
+val testStatementEvaluators: Map<ASTType, StatementEvaluator> =
+    mapOf(
+        ASTType.DECLARATION to DeclarationEvaluator(),
+        ASTType.ASSIGNMENT to AssignmentEvaluator(),
+        ASTType.EXPRESSION_STATEMENT to ExpressionStatementEvaluator(),
+    )
+
+val testSemantics: LanguageSemantics =
+    LanguageSemantics(
+        functions = testBuiltInFunctions,
+        operations = testBinaryOperations,
+        statementEvaluators = testStatementEvaluators,
+    )

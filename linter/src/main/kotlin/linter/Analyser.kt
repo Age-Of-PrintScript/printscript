@@ -1,16 +1,16 @@
 package linter
 
-import ast.ASTViejo
-import ast.OldProgram
+import ast.AST
+import ast.Program
 
 internal class Analyser {
     fun analyse(
-        oldProgram: OldProgram,
+        program: Program,
         rulesConfig: RulesConfig,
-    ): List<Warning> = oldProgram.trees.flatMap { checkRules(it, rulesConfig) }
+    ): List<Warning> = program.trees.flatMap { checkRules(it, rulesConfig) }
 
     fun checkRules(
-        astViejo: ASTViejo,
+        ast: AST,
         rulesConfig: RulesConfig,
-    ): List<Warning> = rulesConfig.rules.mapNotNull { it.apply(astViejo) }
+    ): List<Warning> = rulesConfig.rules.mapNotNull { it.apply(ast) }
 }

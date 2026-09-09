@@ -10,24 +10,25 @@ import interpreter.RuntimeError
 import interpreter.environment.RuntimeEnvironment
 import interpreter.environment.RuntimeEvents
 
-class AssignmentEvaluator : StatementEvaluator<AST.Assignment> {
+class AssignmentEvaluator : StatementEvaluator {
     override fun evaluate(
-        statement: AST.Assignment,
+        statement: AST,
         env: RuntimeEnvironment,
         events: RuntimeEvents,
         semantics: LanguageSemantics,
     ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
+        val assignment = statement as AST.Assignment
         val newValue =
-            solveExpression(statement.value, env, semantics)
+            solveExpression(assignment.value, env, semantics)
                 .getOrReturn { return Failure(it) }
 
         if (newValue.returnValue == null) return Failure(RuntimeError.MISSING_ASSIGNATION)
 
         val newEnv =
             env
-                .changeVariable(statement.id, newValue.returnValue.toLiteral())
+                .changeVariable(assignment.id, newValue.returnValue.toLiteral())
                 .getOrReturn { return Failure(it) }
 
-        return Success(Pair(newEnv, events))
+        return Success(Pair(newEnv, events + newValue.events))
     }
 }

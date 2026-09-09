@@ -10,20 +10,25 @@ enum class ASTType {
 }
 
 sealed interface AST {
+    val astType: ASTType
+
     data class Declaration(
         val id: String,
         val type: PSType,
         val mutable: Boolean,
         val value: Expression?,
+        override val astType: ASTType = ASTType.DECLARATION,
     ) : AST
 
     data class Assignment(
         val id: String,
         val value: Expression,
+        override val astType: ASTType = ASTType.ASSIGNMENT,
     ) : AST
 
     data class ExpressionStatement(
         val expression: Expression,
+        override val astType: ASTType = ASTType.EXPRESSION_STATEMENT,
     ) : AST
 }
 
