@@ -11,8 +11,6 @@ import interpreter.environment.RuntimeEnvironment
 import interpreter.environment.RuntimeEvents
 
 class DeclarationEvaluator : StatementEvaluator {
-    override fun canEvaluate(statement: AST): Boolean = statement is AST.Declaration
-
     override fun evaluate(
         statement: AST,
         env: RuntimeEnvironment,
@@ -21,11 +19,14 @@ class DeclarationEvaluator : StatementEvaluator {
     ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
         val declaration = statement as AST.Declaration
         var currentEnv = env
+        var newEvents = events
         val value = declaration.value
         if (value != null) {
             val solvedResult =
                 solveExpression(value, env, semantics)
                     .getOrReturn { return Failure(it) }
+
+            newEvents += solvedResult.events
 
             if (solvedResult.returnValue == null) {
                 return Failure(RuntimeError.MISSING_ASSIGNATION)
@@ -49,6 +50,6 @@ class DeclarationEvaluator : StatementEvaluator {
 
             currentEnv = newEnv
         }
-        return Success(Pair(currentEnv, events))
+        return Success(Pair(currentEnv, newEvents))
     }
 }

@@ -11,8 +11,6 @@ import interpreter.environment.RuntimeEnvironment
 import interpreter.environment.RuntimeEvents
 
 class AssignmentEvaluator : StatementEvaluator {
-    override fun canEvaluate(statement: AST): Boolean = statement is AST.Assignment
-
     override fun evaluate(
         statement: AST,
         env: RuntimeEnvironment,
@@ -31,6 +29,6 @@ class AssignmentEvaluator : StatementEvaluator {
                 .changeVariable(assignment.id, newValue.returnValue.toLiteral())
                 .getOrReturn { return Failure(it) }
 
-        return Success(Pair(newEnv, events))
+        return Success(Pair(newEnv, events + newValue.events))
     }
 }

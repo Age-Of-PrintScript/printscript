@@ -8,8 +8,6 @@ import interpreter.environment.RuntimeEnvironment
 import interpreter.environment.RuntimeEvents
 
 interface StatementEvaluator {
-    fun canEvaluate(statement: AST): Boolean
-
     fun evaluate(
         statement: AST,
         env: RuntimeEnvironment,

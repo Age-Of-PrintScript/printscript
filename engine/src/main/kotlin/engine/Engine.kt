@@ -20,7 +20,7 @@ class Engine {
         context: ExecutionContext = ExecutionContext(),
         version: String? = null,
     ): EngineResult {
-        val version =
+        val psVersion =
             if (version != null) {
                 PSVersion.getVersion(version).getOrReturn {
                     logFailure(it.message, logger)
@@ -29,9 +29,9 @@ class Engine {
             } else {
                 PSVersion.getLatestVersion()
             }
-        val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
-        val parser = Parser.new(version.statementParsers)
-        val interpreter = Interpreter.new(LanguageSemantics(version.builtInFunctions, version.binaryOperations, version.statementEvaluators))
+        val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
+        val parser = Parser.new(psVersion.statementParsers)
+        val interpreter = Interpreter.new(LanguageSemantics(psVersion.builtInFunctions, psVersion.binaryOperations, psVersion.statementEvaluators))
 
         val tokensResult = lexer.tokenize(source)
         if (tokensResult is Failure) {
@@ -87,7 +87,7 @@ class Engine {
         error: String,
         logger: Logger,
     ) {
-        logger.log(error.toString())
+        logger.log(error)
         logger.log("Build Failed")
     }
 
@@ -96,7 +96,7 @@ class Engine {
         logger: Logger,
         version: String? = null,
     ): ExitCode {
-        val version =
+        val psVersion =
             if (version != null) {
                 PSVersion.getVersion(version).getOrReturn {
                     logFailure(it.message, logger)
@@ -105,8 +105,8 @@ class Engine {
             } else {
                 PSVersion.getLatestVersion()
             }
-        val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
-        val parser = Parser.new(version.statementParsers)
+        val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
+        val parser = Parser.new(psVersion.statementParsers)
 
         val tokensResult = lexer.tokenize(source)
         if (tokensResult is Failure) {

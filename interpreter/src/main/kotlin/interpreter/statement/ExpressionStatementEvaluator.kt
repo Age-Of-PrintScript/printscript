@@ -11,8 +11,6 @@ import interpreter.environment.RuntimeEnvironment
 import interpreter.environment.RuntimeEvents
 
 class ExpressionStatementEvaluator : StatementEvaluator {
-    override fun canEvaluate(statement: AST): Boolean = statement is AST.ExpressionStatement
-
     override fun evaluate(
         statement: AST,
         env: RuntimeEnvironment,
