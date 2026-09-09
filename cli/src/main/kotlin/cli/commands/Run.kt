@@ -9,7 +9,7 @@ import com.github.ajalt.clikt.parameters.types.file
 import engine.Engine
 import engine.Logger
 
-class RunCommand(
+class Run(
     private val engine: Engine = Engine(),
     private val logger: Logger = ConsoleLogger(),
 ) : CliktCommand(name = "run", help = "Ejecuta un script PrintScript a partir de un archivo") {

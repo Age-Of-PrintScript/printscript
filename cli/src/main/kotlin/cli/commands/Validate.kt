@@ -9,7 +9,7 @@ import com.github.ajalt.clikt.parameters.types.file
 import engine.Engine
 import engine.Logger
 
-class ValidateCommand(
+class Validate(
     private val engine: Engine = Engine(),
     private val logger: Logger = ConsoleLogger(),
 ) : CliktCommand(name = "validate", help = "Valida que un script PrintScript este bien escrito") {
