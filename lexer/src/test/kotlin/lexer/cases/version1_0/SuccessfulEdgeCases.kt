@@ -1,4 +1,4 @@
-package lexer.cases
+package lexer.cases.version1_0
 
 import lexer.SuccessCase
 import tokens.TokenType

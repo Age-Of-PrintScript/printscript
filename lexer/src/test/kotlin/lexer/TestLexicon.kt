@@ -1,8 +1,8 @@
 package lexer
 
+import domain.BoolType
 import domain.NumType
 import domain.PSOperator
-import domain.PSType
 import domain.StrType
 import tokens.Assign
 import tokens.Call
@@ -14,6 +14,7 @@ import tokens.DataType
 import tokens.Else
 import tokens.If
 import tokens.Let
+import tokens.Literal
 import tokens.OpenBraces
 import tokens.OpenParen
 import tokens.Operator
@@ -38,10 +39,6 @@ internal object Multiply : PSOperator {
 internal object Divide : PSOperator {
     override val symbol = "/"
     override val precedence = 2
-}
-
-internal object BoolType : PSType {
-    override val name = "boolean"
 }
 
 internal val testSymbolsV1_0: Map<Char, TokenType> =
@@ -81,4 +78,6 @@ internal val testKeywordsV1_1: Map<String, TokenType> =
             "readInput" to Call("readInput"),
             "readEnv" to Call("readEnv"),
             "boolean" to DataType(BoolType),
+            "true" to Literal("true", BoolType),
+            "false" to Literal("false", BoolType),
         )

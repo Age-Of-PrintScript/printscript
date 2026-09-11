@@ -1,13 +1,13 @@
 package lexer
 
-import lexer.cases.InvalidCharacters
-import lexer.cases.MalformedNumbers
-import lexer.cases.SuccessfulAssignments
-import lexer.cases.SuccessfulCalls
-import lexer.cases.SuccessfulDeclarations
-import lexer.cases.SuccessfulEdgeCases
-import lexer.cases.SuccessfulExpressions
-import lexer.cases.UnterminatedStrings
+import lexer.cases.version1_0.InvalidCharacters
+import lexer.cases.version1_0.MalformedNumbers
+import lexer.cases.version1_0.SuccessfulAssignments
+import lexer.cases.version1_0.SuccessfulCalls
+import lexer.cases.version1_0.SuccessfulDeclarations
+import lexer.cases.version1_0.SuccessfulEdgeCases
+import lexer.cases.version1_0.SuccessfulExpressions
+import lexer.cases.version1_0.UnterminatedStrings
 import org.junit.jupiter.api.DynamicNode
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
