@@ -1,3 +1,4 @@
+1.0
 # Input
 LITERAL: 5
 OPERATOR: SUM
