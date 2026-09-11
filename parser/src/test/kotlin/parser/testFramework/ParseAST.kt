@@ -1,7 +1,9 @@
 package parser.testFramework
 
 import ast.AST
+import ast.Block
 import ast.Expression
+import domain.BoolType
 import domain.NumType
 import domain.PSType
 import domain.StrType
@@ -52,14 +54,54 @@ private fun parseAST(
             val (arg, next) = parseExpression(lines, index + 2)
             AST.ExpressionStatement(Expression.Call(functionName, listOf(arg))) to next
         }
+        "CONDITIONAL" -> parseConditional(lines, index, childDepth)
         else -> throw IllegalArgumentException("AST desconocido: ${head.content}")
     }
+}
+
+private fun parseConditional(
+    lines: List<Line>,
+    index: Int,
+    childDepth: Int,
+): Pair<AST.ConditionalStatement, Int> {
+    val (condition, afterCondition) = parseExpression(lines, index + 1)
+    require(afterCondition < lines.size && lines[afterCondition].content == "THEN") {
+        "Se esperaba THEN en condicional"
+    }
+    val (thenBlock, afterThen) = parseBlock(lines, afterCondition + 1, childDepth + 1)
+
+    if (afterThen < lines.size && lines[afterThen].content == "ELSE") {
+        val (elseBlock, afterElse) = parseBlock(lines, afterThen + 1, childDepth + 1)
+        return AST.ConditionalStatement(condition, thenBlock, elseBlock) to afterElse
+    }
+
+    return AST.ConditionalStatement(condition, thenBlock, null) to afterThen
+}
+
+private fun parseBlock(
+    lines: List<Line>,
+    startIndex: Int,
+    blockDepth: Int,
+): Pair<Block, Int> {
+    val statements = mutableListOf<AST>()
+    var i = startIndex
+    while (i < lines.size && lines[i].depth >= blockDepth) {
+        if (lines[i].depth == blockDepth) {
+            val (stmt, next) = parseAST(lines, i)
+            statements.add(stmt)
+            i = next
+        } else {
+            i++
+        }
+    }
+    return Block(statements) to i
 }
 
 private fun parsePSType(name: String): PSType =
     when (name.uppercase()) {
         "NUMBER" -> NumType
         "STRING" -> StrType
+        "BOOLEAN" -> BoolType
         else -> throw IllegalArgumentException("Tipo desconocido: $name")
     }
 

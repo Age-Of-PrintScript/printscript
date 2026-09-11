@@ -37,7 +37,7 @@ internal class FormatterExecutor : Formatter {
             }
 
         val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
-        val parser = Parser.new(psVersion.statementParsers)
+        val parser = Parser.new(psVersion.blockParser)
 
         val source = fileReader.readText(sourcePath)
 

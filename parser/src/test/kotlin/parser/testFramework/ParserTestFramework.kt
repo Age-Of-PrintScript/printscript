@@ -6,13 +6,14 @@ import domain.Failure
 import domain.Success
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
+import parser.BlockParser
 import parser.ExpressionParser
 import parser.Parser
 import parser.SyntaxError
 import parser.builders.AssignmentParser
+import parser.builders.ConditionalParser
 import parser.builders.DeclarationParser
 import parser.builders.ExpressionStatementParser
-import parser.builders.StatementParser
 import tokens.Token
 import java.io.File
 import java.util.stream.Stream
@@ -29,13 +30,20 @@ internal data class TestCase(
 internal class ParserFileTests {
     private fun createParserForVersion(version: String): Parser {
         val expressionParser = ExpressionParser()
-        val statementParsers: List<StatementParser> =
+        val v10BlockParser =
+            BlockParser(
+                listOf(
+                    DeclarationParser(expressionParser),
+                    AssignmentParser(expressionParser),
+                    ExpressionStatementParser(expressionParser),
+                ),
+            )
+        val statementParsers: BlockParser =
             when (version) {
-                "1.0" ->
-                    listOf(
-                        DeclarationParser(expressionParser),
-                        AssignmentParser(expressionParser),
-                        ExpressionStatementParser(expressionParser),
+                "1.0" -> v10BlockParser
+                "1.1" ->
+                    v10BlockParser.copy(
+                        statementParsers = v10BlockParser.statementParsers + ConditionalParser(v10BlockParser),
                     )
                 else -> throw IllegalArgumentException("Versión no soportada: $version")
             }
@@ -57,7 +65,7 @@ internal class ParserFileTests {
 
     @Test
     fun runSingleTest() {
-        runOneTest(File("src/test/resources/parserTests/case_1.md"))
+        runOneTest(File("src/test/resources/parserTests/case_40.md"))
     }
 
     private fun runOneTest(file: File) {
