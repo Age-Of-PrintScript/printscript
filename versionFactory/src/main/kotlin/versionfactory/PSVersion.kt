@@ -8,7 +8,7 @@ import interpreter.BinaryOperation
 import interpreter.BuiltInFunction
 import interpreter.OperationKey
 import interpreter.statement.StatementEvaluator
-import parser.BlockParser
+import parser.builders.StatementParser
 import tokens.TokenType
 
 interface PSVersion {
@@ -16,7 +16,7 @@ interface PSVersion {
     val builtInFunctions: Map<String, BuiltInFunction>
     val keywords: Map<String, TokenType>
     val symbols: Map<Char, TokenType>
-    val blockParser: BlockParser
+    val statementParsers: List<StatementParser>
     val statementEvaluators: Map<ASTType, StatementEvaluator>
 
     companion object {

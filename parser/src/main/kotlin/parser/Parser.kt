@@ -6,6 +6,7 @@ import domain.Failure
 import domain.Position
 import domain.Success
 import domain.getOrReturn
+import parser.builders.StatementParser
 import tokens.Token
 import tokens.Whitespace
 
@@ -13,7 +14,7 @@ interface Parser {
     fun parse(tokens: List<Token>): Either<SyntaxError, Program>
 
     companion object {
-        fun new(blockParser: BlockParser): Parser = ParserImpl(blockParser)
+        fun new(statementParsers: List<StatementParser>): Parser = ParserImpl(BlockParser(statementParsers))
     }
 }
 

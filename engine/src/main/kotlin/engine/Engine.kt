@@ -30,7 +30,7 @@ class Engine {
                 PSVersion.getLatestVersion()
             }
         val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
-        val parser = Parser.new(psVersion.blockParser)
+        val parser = Parser.new(psVersion.statementParsers)
         val interpreter = Interpreter.new(LanguageSemantics(psVersion.builtInFunctions, psVersion.binaryOperations, psVersion.statementEvaluators))
 
         val tokensResult = lexer.tokenize(source)
@@ -106,7 +106,7 @@ class Engine {
                 PSVersion.getLatestVersion()
             }
         val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
-        val parser = Parser.new(psVersion.blockParser)
+        val parser = Parser.new(psVersion.statementParsers)
 
         val tokensResult = lexer.tokenize(source)
         if (tokensResult is Failure) {

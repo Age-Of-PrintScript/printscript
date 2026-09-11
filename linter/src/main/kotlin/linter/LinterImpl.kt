@@ -55,7 +55,7 @@ internal class LinterImpl(
             }
 
         val lexer: Lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
-        val parser: Parser = Parser.new(psVersion.blockParser)
+        val parser: Parser = Parser.new(psVersion.statementParsers)
 
         val tokens = lexer.tokenize(source).getOrReturn { return listOf(Warning.fromError(it)) }
         val program = parser.parse(tokens).getOrReturn { return listOf(Warning.fromError(it)) }

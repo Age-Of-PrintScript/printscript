@@ -14,6 +14,7 @@ import parser.builders.AssignmentParser
 import parser.builders.ConditionalParser
 import parser.builders.DeclarationParser
 import parser.builders.ExpressionStatementParser
+import parser.builders.StatementParser
 import tokens.Token
 import java.io.File
 import java.util.stream.Stream
@@ -30,21 +31,16 @@ internal data class TestCase(
 internal class ParserFileTests {
     private fun createParserForVersion(version: String): Parser {
         val expressionParser = ExpressionParser()
-        val v10BlockParser =
-            BlockParser(
-                listOf(
-                    DeclarationParser(expressionParser),
-                    AssignmentParser(expressionParser),
-                    ExpressionStatementParser(expressionParser),
-                ),
+        val v10Parsers =
+            listOf(
+                DeclarationParser(expressionParser),
+                AssignmentParser(expressionParser),
+                ExpressionStatementParser(expressionParser),
             )
-        val statementParsers: BlockParser =
+        val statementParsers: List<StatementParser> =
             when (version) {
-                "1.0" -> v10BlockParser
-                "1.1" ->
-                    v10BlockParser.copy(
-                        statementParsers = v10BlockParser.statementParsers + ConditionalParser(v10BlockParser),
-                    )
+                "1.0" -> v10Parsers
+                "1.1" -> v10Parsers + ConditionalParser(BlockParser(v10Parsers), expressionParser)
                 else -> throw IllegalArgumentException("Versión no soportada: $version")
             }
         return Parser.new(statementParsers)
