@@ -25,7 +25,7 @@ data class FailureCase(
     val expected: LexerError,
 )
 
-class TestLexer {
+class TestLexer10 {
     private val lexer = LexerImpl(Lexicon(testSymbolsV1_0, testKeywordsV1_0))
 
     @TestFactory

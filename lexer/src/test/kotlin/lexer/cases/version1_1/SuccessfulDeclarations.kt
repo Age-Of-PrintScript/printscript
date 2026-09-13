@@ -2,6 +2,7 @@ package lexer.cases.version1_1
 
 import domain.BoolType
 import domain.NumType
+import domain.StrType
 import lexer.SuccessCase
 import tokens.Assign
 import tokens.Colon
@@ -25,6 +26,19 @@ object SuccessfulDeclarations {
                     DataType(NumType),
                     Assign,
                     Literal("5", NumType),
+                    Semicolon,
+                ),
+            ),
+            SuccessCase(
+                "const string declaration",
+                "const x: string = \"hola\";",
+                listOf(
+                    Const,
+                    Identifier("x"),
+                    Colon,
+                    DataType(StrType),
+                    Assign,
+                    Literal("hola", StrType),
                     Semicolon,
                 ),
             ),
