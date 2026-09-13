@@ -6,7 +6,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class TestPrintlnArgumentRule {
+class TestCallArgumentRule {
     // --- Should pass (no warning) ---
 
     @Test
@@ -124,13 +124,13 @@ class TestPrintlnArgumentRule {
     // --- Helpers ---
 
     private fun testWarning(ast: AST) {
-        val rule = PrintlnArgumentRule()
+        val rule = CallArgumentRule("println")
         val result = rule.apply(ast)
         assertTrue(result != null, "Expected warning for expression argument in println, but got none")
     }
 
     private fun testNoWarning(ast: AST) {
-        val rule = PrintlnArgumentRule()
+        val rule = CallArgumentRule("println")
         val result = rule.apply(ast)
         assertEquals(result, null, "Expected no warning, but got: $result")
     }

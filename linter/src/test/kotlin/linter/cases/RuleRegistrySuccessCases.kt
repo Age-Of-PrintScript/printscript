@@ -4,8 +4,8 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import linter.RuleConfigEntry
 import linter.RuleRegistrySuccessCase
+import linter.rules.CallArgumentRule
 import linter.rules.IdentifierFormatRule
-import linter.rules.PrintlnArgumentRule
 
 internal object RuleRegistrySuccessCases {
     fun cases(): List<RuleRegistrySuccessCase> =
@@ -38,7 +38,7 @@ internal object RuleRegistrySuccessCases {
                         enabled = true,
                         params = JsonObject(emptyMap()),
                     ),
-                expectedClass = PrintlnArgumentRule::class,
+                expectedClass = CallArgumentRule::class,
             ),
             RuleRegistrySuccessCase(
                 name = "build println-no-expression with extra params ignored",
@@ -48,7 +48,7 @@ internal object RuleRegistrySuccessCases {
                         enabled = true,
                         params = JsonObject(mapOf("extra" to JsonPrimitive("ignored"))),
                     ),
-                expectedClass = PrintlnArgumentRule::class,
+                expectedClass = CallArgumentRule::class,
             ),
         )
 }
