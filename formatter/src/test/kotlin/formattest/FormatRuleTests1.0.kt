@@ -1,16 +1,16 @@
 package formattest
 
 import ast.AST
-import domain.getOrReturn
-import formatter.formatrules.LinesAfterCall
-import formatter.formatrules.SpaceAfterColon
-import formatter.formatrules.SpaceAroundAssign
-import formatter.formatrules.SpaceBeforeColon
+import ast.Expression
+import formatter.formatrules.EnsureNoSpaceAroundEquals
+import formatter.formatrules.EnsureSpaceAfterColon
+import formatter.formatrules.EnsureSpaceAroundEquals
+import formatter.formatrules.EnsureSpaceBeforeColon
+import formatter.formatrules.LineBreaksAfterPrintLn
 import formatter.formattokens.AssignmentFormatTokenizer
 import formatter.formattokens.DeclarationFormatTokenizer
 import formatter.formattokens.EOL
 import formatter.formattokens.ExpressionFormatTokenizer
-import formatter.formattokens.FormatTokenizer
 import formatter.formattokens.FormatTokens
 import formatter.formattokens.Text
 import formatter.formattokens.WhiteSpace
@@ -19,11 +19,8 @@ import org.junit.jupiter.api.Test
 import testframework.createAssignment
 import testframework.createDeclaration
 import testframework.createPrintln
-
-private fun tokensFrom(
-    tokenizer: FormatTokenizer,
-    ast: AST,
-): FormatTokens = tokenizer.tokenize(ast).getOrReturn { error("tokenizer fallo: $it") }
+import testframework.createStringLiteralExpression
+import testframework.tokensFrom
 
 class FormatRuleTests {
     // ------------------ SpaceAroundAssign ------------------------------
@@ -38,7 +35,7 @@ class FormatRuleTests {
                 add(equalsIndex, WhiteSpace)
             }
 
-        val result = SpaceAroundAssign(true).apply(input)
+        val result = EnsureSpaceAroundEquals(true).apply(input)
 
         assertEquals(FormatTokens(expected), result)
     }
@@ -47,7 +44,7 @@ class FormatRuleTests {
     fun `space around assign - ya tiene un espacio a cada lado no cambia`() {
         val input = FormatTokens(listOf(Text("x"), WhiteSpace, Text("="), WhiteSpace, Text("5")))
 
-        val result = SpaceAroundAssign(true).apply(input)
+        val result = EnsureSpaceAroundEquals(true).apply(input)
 
         assertEquals(input, result)
     }
@@ -55,7 +52,7 @@ class FormatRuleTests {
     @Test
     fun `space around assign - idempotencia aplicando dos veces seguidas`() {
         val input = tokensFrom(AssignmentFormatTokenizer(), createAssignment("x"))
-        val rule = SpaceAroundAssign(true)
+        val rule = EnsureSpaceAroundEquals(true)
 
         val once = rule.apply(input)
         val twice = rule.apply(once)
@@ -68,7 +65,7 @@ class FormatRuleTests {
         val input = FormatTokens(listOf(Text("x"), WhiteSpace, Text("="), Text("5")))
         val expected = FormatTokens(listOf(Text("x"), WhiteSpace, Text("="), WhiteSpace, Text("5")))
 
-        val result = SpaceAroundAssign(true).apply(input)
+        val result = EnsureSpaceAroundEquals(true).apply(input)
 
         assertEquals(expected, result)
     }
@@ -77,7 +74,48 @@ class FormatRuleTests {
     fun `space around assign - desactivada no toca nada`() {
         val input = tokensFrom(AssignmentFormatTokenizer(), createAssignment("x"))
 
-        val result = SpaceAroundAssign(false).apply(input)
+        val result = EnsureSpaceAroundEquals(false).apply(input)
+
+        assertEquals(input, result)
+    }
+
+    // ------------------ EnsureNoSpaceAroundEquals ------------------------------
+
+    @Test
+    fun `no space around equals - lista real de AssignmentFormatTokenizer ya no tiene espacios y no cambia`() {
+        val input = tokensFrom(AssignmentFormatTokenizer(), createAssignment("x"))
+
+        val result = EnsureNoSpaceAroundEquals(true).apply(input)
+
+        assertEquals(input, result)
+    }
+
+    @Test
+    fun `no space around equals - saca los espacios existentes a los dos lados`() {
+        val input = FormatTokens(listOf(Text("x"), WhiteSpace, Text("="), WhiteSpace, Text("5")))
+        val expected = FormatTokens(listOf(Text("x"), Text("="), Text("5")))
+
+        val result = EnsureNoSpaceAroundEquals(true).apply(input)
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `no space around equals - idempotencia aplicando dos veces seguidas`() {
+        val input = FormatTokens(listOf(Text("x"), WhiteSpace, Text("="), WhiteSpace, Text("5")))
+        val rule = EnsureNoSpaceAroundEquals(true)
+
+        val once = rule.apply(input)
+        val twice = rule.apply(once)
+
+        assertEquals(once, twice)
+    }
+
+    @Test
+    fun `no space around equals - desactivada no toca nada`() {
+        val input = FormatTokens(listOf(Text("x"), WhiteSpace, Text("="), WhiteSpace, Text("5")))
+
+        val result = EnsureNoSpaceAroundEquals(false).apply(input)
 
         assertEquals(input, result)
     }
@@ -90,7 +128,7 @@ class FormatRuleTests {
         val colonIndex = input.list.indexOfFirst { it is Text && it.value == ":" }
         val expected = input.list.toMutableList().apply { add(colonIndex, WhiteSpace) }
 
-        val result = SpaceBeforeColon(true).apply(input)
+        val result = EnsureSpaceBeforeColon(true).apply(input)
 
         assertEquals(FormatTokens(expected), result)
     }
@@ -98,7 +136,7 @@ class FormatRuleTests {
     @Test
     fun `space before colon - idempotencia aplicando dos veces seguidas`() {
         val input = tokensFrom(DeclarationFormatTokenizer(), createDeclaration("x"))
-        val rule = SpaceBeforeColon(true)
+        val rule = EnsureSpaceBeforeColon(true)
 
         val once = rule.apply(input)
         val twice = rule.apply(once)
@@ -111,7 +149,7 @@ class FormatRuleTests {
         val input = FormatTokens(listOf(Text(":"), Text("string")))
         val expected = FormatTokens(listOf(WhiteSpace, Text(":"), Text("string")))
 
-        val result = SpaceBeforeColon(true).apply(input)
+        val result = EnsureSpaceBeforeColon(true).apply(input)
 
         assertEquals(expected, result)
     }
@@ -120,7 +158,7 @@ class FormatRuleTests {
     fun `space before colon - desactivada no toca nada`() {
         val input = tokensFrom(DeclarationFormatTokenizer(), createDeclaration("x"))
 
-        val result = SpaceBeforeColon(false).apply(input)
+        val result = EnsureSpaceBeforeColon(false).apply(input)
 
         assertEquals(input, result)
     }
@@ -133,7 +171,7 @@ class FormatRuleTests {
         val colonIndex = input.list.indexOfFirst { it is Text && it.value == ":" }
         val expected = input.list.toMutableList().apply { add(colonIndex + 1, WhiteSpace) }
 
-        val result = SpaceAfterColon(true).apply(input)
+        val result = EnsureSpaceAfterColon(true).apply(input)
 
         assertEquals(FormatTokens(expected), result)
     }
@@ -141,7 +179,7 @@ class FormatRuleTests {
     @Test
     fun `space after colon - idempotencia aplicando dos veces seguidas`() {
         val input = tokensFrom(DeclarationFormatTokenizer(), createDeclaration("x"))
-        val rule = SpaceAfterColon(true)
+        val rule = EnsureSpaceAfterColon(true)
 
         val once = rule.apply(input)
         val twice = rule.apply(once)
@@ -154,7 +192,7 @@ class FormatRuleTests {
         val input = FormatTokens(listOf(Text("x"), Text(":")))
         val expected = FormatTokens(listOf(Text("x"), Text(":"), WhiteSpace))
 
-        val result = SpaceAfterColon(true).apply(input)
+        val result = EnsureSpaceAfterColon(true).apply(input)
 
         assertEquals(expected, result)
     }
@@ -163,7 +201,7 @@ class FormatRuleTests {
     fun `space after colon - desactivada no toca nada`() {
         val input = tokensFrom(DeclarationFormatTokenizer(), createDeclaration("x"))
 
-        val result = SpaceAfterColon(false).apply(input)
+        val result = EnsureSpaceAfterColon(false).apply(input)
 
         assertEquals(input, result)
     }
@@ -176,7 +214,7 @@ class FormatRuleTests {
         val withoutTrailingEol = input.list.dropLastWhile { it is EOL }
         val expected = FormatTokens(withoutTrailingEol + listOf(EOL, EOL))
 
-        val result = LinesAfterCall(2).apply(input)
+        val result = LineBreaksAfterPrintLn(2).apply(input)
 
         assertEquals(expected, result)
     }
@@ -184,7 +222,7 @@ class FormatRuleTests {
     @Test
     fun `lines after call - idempotencia aplicando dos veces seguidas`() {
         val input = tokensFrom(ExpressionFormatTokenizer(), createPrintln())
-        val rule = LinesAfterCall(2)
+        val rule = LineBreaksAfterPrintLn(2)
 
         val once = rule.apply(input)
         val twice = rule.apply(once)
@@ -197,17 +235,7 @@ class FormatRuleTests {
         val input = tokensFrom(ExpressionFormatTokenizer(), createPrintln())
         val expected = FormatTokens(input.list.dropLastWhile { it is EOL })
 
-        val result = LinesAfterCall(0).apply(input)
-
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `lines after call - raro lista sin ningun EOL igual agrega la cantidad configurada`() {
-        val input = FormatTokens(listOf(Text("println(x)")))
-        val expected = FormatTokens(listOf(Text("println(x)"), EOL, EOL, EOL))
-
-        val result = LinesAfterCall(3).apply(input)
+        val result = LineBreaksAfterPrintLn(0).apply(input)
 
         assertEquals(expected, result)
     }
@@ -217,8 +245,18 @@ class FormatRuleTests {
         val input = tokensFrom(ExpressionFormatTokenizer(), createPrintln())
         val expected = FormatTokens(input.list.dropLastWhile { it is EOL })
 
-        val result = LinesAfterCall(-1).apply(input)
+        val result = LineBreaksAfterPrintLn(-1).apply(input)
 
         assertEquals(expected, result)
+    }
+
+    @Test
+    fun `lines after call - no afecta llamadas que no son println`() {
+        val readInput = AST.ExpressionStatement(Expression.Call("readInput", listOf(createStringLiteralExpression("nombre"))))
+        val input = tokensFrom(ExpressionFormatTokenizer(), readInput)
+
+        val result = LineBreaksAfterPrintLn(2).apply(input)
+
+        assertEquals(input, result)
     }
 }

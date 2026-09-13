@@ -1,5 +1,6 @@
 plugins {
    id("printscript.common-conventions")
+   kotlin("plugin.serialization")
 }
 
 
