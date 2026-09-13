@@ -7,26 +7,29 @@ import domain.PSLiteral
 import domain.PSOperator
 import domain.StrType
 import domain.Success
-import interpreter.environment.PrintEvent
 import interpreter.statement.AssignmentEvaluator
 import interpreter.statement.DeclarationEvaluator
 import interpreter.statement.ExpressionStatementEvaluator
 import interpreter.statement.StatementEvaluator
 
 val printlnFunction =
-    BuiltInFunction { args ->
+    BuiltInFunction { args, io ->
         val message = if (args.isNotEmpty()) args.first().raw else ""
-        Success(
-            FunctionResult(
-                returnValue = null,
-                events = listOf(PrintEvent(message)),
-            ),
-        )
+        io.emitter.print(message)
+        Success(null)
+    }
+
+val readInputFunction =
+    BuiltInFunction { args, io ->
+        val prompt = if (args.isNotEmpty()) args.first().raw else ""
+        val input = io.provider.readInput(prompt)
+        Success(PSLiteral(input, StrType))
     }
 
 val testBuiltInFunctions: Map<String, BuiltInFunction> =
     mapOf(
         "println" to printlnFunction,
+        "readInput" to readInputFunction,
     )
 
 enum class Operators(

@@ -6,8 +6,6 @@ import domain.Success
 import domain.getOrReturn
 import interpreter.Interpreter
 import interpreter.LanguageSemantics
-import interpreter.environment.ExecutionResult
-import interpreter.environment.PrintEvent
 import lexer.Lexer
 import lexer.Lexicon
 import parser.Parser
@@ -16,6 +14,7 @@ import versionfactory.PSVersion
 class Engine {
     fun execute(
         source: String,
+        io: EngineIO,
         logger: Logger,
         context: ExecutionContext = ExecutionContext(),
         version: String? = null,
@@ -29,60 +28,63 @@ class Engine {
             } else {
                 PSVersion.getLatestVersion()
             }
+
         val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
         val parser = Parser.new(psVersion.statementParsers)
-        val interpreter = Interpreter.new(LanguageSemantics(psVersion.builtInFunctions, psVersion.binaryOperations, psVersion.statementEvaluators))
+        val interpreter =
+            Interpreter
+                .new(
+                    LanguageSemantics(
+                        psVersion.builtInFunctions,
+                        psVersion.binaryOperations,
+                        psVersion.statementEvaluators,
+                    ),
+                )
 
         val tokensResult = lexer.tokenize(source)
         if (tokensResult is Failure) {
             logFailure(tokensResult.value, logger)
             return EngineResult(ExitCode.FAILURE, context)
         }
+
         val programResult = parser.parse((tokensResult as Success).value)
         if (programResult is Failure) {
             logFailure(programResult.value, logger)
             return EngineResult(ExitCode.FAILURE, context)
         }
+
+        val interpreterIO = toInterpreterIO(io)
+
         val executionResult =
-            interpreter.executeWithEnvironment(
+            interpreter.execute(
                 (programResult as Success).value,
+                interpreterIO,
                 context.environment,
             )
+
         return when (executionResult) {
             is Failure -> {
                 logFailure(executionResult.value, logger)
                 EngineResult(ExitCode.FAILURE, context)
             }
             is Success -> {
-                logSuccess(executionResult.value, logger)
+                logSuccess(logger)
                 EngineResult(
                     ExitCode.SUCCESS,
-                    ExecutionContext(executionResult.value.runtimeEnvironment),
+                    ExecutionContext(executionResult.value),
                 )
             }
         }
     }
 
-    private fun logSuccess(
-        result: ExecutionResult,
-        logger: Logger,
-    ) {
-        val events = result.runtimeEvents
-        for (event in events.events) {
-            when (event) {
-                is PrintEvent -> logger.log(event.message)
-            }
-        }
-        logger.log("Build Successful")
-    }
+    private fun logSuccess(logger: Logger) = logger.log("Build Successful")
 
     private fun logFailure(
         error: Error,
         logger: Logger,
-    ) {
-        logFailure(error.toString(), logger)
-    }
+    ) = logFailure(error.toString(), logger)
 
+    // TODO: eliminar esto
     private fun logFailure(
         error: String,
         logger: Logger,

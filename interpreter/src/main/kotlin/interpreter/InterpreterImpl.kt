@@ -4,44 +4,30 @@ import ast.Program
 import domain.Either
 import domain.Failure
 import domain.Success
-import interpreter.environment.ExecutionResult
 import interpreter.environment.RuntimeEnvironment
-import interpreter.environment.RuntimeEvents
 
 internal class InterpreterImpl(
     val semantics: LanguageSemantics,
 ) : Interpreter {
-    override fun execute(program: Program): Either<RuntimeError, ExecutionResult> = execute(program, RuntimeEnvironment(emptyMap()), RuntimeEvents(emptyList()))
-
-    override fun executeWithEnvironment(
+    override fun execute(
         program: Program,
-        runtimeEnvironment: RuntimeEnvironment,
-    ): Either<RuntimeError, ExecutionResult> = execute(program, runtimeEnvironment, RuntimeEvents(emptyList()))
-
-    private fun execute(
-        program: Program,
-        runtimeEnvironment: RuntimeEnvironment,
-        runtimeEvents: RuntimeEvents,
-    ): Either<RuntimeError, ExecutionResult> {
-        val asts = program.trees
-        var events = runtimeEvents
-        var env = runtimeEnvironment
-        for (ast in asts) {
+        io: InterpreterIO,
+        runtimeEnvironment: RuntimeEnvironment?,
+    ): Either<RuntimeError, RuntimeEnvironment> {
+        var env = runtimeEnvironment ?: RuntimeEnvironment(emptyMap())
+        for (ast in program.trees) {
             val astType = ast.astType
             val evaluator =
                 semantics.statementEvaluators[astType]
                     ?: return Failure(RuntimeError.MISSING_EVALUATOR_FOR_AST)
 
-            val result = evaluator.evaluate(ast, env, events, semantics)
+            val result = evaluator.evaluate(ast, env, io, semantics)
 
             when (result) {
                 is Failure -> return Failure(result.value)
-                is Success -> {
-                    env = result.value.first
-                    events = result.value.second
-                }
+                is Success -> env = result.value
             }
         }
-        return Success(ExecutionResult(env, events))
+        return Success(env)
     }
 }

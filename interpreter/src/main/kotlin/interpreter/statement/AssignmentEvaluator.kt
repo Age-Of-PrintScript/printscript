@@ -3,32 +3,25 @@ package interpreter.statement
 import ast.AST
 import domain.Either
 import domain.Failure
-import domain.Success
 import domain.getOrReturn
+import interpreter.InterpreterIO
 import interpreter.LanguageSemantics
 import interpreter.RuntimeError
 import interpreter.environment.RuntimeEnvironment
-import interpreter.environment.RuntimeEvents
 
 class AssignmentEvaluator : StatementEvaluator {
     override fun evaluate(
         statement: AST,
         env: RuntimeEnvironment,
-        events: RuntimeEvents,
+        io: InterpreterIO,
         semantics: LanguageSemantics,
-    ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
+    ): Either<RuntimeError, RuntimeEnvironment> {
         val assignmentStatement = statement as AST.AssignmentStatement
-        val newValue =
-            solveExpression(assignmentStatement.value, env, semantics)
+        val solvedValue =
+            solveExpression(assignmentStatement.value, env, io, semantics)
                 .getOrReturn { return Failure(it) }
+                ?: return Failure(RuntimeError.MISSING_ASSIGNATION)
 
-        if (newValue.returnValue == null) return Failure(RuntimeError.MISSING_ASSIGNATION)
-
-        val newEnv =
-            env
-                .changeVariable(assignmentStatement.id, newValue.returnValue.toLiteral())
-                .getOrReturn { return Failure(it) }
-
-        return Success(Pair(newEnv, events + newValue.events))
+        return env.changeVariable(assignmentStatement.id, solvedValue.toLiteral())
     }
 }

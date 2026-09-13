@@ -8,15 +8,10 @@ import domain.PSLiteral
 import domain.PSType
 import domain.Success
 import domain.getOrReturn
+import interpreter.InterpreterIO
 import interpreter.LanguageSemantics
 import interpreter.RuntimeError
-import interpreter.environment.Event
 import interpreter.environment.RuntimeEnvironment
-
-data class ExpressionResult(
-    val returnValue: PSLiteral? = null,
-    val events: List<Event> = emptyList(),
-)
 
 // es necesario que estoo se instancie con cada nuevo interpreterimpl?
 private val expressionSolver = ExpressionSolver()
@@ -24,11 +19,12 @@ private val expressionSolver = ExpressionSolver()
 internal fun solveExpression(
     expression: Expression,
     env: RuntimeEnvironment,
+    io: InterpreterIO,
     semantics: LanguageSemantics,
-): Either<RuntimeError, ExpressionResult> {
+): Either<RuntimeError, PSLiteral?> {
     val result =
         expressionSolver
-            .solve(expression, env.getVariableMapWithValues(), semantics)
+            .solve(expression, env.getVariableMapWithValues(), io, semantics)
             .getOrReturn { return Failure(RuntimeError.MATH_ERROR) }
 
     return Success(result)
