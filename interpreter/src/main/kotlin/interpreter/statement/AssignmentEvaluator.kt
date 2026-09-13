@@ -1,11 +1,9 @@
 package interpreter.statement
 
 import ast.AST
-import ast.Expression
 import domain.Either
 import domain.Failure
 import domain.getOrReturn
-import interpreter.CastKey
 import interpreter.InterpreterIO
 import interpreter.LanguageSemantics
 import interpreter.RuntimeError
@@ -29,20 +27,8 @@ class AssignmentEvaluator : StatementEvaluator {
                 ?: return Failure(RuntimeError.VARIABLE_DOESNT_EXIST)
 
         val finalValue =
-            if (solvedValue.type != expectedType) {
-                if (assignmentStatement.value is Expression.Call) {
-                    val caster =
-                        semantics
-                            .typeCasters[CastKey(solvedValue.type, expectedType)]
-                            ?: return Failure(RuntimeError.INVALID_CAST)
-
-                    caster.cast(solvedValue).getOrReturn { return Failure(it) }
-                } else {
-                    return Failure(RuntimeError.VARIABLE_HAS_DIFFERENT_TYPE)
-                }
-            } else {
-                solvedValue
-            }
+            resolveWithCast(solvedValue, expectedType, assignmentStatement.value, semantics)
+                .getOrReturn { return Failure(it) }
 
         return env.changeVariable(assignmentStatement.id, finalValue.toLiteral())
     }

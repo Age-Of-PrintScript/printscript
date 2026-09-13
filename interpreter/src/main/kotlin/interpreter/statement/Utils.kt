@@ -8,12 +8,12 @@ import domain.PSLiteral
 import domain.PSType
 import domain.Success
 import domain.getOrReturn
+import interpreter.CastKey
 import interpreter.InterpreterIO
 import interpreter.LanguageSemantics
 import interpreter.RuntimeError
 import interpreter.environment.RuntimeEnvironment
 
-// es necesario que estoo se instancie con cada nuevo interpreterimpl?
 private val expressionSolver = ExpressionSolver()
 
 internal fun solveExpression(
@@ -29,6 +29,25 @@ internal fun solveExpression(
 
     return Success(result)
 }
+
+internal fun resolveWithCast(
+    value: PSLiteral,
+    targetType: PSType,
+    expression: Expression,
+    semantics: LanguageSemantics,
+): Either<RuntimeError, PSLiteral> =
+    if (value.type != targetType) {
+        if (expression is Expression.Call) {
+            val caster =
+                semantics.typeCasters[CastKey(value.type, targetType)]
+                    ?: return Failure(RuntimeError.INVALID_CAST)
+            caster.cast(value)
+        } else {
+            Failure(RuntimeError.VARIABLE_HAS_DIFFERENT_TYPE)
+        }
+    } else {
+        Success(value)
+    }
 
 internal fun updateEnvironmentWithNewDeclaration(
     env: RuntimeEnvironment,
