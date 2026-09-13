@@ -12,35 +12,42 @@ internal data class CallArgumentRule(
     val name: String,
 ) : LinterRule {
     override fun apply(ast: AST): Warning? {
-        val arg = getCallArguments(ast, name) ?: return null
-
-        return if (isValidArgument(arg)) {
-            null
-        } else {
-            Warning(
-                "$name must be called with an identifier or literal",
-                Position(0, 0),
-            )
+        val calls = extractCalls(ast, name)
+        for (call in calls) {
+            val arg = call.args.firstOrNull() ?: continue
+            if (!isValidArgument(arg)) {
+                return Warning(
+                    "$name must be called with an identifier or literal",
+                    Position(0, 0),
+                )
+            }
         }
+        return null
     }
 
-    private fun getCallArguments(
+    private fun extractCalls(
         ast: AST,
         functionName: String,
-    ): Expression? {
-        val call = extractCall(ast, functionName) ?: return null
-        return call.args.firstOrNull()
-    }
+    ): List<Expression.Call> =
+        when (ast) {
+            is AST.ExpressionStatement -> findCalls(ast.expression, functionName)
+            is AST.DeclarationStatement -> ast.value?.let { findCalls(it, functionName) } ?: emptyList()
+            is AST.AssignmentStatement -> findCalls(ast.value, functionName)
+            is AST.ConditionalStatement -> findCalls(ast.condition, functionName)
+        }
 
-    private fun extractCall(
-        ast: AST,
+    private fun findCalls(
+        expr: Expression,
         functionName: String,
-    ): Expression.Call? {
-        if (ast !is AST.ExpressionStatement) return null
-        val expr = ast.expression
-        if (expr !is Expression.Call || expr.name != functionName) return null
-        return expr
-    }
+    ): List<Expression.Call> =
+        when (expr) {
+            is Expression.Call -> {
+                val matches = if (expr.name == functionName) listOf(expr) else emptyList()
+                matches + expr.args.flatMap { findCalls(it, functionName) }
+            }
+            is Expression.Operation -> findCalls(expr.left, functionName) + findCalls(expr.right, functionName)
+            is Expression.Literal, is Expression.Variable -> emptyList()
+        }
 
     private fun isValidArgument(arg: Expression): Boolean = arg is Expression.Variable || arg is Expression.Literal
 }

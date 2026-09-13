@@ -121,16 +121,71 @@ class TestCallArgumentRule {
         testNoWarning(ast)
     }
 
-    // --- Helpers ---
+    // --- readInput in Declarations and Assignments ---
 
-    private fun testWarning(ast: AST) {
-        val rule = CallArgumentRule("println")
-        val result = rule.apply(ast)
-        assertTrue(result != null, "Expected warning for expression argument in println, but got none")
+    @Test
+    fun readInputWithLiteralInDeclaration() {
+        val readInputCall = createReadInput(createLiteralExpression("Enter name: "))
+        val ast = createDeclaration(name = "x", value = readInputCall)
+        testNoWarning(ast, functionName = "readInput")
     }
 
-    private fun testNoWarning(ast: AST) {
-        val rule = CallArgumentRule("println")
+    @Test
+    fun readInputWithVariableInAssignment() {
+        val readInputCall = createReadInput(createVariableExpression("prompt"))
+        val ast = createAssignment(name = "x", value = readInputCall)
+        testNoWarning(ast, functionName = "readInput")
+    }
+
+    @Test
+    fun readInputWithEmptyArgumentsInDeclaration() {
+        val readInputCall = createReadInput()
+        val ast = createDeclaration(name = "x", value = readInputCall)
+        testNoWarning(ast, functionName = "readInput")
+    }
+
+    @Test
+    fun readInputWithOperationInDeclarationFails() {
+        val operation =
+            createOperationExpression(
+                left = createLiteralExpression("Hello, "),
+                right = createVariableExpression("name"),
+                operator = Operators.SUM,
+            )
+        val readInputCall = createReadInput(operation)
+        val ast = createDeclaration(name = "x", value = readInputCall)
+        testWarning(ast, functionName = "readInput")
+    }
+
+    @Test
+    fun readInputWithOperationInAssignmentFails() {
+        val operation =
+            createOperationExpression(
+                left = createLiteralExpression(1),
+                right = createLiteralExpression(2),
+                operator = Operators.SUM,
+            )
+        val readInputCall = createReadInput(operation)
+        val ast = createAssignment(name = "x", value = readInputCall)
+        testWarning(ast, functionName = "readInput")
+    }
+
+    // --- Helpers ---
+
+    private fun testWarning(
+        ast: AST,
+        functionName: String = "println",
+    ) {
+        val rule = CallArgumentRule(functionName)
+        val result = rule.apply(ast)
+        assertTrue(result != null, "Expected warning for expression argument in $functionName, but got none")
+    }
+
+    private fun testNoWarning(
+        ast: AST,
+        functionName: String = "println",
+    ) {
+        val rule = CallArgumentRule(functionName)
         val result = rule.apply(ast)
         assertEquals(result, null, "Expected no warning, but got: $result")
     }
