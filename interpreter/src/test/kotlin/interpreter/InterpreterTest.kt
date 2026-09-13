@@ -77,7 +77,7 @@ class InterpreterTest {
             .assertTrue(result is domain.Success)
         val env = (result as domain.Success).value
         org.junit.jupiter.api.Assertions.assertEquals(
-            ast.Expression.Literal("Alice", domain.StrType),
+            domain.PSLiteral("Alice", domain.StrType),
             env.getVariableMapWithValues()["name"],
         )
         org.junit.jupiter.api.Assertions
@@ -208,7 +208,7 @@ class InterpreterTest {
             .assertTrue(result is domain.Success)
         val env = (result as domain.Success).value
         org.junit.jupiter.api.Assertions.assertEquals(
-            ast.Expression.Literal("UpdatedValue", domain.StrType),
+            domain.PSLiteral("UpdatedValue", domain.StrType),
             env.getVariableMapWithValues()["x"],
         )
     }

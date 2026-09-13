@@ -1,7 +1,6 @@
 package interpreter.statement
 
 import ast.Expression
-import ast.Expression.Literal
 import domain.Either
 import domain.Failure
 import domain.PSLiteral
@@ -14,8 +13,6 @@ import interpreter.LanguageSemantics
 import interpreter.RuntimeError
 import interpreter.environment.RuntimeEnvironment
 
-private val expressionSolver = ExpressionSolver()
-
 internal fun solveExpression(
     expression: Expression,
     env: RuntimeEnvironment,
@@ -23,7 +20,7 @@ internal fun solveExpression(
     semantics: LanguageSemantics,
 ): Either<RuntimeError, PSLiteral?> {
     val result =
-        expressionSolver
+        ExpressionSolver
             .solve(expression, env.getVariableMapWithValues(), io, semantics)
             .getOrReturn { return Failure(RuntimeError.MATH_ERROR) }
 
@@ -53,7 +50,7 @@ internal fun updateEnvironmentWithNewDeclaration(
     env: RuntimeEnvironment,
     id: String,
     type: PSType,
-    value: Literal,
+    value: PSLiteral,
     mutable: Boolean,
 ): Either<RuntimeError, RuntimeEnvironment> {
     if (type != value.type) {
@@ -66,7 +63,3 @@ internal fun updateEnvironmentWithNewDeclaration(
 
     return Success(newEnv)
 }
-
-internal fun Literal.toPSLiteral(): PSLiteral = PSLiteral(raw = value, type = type)
-
-internal fun PSLiteral.toLiteral(): Literal = Literal(value = raw, type = type)

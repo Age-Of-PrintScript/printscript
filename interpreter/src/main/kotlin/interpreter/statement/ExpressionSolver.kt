@@ -10,19 +10,19 @@ import interpreter.InterpreterIO
 import interpreter.LanguageSemantics
 import interpreter.OperationKey
 
-internal class ExpressionSolver {
+internal object ExpressionSolver {
     fun solve(
         expression: Expression,
-        env: Map<String, Expression.Literal?>,
+        env: Map<String, PSLiteral?>,
         io: InterpreterIO,
         semantics: LanguageSemantics,
     ): Either<String, PSLiteral?> {
         return when (expression) {
-            is Expression.Literal -> Success(expression.toPSLiteral())
+            is Expression.Literal -> Success(PSLiteral(expression.value, expression.type))
 
             is Expression.Variable -> {
                 val value = env[expression.name] ?: return Failure("")
-                Success(value.toPSLiteral())
+                Success(value)
             }
 
             is Expression.Operation -> {

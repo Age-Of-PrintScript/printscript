@@ -23,13 +23,13 @@ class AssignmentEvaluator : StatementEvaluator {
                 ?: return Failure(RuntimeError.MISSING_ASSIGNATION)
 
         val expectedType =
-            env.variableMap[assignmentStatement.id]?.type
+            env.getVariableType(assignmentStatement.id)
                 ?: return Failure(RuntimeError.VARIABLE_DOESNT_EXIST)
 
         val finalValue =
             resolveWithCast(solvedValue, expectedType, assignmentStatement.value, semantics)
                 .getOrReturn { return Failure(it) }
 
-        return env.changeVariable(assignmentStatement.id, finalValue.toLiteral())
+        return env.changeVariable(assignmentStatement.id, finalValue)
     }
 }

@@ -13,6 +13,7 @@ enum class RuntimeError(
     MISSING_ASSIGNATION("Variable cannot be assigned to void"),
     MISSING_EVALUATOR_FOR_AST("AST evaluator not found"),
     INVALID_CAST("Cannot cast value to the expected type"),
+    VARIABLE_NOT_MUTABLE("Variable is not mutable"),
     ;
 
     override fun getMessage(): String = reason

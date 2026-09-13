@@ -33,7 +33,7 @@ class DeclarationEvaluator : StatementEvaluator {
                 env,
                 declarationStatement.id,
                 declarationStatement.type,
-                finalValue.toLiteral(),
+                finalValue,
                 declarationStatement.mutable,
             )
         } else {

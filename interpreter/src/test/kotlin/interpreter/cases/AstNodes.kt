@@ -16,6 +16,14 @@ val DECLARATION_Statement_X_NUMBER_5 =
         value = LITERAL_NUMBER_5,
     )
 
+val DECLARATION_Statement_X_NUMBER_5_IMMUTABLE =
+    AST.DeclarationStatement(
+        id = "x",
+        type = NumType,
+        mutable = false,
+        value = LITERAL_NUMBER_5,
+    )
+
 val DECLARATION_Statement_X_STRING_HOLA =
     AST.DeclarationStatement(
         id = "x",
