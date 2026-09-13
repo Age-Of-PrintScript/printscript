@@ -35,7 +35,7 @@ internal data class TokenBuilder(
                 return Success(copy(type = newType))
             }
 
-            chr.isLetter() -> {
+            chr.isLetter() || chr == '_' -> {
                 val newType =
                     if (type == null) {
                         Identifier(chr.toString())
