@@ -7,10 +7,21 @@ internal class Analyser {
     fun analyse(
         program: Program,
         rulesConfig: RulesConfig,
-    ): List<Warning> = program.trees.flatMap { checkRules(it, rulesConfig) }
+    ): List<Warning> = program.trees.flatMap { analyseNode(it, rulesConfig) }
 
-    fun checkRules(
+    private fun analyseNode(
         ast: AST,
         rulesConfig: RulesConfig,
-    ): List<Warning> = rulesConfig.rules.mapNotNull { it.apply(ast) }
+    ): List<Warning> {
+        val currentWarnings = rulesConfig.rules.mapNotNull { it.apply(ast) }
+        val nestedWarnings =
+            when (ast) {
+                is AST.ConditionalStatement -> {
+                    ast.ifBlock.statements.flatMap { analyseNode(it, rulesConfig) } +
+                        (ast.elseBlock?.statements?.flatMap { analyseNode(it, rulesConfig) } ?: emptyList())
+                }
+                else -> emptyList()
+            }
+        return currentWarnings + nestedWarnings
+    }
 }

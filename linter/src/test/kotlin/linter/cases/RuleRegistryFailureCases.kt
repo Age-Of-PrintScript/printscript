@@ -37,5 +37,25 @@ internal object RuleRegistryFailureCases {
                     ),
                 expectedException = IllegalArgumentException::class,
             ),
+            RuleRegistryFailureCase(
+                name = "readInput-no-expression in version 1.0 throws IllegalArgumentException",
+                entry =
+                    RuleConfigEntry(
+                        name = "readInput-no-expression",
+                        enabled = true,
+                    ),
+                expectedException = IllegalArgumentException::class,
+                version = "1.0",
+            ),
+            RuleRegistryFailureCase(
+                name = "unsupported version throws IllegalArgumentException",
+                entry =
+                    RuleConfigEntry(
+                        name = "identifier-format",
+                        enabled = true,
+                    ),
+                expectedException = IllegalArgumentException::class,
+                version = "2.0",
+            ),
         )
 }

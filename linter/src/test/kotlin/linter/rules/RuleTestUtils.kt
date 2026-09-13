@@ -49,3 +49,9 @@ fun createOperationExpression(
     right: Expression,
     operator: PSOperator = Operators.SUM,
 ): Expression.Operation = Expression.Operation(left, operator, right)
+
+fun createReadInput(vararg args: Expression): Expression.Call =
+    Expression.Call(
+        name = "readInput",
+        args = args.toList(),
+    )
