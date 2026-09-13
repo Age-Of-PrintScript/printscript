@@ -38,6 +38,7 @@ class Engine {
                         psVersion.builtInFunctions,
                         psVersion.binaryOperations,
                         psVersion.statementEvaluators,
+                        psVersion.typeCasters,
                     ),
                 )
 

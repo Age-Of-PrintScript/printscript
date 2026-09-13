@@ -1,6 +1,7 @@
 package interpreter
 
 import ast.ASTType
+import domain.BoolType
 import domain.Failure
 import domain.NumType
 import domain.PSLiteral
@@ -127,9 +128,32 @@ val testStatementEvaluators: Map<ASTType, StatementEvaluator> =
         ASTType.EXPRESSION_STATEMENT to ExpressionStatementEvaluator(),
     )
 
+val testStrToNum =
+    TypeCast { value ->
+        val num =
+            value.raw.toDoubleOrNull()
+                ?: return@TypeCast Failure(RuntimeError.INVALID_CAST)
+        Success(PSLiteral(num.toString(), NumType))
+    }
+
+val testStrToBool =
+    TypeCast { value ->
+        val bool =
+            value.raw.toBooleanStrictOrNull()
+                ?: return@TypeCast Failure(RuntimeError.INVALID_CAST)
+        Success(PSLiteral(bool.toString(), BoolType))
+    }
+
+val testTypeCasters: Map<CastKey, TypeCast> =
+    mapOf(
+        CastKey(StrType, NumType) to testStrToNum,
+        CastKey(StrType, BoolType) to testStrToBool,
+    )
+
 val testSemantics: LanguageSemantics =
     LanguageSemantics(
         functions = testBuiltInFunctions,
         operations = testBinaryOperations,
         statementEvaluators = testStatementEvaluators,
+        typeCasters = testTypeCasters,
     )

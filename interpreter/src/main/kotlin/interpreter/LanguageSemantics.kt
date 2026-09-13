@@ -7,4 +7,5 @@ data class LanguageSemantics(
     val functions: Map<String, BuiltInFunction>,
     val operations: Map<OperationKey, BinaryOperation>,
     val statementEvaluators: Map<ASTType, StatementEvaluator>,
+    val typeCasters: Map<CastKey, TypeCast> = emptyMap(),
 )
