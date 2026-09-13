@@ -8,104 +8,104 @@ import domain.StrType
 
 val POS = Position(0, 0)
 
-val DECLARATION_X_NUMBER_5 =
-    AST.Declaration(
+val DECLARATION_Statement_X_NUMBER_5 =
+    AST.DeclarationStatement(
         id = "x",
         type = NumType,
         mutable = true,
         value = LITERAL_NUMBER_5,
     )
 
-val DECLARATION_X_STRING_HOLA =
-    AST.Declaration(
+val DECLARATION_Statement_X_STRING_HOLA =
+    AST.DeclarationStatement(
         id = "x",
         type = StrType,
         mutable = true,
         value = LITERAL_STRING_HOLA,
     )
 
-val DECLARATION_X_NUMBER_NO_VALUE =
-    AST.Declaration(
+val DECLARATION_Statement_X_NUMBER_NO_VALUE =
+    AST.DeclarationStatement(
         id = "x",
         type = NumType,
         mutable = true,
         value = null,
     )
 
-val DECLARATION_X_STRING_NO_VALUE =
-    AST.Declaration(
+val DECLARATION_Statement_X_STRING_NO_VALUE =
+    AST.DeclarationStatement(
         id = "x",
         type = StrType,
         mutable = true,
         value = null,
     )
 
-val DECLARATION_A_NUMBER_1 =
-    AST.Declaration(
+val DECLARATION_Statement_A_NUMBER_1 =
+    AST.DeclarationStatement(
         id = "a",
         type = NumType,
         mutable = true,
         value = LITERAL_NUMBER_1,
     )
 
-val DECLARATION_Y_NUMBER_NO_VALUE =
-    AST.Declaration(
+val DECLARATION_Statement_Y_NUMBER_NO_VALUE =
+    AST.DeclarationStatement(
         id = "y",
         type = NumType,
         mutable = true,
         value = null,
     )
 
-val DECLARATION_Y_NUMBER_WITH_X_VALUE =
-    AST.Declaration(
+val DECLARATION_Statement_Y_NUMBER_WITH_X_VALUE =
+    AST.DeclarationStatement(
         id = "y",
         type = NumType,
         mutable = true,
         value = VARIABLE_X,
     )
 
-val DECLARATION_X_NUMBER_WITH_STRING_VALUE =
-    AST.Declaration(
+val DECLARATION_Statement_X_NUMBER_WITH_STRING_VALUE =
+    AST.DeclarationStatement(
         id = "x",
         type = NumType,
         mutable = true,
         value = LITERAL_STRING_X,
     )
 
-val DECLARATION_X_NUMBER_WITH_INVALID_OPERATION =
-    AST.Declaration(
+val DECLARATION_Statement_X_NUMBER_WITH_INVALID_OPERATION =
+    AST.DeclarationStatement(
         id = "x",
         type = NumType,
         mutable = true,
         value = OPERATION_5_DIVIDE_STRING,
     )
 
-val ASSIGNMENT_X_TO_10 =
-    AST.Assignment(
+val ASSIGNMENT_Statement_X_TO_10 =
+    AST.AssignmentStatement(
         id = "x",
         value = LITERAL_NUMBER_10,
     )
 
-val ASSIGNMENT_X_TO_2 =
-    AST.Assignment(
+val ASSIGNMENT_Statement_X_TO_2 =
+    AST.AssignmentStatement(
         id = "x",
         value = LITERAL_NUMBER_2,
     )
 
-val ASSIGNMENT_Y_TO_X =
-    AST.Assignment(
+val ASSIGNMENT_Statement_Y_TO_X =
+    AST.AssignmentStatement(
         id = "y",
         value = VARIABLE_X,
     )
 
-val ASSIGNMENT_X_TO_STRING_X =
-    AST.Assignment(
+val ASSIGNMENT_Statement_X_TO_STRING_X =
+    AST.AssignmentStatement(
         id = "x",
         value = LITERAL_STRING_X,
     )
 
-val ASSIGNMENT_UNDECLARED_A_TO_5 =
-    AST.Assignment(
+val ASSIGNMENT_Statement_UNDECLARED_A_TO_5 =
+    AST.AssignmentStatement(
         id = "a",
         value = LITERAL_NUMBER_5,
     )

@@ -14,12 +14,14 @@ internal data class RuleRegistrySuccessCase(
     val name: String,
     val entry: RuleConfigEntry,
     val expectedClass: KClass<out LinterRule>,
+    val version: String = "1.0",
 )
 
 internal data class RuleRegistryFailureCase(
     val name: String,
     val entry: RuleConfigEntry,
     val expectedException: KClass<out Throwable>,
+    val version: String = "1.0",
 )
 
 internal class RuleRegistryTest {
@@ -27,7 +29,7 @@ internal class RuleRegistryTest {
     fun `successful rule creations`(): List<DynamicNode> =
         RuleRegistrySuccessCases.cases().map { case ->
             dynamicTest(case.name) {
-                val rule = RuleRegistry.build(case.entry)
+                val rule = RuleRegistry.build(case.entry, case.version)
                 assertNotNull(rule)
                 assertTrue(
                     case.expectedClass.isInstance(rule),
@@ -41,7 +43,7 @@ internal class RuleRegistryTest {
         RuleRegistryFailureCases.cases().map { case ->
             dynamicTest(case.name) {
                 assertThrows(case.expectedException.java) {
-                    RuleRegistry.build(case.entry)
+                    RuleRegistry.build(case.entry, case.version)
                 }
             }
         }

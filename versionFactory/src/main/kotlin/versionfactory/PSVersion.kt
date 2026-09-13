@@ -23,6 +23,7 @@ interface PSVersion {
         fun getVersion(version: String): Either<VersionError, PSVersion> =
             when (version) {
                 "1.0" -> Success(version1_0)
+                "1.1" -> Success(version1_1)
                 else -> Failure(VersionError.VERSION_DOESNT_EXISTS)
             }
 
@@ -31,3 +32,4 @@ interface PSVersion {
 }
 
 val version1_0: PSVersion = PSVersion1_0()
+val version1_1: PSVersion = PSVersion1_1()

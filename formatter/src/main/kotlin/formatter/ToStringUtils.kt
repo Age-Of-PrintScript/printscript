@@ -7,22 +7,23 @@ import domain.StrType
 
 internal fun astToString(ast: AST): String =
     when (ast) {
-        is AST.Assignment -> assignmentToString(ast)
+        is AST.AssignmentStatement -> assignmentToString(ast)
         is AST.ExpressionStatement -> expressionToString(ast.expression, 0)
-        is AST.Declaration -> declarationToString(ast)
+        is AST.DeclarationStatement -> declarationToString(ast)
+        else -> TODO("Not implemented yet")
     }
 
-internal fun declarationToString(declaration: AST.Declaration): String {
-    val keyword = if (declaration.mutable) "let" else "const"
+internal fun declarationToString(declarationStatement: AST.DeclarationStatement): String {
+    val keyword = if (declarationStatement.mutable) "let" else "const"
     var assignPart = ""
-    if (declaration.value != null) {
-        val string = expressionToString(declaration.value, 0)
+    if (declarationStatement.value != null) {
+        val string = expressionToString(declarationStatement.value, 0)
         assignPart = "=$string"
     }
-    return "$keyword ${declaration.id}:${typeToString(declaration.type)}$assignPart"
+    return "$keyword ${declarationStatement.id}:${typeToString(declarationStatement.type)}$assignPart"
 }
 
-internal fun assignmentToString(assignment: AST.Assignment): String = "${assignment.id}=${expressionToString(assignment.value, 0)}"
+internal fun assignmentToString(assignmentStatement: AST.AssignmentStatement): String = "${assignmentStatement.id}=${expressionToString(assignmentStatement.value, 0)}"
 
 internal fun callToString(call: Expression.Call): String {
     val argsStr = call.args.joinToString(", ") { expressionToString(it, 0) }

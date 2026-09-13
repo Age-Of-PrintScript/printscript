@@ -4,6 +4,10 @@ interface PSType {
     val name: String
 }
 
+object BoolType : PSType {
+    override val name = "boolean"
+}
+
 object StrType : PSType {
     override val name = "string"
 }

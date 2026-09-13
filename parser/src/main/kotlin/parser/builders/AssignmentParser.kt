@@ -35,6 +35,6 @@ class AssignmentParser(
             .getOrReturn { return Failure(it) }
 
         val expr = expressionParser.parse(exprTokens).getOrReturn { return Failure(it) }
-        return Success(AST.Assignment(id, expr))
+        return Success(AST.AssignmentStatement(id, expr))
     }
 }

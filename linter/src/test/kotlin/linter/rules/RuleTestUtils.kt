@@ -12,8 +12,8 @@ fun createDeclaration(
     name: String,
     type: PSType = StrType,
     value: Expression? = createLiteralExpression("test"),
-): AST.Declaration =
-    AST.Declaration(
+): AST.DeclarationStatement =
+    AST.DeclarationStatement(
         id = name,
         type = type,
         mutable = true,
@@ -23,8 +23,8 @@ fun createDeclaration(
 fun createAssignment(
     name: String,
     value: Expression = createLiteralExpression(1),
-): AST.Assignment =
-    AST.Assignment(
+): AST.AssignmentStatement =
+    AST.AssignmentStatement(
         id = name,
         value = value,
     )
@@ -49,3 +49,9 @@ fun createOperationExpression(
     right: Expression,
     operator: PSOperator = Operators.SUM,
 ): Expression.Operation = Expression.Operation(left, operator, right)
+
+fun createReadInput(vararg args: Expression): Expression.Call =
+    Expression.Call(
+        name = "readInput",
+        args = args.toList(),
+    )

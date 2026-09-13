@@ -17,16 +17,16 @@ class AssignmentEvaluator : StatementEvaluator {
         events: RuntimeEvents,
         semantics: LanguageSemantics,
     ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
-        val assignment = statement as AST.Assignment
+        val assignmentStatement = statement as AST.AssignmentStatement
         val newValue =
-            solveExpression(assignment.value, env, semantics)
+            solveExpression(assignmentStatement.value, env, semantics)
                 .getOrReturn { return Failure(it) }
 
         if (newValue.returnValue == null) return Failure(RuntimeError.MISSING_ASSIGNATION)
 
         val newEnv =
             env
-                .changeVariable(assignment.id, newValue.returnValue.toLiteral())
+                .changeVariable(assignmentStatement.id, newValue.returnValue.toLiteral())
                 .getOrReturn { return Failure(it) }
 
         return Success(Pair(newEnv, events + newValue.events))

@@ -14,7 +14,7 @@ import testframework.createVariableExpression
 
 // ------------------ Assignment ------------------------------
 
-class AssignmentTests {
+class AssignmentStatementTests {
     // ---- Grupo A: combinaciones de reglas activas/inactivas ----
 
     @Test

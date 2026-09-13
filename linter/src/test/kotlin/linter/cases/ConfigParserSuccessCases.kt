@@ -8,12 +8,12 @@ internal object ConfigParserSuccessCases {
         listOf(
             ConfigParserSuccessCase(
                 name = "parse default config from resources",
-                execute = { parser -> parser.parseDefault() },
+                execute = { parser -> parser.parseDefault("1.0") },
                 expectedRulesCount = 2,
             ),
             ConfigParserSuccessCase(
                 name = "parse or default with null stream falls back to default",
-                execute = { parser -> parser.parseOrDefault(null) },
+                execute = { parser -> parser.parseOrDefault(null, "1.0") },
                 expectedRulesCount = 2,
             ),
             ConfigParserSuccessCase(
@@ -31,7 +31,7 @@ internal object ConfigParserSuccessCases {
                           ]
                         }
                         """.trimIndent()
-                    parser.parseOrDefault(json.byteInputStream())
+                    parser.parseOrDefault(json.byteInputStream(), "1.0")
                 },
                 expectedRulesCount = 1,
             ),
@@ -54,7 +54,7 @@ internal object ConfigParserSuccessCases {
                           ]
                         }
                         """.trimIndent()
-                    parser.parse(json)
+                    parser.parse(json, "1.0")
                 },
                 expectedRulesCount = 1,
             ),
@@ -75,7 +75,7 @@ internal object ConfigParserSuccessCases {
                         }
                         """.trimIndent(),
                     )
-                    parser.parse(tempFile)
+                    parser.parse(tempFile, "1.0")
                 },
                 expectedRulesCount = 1,
             ),
@@ -83,7 +83,7 @@ internal object ConfigParserSuccessCases {
                 name = "parse empty rules list",
                 execute = { parser ->
                     val json = """{ "rules": [] }"""
-                    parser.parse(json)
+                    parser.parse(json, "1.0")
                 },
                 expectedRulesCount = 0,
             ),
@@ -102,7 +102,25 @@ internal object ConfigParserSuccessCases {
                           ]
                         }
                         """.trimIndent()
-                    parser.parse(json)
+                    parser.parse(json, "1.0")
+                },
+                expectedRulesCount = 1,
+            ),
+            ConfigParserSuccessCase(
+                name = "parse config with readInput rule in version 1.1",
+                execute = { parser ->
+                    val json =
+                        """
+                        {
+                          "rules": [
+                            {
+                              "name": "readInput-no-expression",
+                              "enabled": true
+                            }
+                          ]
+                        }
+                        """.trimIndent()
+                    parser.parse(json, "1.1")
                 },
                 expectedRulesCount = 1,
             ),
