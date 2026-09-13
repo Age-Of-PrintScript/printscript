@@ -50,5 +50,15 @@ internal object RuleRegistrySuccessCases {
                     ),
                 expectedClass = CallArgumentRule::class,
             ),
+            RuleRegistrySuccessCase(
+                name = "build readInput-no-expression in version 1.1",
+                entry =
+                    RuleConfigEntry(
+                        name = "readInput-no-expression",
+                        enabled = true,
+                    ),
+                expectedClass = CallArgumentRule::class,
+                version = "1.1",
+            ),
         )
 }
