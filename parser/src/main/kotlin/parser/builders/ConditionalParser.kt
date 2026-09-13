@@ -47,7 +47,7 @@ class ConditionalParser(
             .consumeExpected(OpenBraces::class, SyntaxError.INVALID_TOKEN)
             .getOrReturn { return Failure(it) }
 
-        val blockTokens = consumer.consumeUntil(CloseBraces::class)
+        val blockTokens = consumer.consumeBalancedUntil(OpenBraces::class, CloseBraces::class)
 
         consumer
             .consumeExpected(CloseBraces::class, SyntaxError.INVALID_TOKEN)

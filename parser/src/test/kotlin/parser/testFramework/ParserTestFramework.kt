@@ -40,7 +40,14 @@ internal class ParserFileTests {
         val statementParsers: List<StatementParser> =
             when (version) {
                 "1.0" -> v10Parsers
-                "1.1" -> v10Parsers + ConditionalParser(BlockParser(v10Parsers), expressionParser)
+                "1.1" -> {
+                    val v11Parsers = mutableListOf<StatementParser>()
+                    val v11BlockParser = BlockParser(v11Parsers)
+                    val conditionalParser = ConditionalParser(v11BlockParser, expressionParser)
+                    v11Parsers.addAll(v10Parsers)
+                    v11Parsers.add(conditionalParser)
+                    v11Parsers
+                }
                 else -> throw IllegalArgumentException("Versión no soportada: $version")
             }
         return Parser.new(statementParsers)
