@@ -89,7 +89,7 @@ internal object LinterSuccessCases {
                         }
                         """.trimIndent(),
                     )
-                    Linter.fromConfigFile(tempFile)
+                    Linter.fromConfig(tempFile.inputStream())
                 },
                 source = "println(5 * 2);",
                 expectedWarningsCount = 1,
@@ -116,8 +116,8 @@ internal object LinterSuccessCases {
             LinterTestCase(
                 name = "fromRules with programmatically parsed config",
                 linterProvider = {
-                    val rulesConfig = ConfigParser().parseDefault()
-                    Linter.fromRules(rulesConfig)
+                    val rulesConfig = ConfigParser().parseDefault("1.0")
+                    Linter.fromRules(rulesConfig, "1.0")
                 },
                 source = "let MyVar: string = \"test\";",
                 expectedWarningsCount = 1,

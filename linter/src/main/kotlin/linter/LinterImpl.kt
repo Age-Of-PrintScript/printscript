@@ -1,62 +1,67 @@
 package linter
 
-import domain.Position
 import domain.getOrReturn
 import lexer.Lexer
 import lexer.Lexicon
 import parser.Parser
 import versionfactory.PSVersion
-import java.io.File
 import java.io.InputStream
 
 interface Linter {
-    fun analyse(
-        source: String,
-        version: String? = null,
-    ): List<Warning>
+    val version: String
+
+    fun analyse(source: String): List<Warning>
 
     companion object {
-        fun createDefault(): Linter {
-            val config = ConfigParser().parseDefault()
-            return LinterImpl(config)
+        fun createDefault(version: String = "1.0"): Linter {
+            val config = ConfigParser().parseDefault(version)
+            return fromRules(config, version)
         }
 
-        fun fromConfig(inputStream: InputStream): Linter {
-            val config = ConfigParser().parse(inputStream)
-            return LinterImpl(config)
+        fun fromConfig(
+            inputStream: InputStream,
+            version: String = "1.0",
+        ): Linter {
+            val config = ConfigParser().parse(inputStream, version)
+            return fromRules(config, version)
         }
 
-        fun fromConfigFile(file: File): Linter = fromConfig(file.inputStream())
-
-        fun fromJson(jsonContent: String): Linter {
-            val config = ConfigParser().parse(jsonContent)
-            return LinterImpl(config)
+        fun fromJson(
+            jsonContent: String,
+            version: String = "1.0",
+        ): Linter {
+            val config = ConfigParser().parse(jsonContent, version)
+            return fromRules(config, version)
         }
 
-        internal fun fromRules(rulesConfig: RulesConfig): Linter = LinterImpl(rulesConfig)
+        internal fun fromRules(
+            rulesConfig: RulesConfig,
+            version: String = "1.0",
+        ): Linter {
+            val psVersion =
+                PSVersion.getVersion(version).getOrReturn {
+                    throw IllegalArgumentException("Unsupported version: $version")
+                }
+            val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
+            val parser = Parser.new(psVersion.statementParsers)
+            return LinterImpl(
+                version,
+                rulesConfig,
+                lexer = lexer,
+                parser = parser,
+            )
+        }
     }
 }
 
 internal class LinterImpl(
+    override val version: String,
     private val rulesConfig: RulesConfig,
+    private val lexer: Lexer,
+    private val parser: Parser,
     private val analyser: Analyser = Analyser(),
 ) : Linter {
-    override fun analyse(
-        source: String,
-        version: String?,
-    ): List<Warning> {
-        val psVersion =
-            if (version != null) {
-                PSVersion.getVersion(version).getOrReturn {
-                    return listOf(Warning(it.message, Position(0, 0)))
-                }
-            } else {
-                PSVersion.getLatestVersion()
-            }
-
-        val lexer: Lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
-        val parser: Parser = Parser.new(psVersion.statementParsers)
-
+    override fun analyse(source: String): List<Warning> {
         val tokens = lexer.tokenize(source).getOrReturn { return listOf(Warning.fromError(it)) }
         val program = parser.parse(tokens).getOrReturn { return listOf(Warning.fromError(it)) }
         return analyser.analyse(program, rulesConfig)

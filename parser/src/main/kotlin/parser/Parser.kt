@@ -1,6 +1,5 @@
 package parser
 
-import ast.AST
 import ast.Program
 import domain.Either
 import domain.Failure
@@ -15,12 +14,12 @@ interface Parser {
     fun parse(tokens: List<Token>): Either<SyntaxError, Program>
 
     companion object {
-        fun new(statementParsers: List<StatementParser>): Parser = ParserImpl(statementParsers)
+        fun new(statementParsers: List<StatementParser>): Parser = ParserImpl(BlockParser(statementParsers))
     }
 }
 
 internal class ParserImpl(
-    private val statementParsers: List<StatementParser>,
+    private val blockParser: BlockParser,
 ) : Parser {
     override fun parse(tokens: List<Token>): Either<SyntaxError, Program> {
         val cleanTokens = tokens.filterNot { it.type is Whitespace }
@@ -29,17 +28,8 @@ internal class ParserImpl(
         }
 
         val consumer = TokenConsumer(cleanTokens)
-        val statements = mutableListOf<AST>()
 
-        while (consumer.hasNext()) {
-            val nextToken = consumer.peek()
-            val parser =
-                statementParsers.firstOrNull { it.canParse(nextToken.type) }
-                    ?: return Failure(SyntaxError.INVALID_TOKEN)
-
-            val statement = parser.parse(consumer).getOrReturn { return Failure(it) }
-            statements.add(statement)
-        }
+        val statements = blockParser.parse(consumer).getOrReturn { return Failure(it) }
 
         return Success(
             Program(

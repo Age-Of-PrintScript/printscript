@@ -16,8 +16,6 @@ class TokenConsumer(
 
     fun peek(): Token = tokens[position]
 
-    fun peekOrNull(): Token? = tokens.getOrNull(position)
-
     fun consume(): Token = tokens[position++]
 
     fun consumeIf(expectedType: KClass<out TokenType>): Token? {
@@ -42,6 +40,31 @@ class TokenConsumer(
         val accumulated = mutableListOf<Token>()
         while (hasNext() && !delimiterType.isInstance(peek().type)) {
             accumulated.add(consume())
+        }
+        return accumulated
+    }
+
+    fun consumeBalancedUntil(
+        openDelimiter: KClass<out TokenType>,
+        closeDelimiter: KClass<out TokenType>,
+    ): List<Token> {
+        val accumulated = mutableListOf<Token>()
+        var depth = 1
+        while (hasNext() && depth > 0) {
+            val token = peek()
+            when {
+                openDelimiter.isInstance(token.type) -> {
+                    depth++
+                    accumulated.add(consume())
+                }
+                closeDelimiter.isInstance(token.type) -> {
+                    depth--
+                    if (depth > 0) {
+                        accumulated.add(consume())
+                    }
+                }
+                else -> accumulated.add(consume())
+            }
         }
         return accumulated
     }

@@ -1,3 +1,4 @@
+1.0
 # Input
 IDENTIFIER: X
 ASSIGN

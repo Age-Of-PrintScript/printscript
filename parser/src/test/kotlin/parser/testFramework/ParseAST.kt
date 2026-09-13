@@ -1,7 +1,9 @@
 package parser.testFramework
 
 import ast.AST
+import ast.Block
 import ast.Expression
+import domain.BoolType
 import domain.NumType
 import domain.PSType
 import domain.StrType
@@ -40,26 +42,71 @@ private fun parseAST(
         "DECLARATION" -> {
             val id = getContent(lines, index + 1)
             val type = parsePSType(getContent(lines, index + 2))
-            createDeclaration(index + 3, lines, childDepth, id, type)
+            createDeclaration(lines, index + 3, id, type, isMutable = true)
         }
+        "CONST_DECLARATION" -> {
+            val id = getContent(lines, index + 1)
+            val type = parsePSType(getContent(lines, index + 2))
+            createDeclaration(lines, index + 3, id, type, isMutable = false)
+        }
+
         "ASSIGNMENT" -> {
             val id = getContent(lines, index + 1)
             val (value, next) = parseExpression(lines, index + 2)
             AST.AssignmentStatement(id, value) to next
         }
         "CALL" -> {
-            val functionName = getContent(lines, index + 1).lowercase()
-            val (arg, next) = parseExpression(lines, index + 2)
-            AST.ExpressionStatement(Expression.Call(functionName, listOf(arg))) to next
+            val (callExpr, next) = getCall(lines, index)
+            AST.ExpressionStatement(callExpr) to next
         }
+        "CONDITIONAL" -> parseConditional(lines, index, childDepth)
         else -> throw IllegalArgumentException("AST desconocido: ${head.content}")
     }
+}
+
+private fun parseConditional(
+    lines: List<Line>,
+    index: Int,
+    childDepth: Int,
+): Pair<AST.ConditionalStatement, Int> {
+    val (condition, afterCondition) = parseExpression(lines, index + 1)
+    require(afterCondition < lines.size && lines[afterCondition].content == "THEN") {
+        "Se esperaba THEN en condicional"
+    }
+    val (thenBlock, afterThen) = parseBlock(lines, afterCondition + 1, childDepth + 1)
+
+    if (afterThen < lines.size && lines[afterThen].content == "ELSE") {
+        val (elseBlock, afterElse) = parseBlock(lines, afterThen + 1, childDepth + 1)
+        return AST.ConditionalStatement(condition, thenBlock, elseBlock) to afterElse
+    }
+
+    return AST.ConditionalStatement(condition, thenBlock, null) to afterThen
+}
+
+private fun parseBlock(
+    lines: List<Line>,
+    startIndex: Int,
+    blockDepth: Int,
+): Pair<Block, Int> {
+    val statements = mutableListOf<AST>()
+    var i = startIndex
+    while (i < lines.size && lines[i].depth >= blockDepth) {
+        if (lines[i].depth == blockDepth) {
+            val (stmt, next) = parseAST(lines, i)
+            statements.add(stmt)
+            i = next
+        } else {
+            i++
+        }
+    }
+    return Block(statements) to i
 }
 
 private fun parsePSType(name: String): PSType =
     when (name.uppercase()) {
         "NUMBER" -> NumType
         "STRING" -> StrType
+        "BOOLEAN" -> BoolType
         else -> throw IllegalArgumentException("Tipo desconocido: $name")
     }
 
@@ -74,22 +121,49 @@ private fun parseExpression(
         line.content.startsWith("LITERAL") -> getLiteral(line, index)
         line.content.startsWith("VARIABLE") ->
             Expression.Variable(getValue(line)) to index + 1
+        line.content.startsWith("CALL") -> getCall(lines, index)
         else -> throw IllegalArgumentException("Expression desconocida: ${line.content}")
     }
 }
 
-private fun createDeclaration(
-    index: Int,
+private fun getCall(
     lines: List<Line>,
-    childDepth: Int,
+    index: Int,
+): Pair<Expression.Call, Int> {
+    val line = lines[index]
+    val afterCall = line.content.removePrefix("CALL").trim()
+    if (afterCall.isNotEmpty()) {
+        val functionName = afterCall.lowercase()
+        val childDepth = line.depth + 1
+        if (index + 1 < lines.size && lines[index + 1].depth == childDepth) {
+            val (arg, next) = parseExpression(lines, index + 1)
+            return Expression.Call(functionName, listOf(arg)) to next
+        }
+        return Expression.Call(functionName, emptyList()) to index + 1
+    } else {
+        val functionName = getContent(lines, index + 1).lowercase()
+        val childDepth = line.depth + 1
+        if (index + 2 < lines.size && lines[index + 2].depth == childDepth) {
+            val (arg, next) = parseExpression(lines, index + 2)
+            return Expression.Call(functionName, listOf(arg)) to next
+        }
+        return Expression.Call(functionName, emptyList()) to index + 2
+    }
+}
+
+private fun createDeclaration(
+    lines: List<Line>,
+    index: Int,
     id: String,
     type: PSType,
+    isMutable: Boolean = true,
 ): Pair<AST.DeclarationStatement, Int> {
+    val childDepth = lines[index - 3].depth + 1
     if (index < lines.size && lines[index].depth == childDepth) {
         val (value, next) = parseExpression(lines, index)
-        return AST.DeclarationStatement(id, type, mutable = true, value = value) to next
+        return AST.DeclarationStatement(id, type, mutable = isMutable, value = value) to next
     } else {
-        return AST.DeclarationStatement(id, type, mutable = true, value = null) to index
+        return AST.DeclarationStatement(id, type, mutable = isMutable, value = null) to index
     }
 }
 
