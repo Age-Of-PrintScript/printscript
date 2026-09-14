@@ -22,7 +22,7 @@ interface Formatter {
         fun new(
             config: ConfigProvider,
             psVersion: String,
-        ) = FormatterExecutor(config, psVersion)
+        ): Formatter = FormatterExecutor(config, psVersion)
     }
 }
 
