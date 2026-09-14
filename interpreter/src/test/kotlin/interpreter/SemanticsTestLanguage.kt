@@ -9,6 +9,7 @@ import domain.PSOperator
 import domain.StrType
 import domain.Success
 import interpreter.statement.AssignmentEvaluator
+import interpreter.statement.ConditionalEvaluator
 import interpreter.statement.DeclarationEvaluator
 import interpreter.statement.ExpressionStatementEvaluator
 import interpreter.statement.StatementEvaluator
@@ -126,6 +127,7 @@ val testStatementEvaluators: Map<ASTType, StatementEvaluator> =
         ASTType.DECLARATION to DeclarationEvaluator(),
         ASTType.ASSIGNMENT to AssignmentEvaluator(),
         ASTType.EXPRESSION_STATEMENT to ExpressionStatementEvaluator(),
+        ASTType.CONDITIONAL to ConditionalEvaluator(),
     )
 
 val testStrToNum =
