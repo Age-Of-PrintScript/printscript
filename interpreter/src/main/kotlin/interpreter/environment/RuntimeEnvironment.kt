@@ -26,14 +26,10 @@ data class RuntimeEnvironment(
         value: PSLiteral?,
         mutable: Boolean,
     ): Either<RuntimeError, RuntimeEnvironment> {
-        if (variableMap.containsKey(id)) return Failure(RuntimeError.VARIABLE_ALREADY_DEFINED)
+        if (containsVariable(id)) return Failure(RuntimeError.VARIABLE_ALREADY_DEFINED)
         return Success(
             RuntimeEnvironment(
-                variableMap
-                    .toMutableMap()
-                    .apply {
-                        put(id, VariableInfo(type, value, mutable))
-                    }.toMap(),
+                variableMap + (id to VariableInfo(type, value, mutable)),
             ),
         )
     }
@@ -42,7 +38,7 @@ data class RuntimeEnvironment(
         id: String,
         value: PSLiteral,
     ): Either<RuntimeError, RuntimeEnvironment> {
-        if (!variableExists(id)) return Failure(RuntimeError.VARIABLE_DOESNT_EXIST)
+        if (!containsVariable(id)) return Failure(RuntimeError.VARIABLE_DOESNT_EXIST)
 
         val prevValue = variableMap.getValue(id)
 
@@ -52,21 +48,10 @@ data class RuntimeEnvironment(
 
         return Success(
             RuntimeEnvironment(
-                variableMap
-                    .toMutableMap()
-                    .apply {
-                        put(id, updateValue(prevValue, value))
-                    }.toMap(),
+                variableMap + (id to VariableInfo(value.type, value, true)),
             ),
         )
     }
-
-    private fun updateValue(
-        prevValue: VariableInfo,
-        value: PSLiteral,
-    ): VariableInfo = prevValue.copy(value = value)
-
-    private fun variableExists(id: String): Boolean = variableMap.containsKey(id)
 
     private fun hasDifferentType(
         prevValue: VariableInfo,
