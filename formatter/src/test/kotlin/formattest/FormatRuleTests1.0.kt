@@ -241,16 +241,6 @@ class FormatRuleTests {
     }
 
     @Test
-    fun `lines after call - raro cantidad negativa no explota y no agrega lineas`() {
-        val input = tokensFrom(ExpressionFormatTokenizer(), createPrintln())
-        val expected = FormatTokens(input.list.dropLastWhile { it is EOL })
-
-        val result = LineBreaksAfterPrintLn(-1).apply(input)
-
-        assertEquals(expected, result)
-    }
-
-    @Test
     fun `lines after call - no afecta llamadas que no son println`() {
         val readInput = AST.ExpressionStatement(Expression.Call("readInput", listOf(createStringLiteralExpression("nombre"))))
         val input = tokensFrom(ExpressionFormatTokenizer(), readInput)

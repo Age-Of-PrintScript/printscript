@@ -18,7 +18,19 @@ private fun isText(
 
 data class FormatRules(
     val list: List<FormatRule>,
-)
+) {
+    fun add(rule: FormatRule): FormatRules {
+        val newList = list.toMutableList()
+        newList.add(rule)
+        return FormatRules(newList)
+    }
+
+    fun remove(rule: FormatRule): FormatRules {
+        val newList = list.toMutableList()
+        newList.remove(rule)
+        return FormatRules(newList)
+    }
+}
 
 class EnsureSpaceAroundEquals(
     val activated: Boolean,
@@ -106,7 +118,7 @@ class LineBreaksAfterPrintLn(
         FormatTokens(
             splitIntoLines(tokens.list).flatMap { line ->
                 if (isText(line.first(), "println")) {
-                    line.dropLastWhile { it is EOL } + List((lines.toInt() + 1)) { EOL }
+                    line.dropLastWhile { it is EOL } + List((lines.toInt().coerceAtLeast(0) + 1)) { EOL }
                 } else {
                     line
                 }
