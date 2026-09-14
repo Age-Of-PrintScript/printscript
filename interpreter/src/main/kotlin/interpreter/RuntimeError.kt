@@ -15,6 +15,8 @@ enum class RuntimeError(
     INVALID_CAST("Cannot cast value to the expected type"),
     VARIABLE_NOT_MUTABLE("Variable is not mutable"),
     MISSING_IF_CONDITION("Condition not found"),
+    MISSING_ARGUMENT("Missing required argument"),
+    ENV_VARIABLE_NOT_FOUND("Environment variable not found"),
     ;
 
     override fun getMessage(): String = reason

@@ -1,6 +1,7 @@
 package cli.adapters
 
 import engine.EngineIO
+import engine.EnvProvider
 import engine.InputProvider
 import engine.PrintEmitter
 
@@ -17,8 +18,13 @@ object ConsoleInput : InputProvider {
     }
 }
 
+object ConsoleEnv : EnvProvider {
+    override fun readEnv(key: String): String? = System.getenv(key)
+}
+
 val engineIO: EngineIO =
     EngineIO(
         ConsolePrinter,
         ConsoleInput,
+        ConsoleEnv,
     )
