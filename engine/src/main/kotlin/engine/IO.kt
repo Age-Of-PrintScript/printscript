@@ -1,8 +1,6 @@
 package engine
 
-import interpreter.InputProvider
 import interpreter.InterpreterIO
-import interpreter.PrintEmitter
 
 fun interface PrintEmitter {
     fun print(message: String)
