@@ -1,17 +1,17 @@
 package cli.adapters
 
 import engine.EngineIO
+import engine.EngineInputProvider
+import engine.EnginePrintEmitter
 import engine.EnvProvider
-import engine.InputProvider
-import engine.PrintEmitter
 
-object ConsolePrinter : PrintEmitter {
+object ConsolePrinter : EnginePrintEmitter {
     override fun print(message: String) {
         println(message)
     }
 }
 
-object ConsoleInput : InputProvider {
+object ConsoleInput : EngineInputProvider {
     override fun readInput(prompt: String): String {
         print(prompt)
         return readln()
