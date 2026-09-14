@@ -35,9 +35,7 @@ class FormatterExecutor(
         configPath: String,
     ): FormatResult<String, String> {
         val psVersion =
-            PSVersion.getVersion(psVersion).getOrReturn {
-                throw IllegalArgumentException("Unsupported version: $psVersion")
-            }
+            PSVersion.getVersion(psVersion).getOrReturn { return FormatError("Unknown version") }
 
         val source = file.readText()
 
