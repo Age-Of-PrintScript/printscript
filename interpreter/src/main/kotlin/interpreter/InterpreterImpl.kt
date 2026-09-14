@@ -5,7 +5,7 @@ import domain.Either
 import interpreter.environment.RuntimeEnvironment
 
 internal class InterpreterImpl(
-    val semantics: LanguageSemantics,
+    private val semantics: LanguageSemantics,
 ) : Interpreter {
     override fun execute(
         program: Program,

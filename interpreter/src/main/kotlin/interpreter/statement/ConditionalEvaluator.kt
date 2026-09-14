@@ -25,11 +25,11 @@ class ConditionalEvaluator : StatementEvaluator {
             solveExpression(conditional.condition, env, io, semantics)
                 .getOrReturn { return Failure(it) }
                 ?: return Failure(RuntimeError.MISSING_IF_CONDITION)
-
-        if (condition.type !is BoolType) return Failure(RuntimeError.MISSING_IF_CONDITION)
+        val type = condition.type
+        if (type !is BoolType) return Failure(RuntimeError.MISSING_IF_CONDITION)
 
         val blockToExecute =
-            if (condition.raw == "true") {
+            if (type.isTrue(condition.raw)) {
                 conditional.ifBlock
             } else {
                 conditional.elseBlock ?: return Success(env)
