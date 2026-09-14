@@ -1,7 +1,7 @@
 package interpreter.cases
 
-import ast.Expression
 import domain.NumType
+import domain.PSLiteral
 import domain.StrType
 import interpreter.environment.RuntimeEnvironment
 import interpreter.environment.VariableInfo
@@ -14,7 +14,7 @@ val ENV_WITH_X_EQUAL_TO_5 =
             "x" to
                 VariableInfo(
                     NumType,
-                    Expression.Literal("5", NumType),
+                    PSLiteral("5", NumType),
                 ),
         ),
     )
@@ -25,7 +25,7 @@ val ENV_WITH_X_EQUAL_TO_10 =
             "x" to
                 VariableInfo(
                     NumType,
-                    Expression.Literal("10", NumType),
+                    PSLiteral("10", NumType),
                 ),
         ),
     )
@@ -36,7 +36,7 @@ val ENV_WITH_X_EQUAL_TO_2 =
             "x" to
                 VariableInfo(
                     NumType,
-                    Expression.Literal("2", NumType),
+                    PSLiteral("2", NumType),
                 ),
         ),
     )
@@ -47,7 +47,7 @@ val ENV_WITH_X_STRING_HOLA =
             "x" to
                 VariableInfo(
                     StrType,
-                    Expression.Literal("hola", StrType),
+                    PSLiteral("hola", StrType),
                 ),
         ),
     )
@@ -80,7 +80,7 @@ val ENV_WITH_A_EQUAL_TO_1 =
             "a" to
                 VariableInfo(
                     NumType,
-                    Expression.Literal("1", NumType),
+                    PSLiteral("1", NumType),
                 ),
         ),
     )
@@ -91,12 +91,12 @@ val ENV_WITH_X_5_AND_A_1 =
             "x" to
                 VariableInfo(
                     NumType,
-                    Expression.Literal("5", NumType),
+                    PSLiteral("5", NumType),
                 ),
             "a" to
                 VariableInfo(
                     NumType,
-                    Expression.Literal("1", NumType),
+                    PSLiteral("1", NumType),
                 ),
         ),
     )
@@ -107,12 +107,12 @@ val ENV_WITH_X_5_AND_Y_5 =
             "x" to
                 VariableInfo(
                     NumType,
-                    Expression.Literal("5", NumType),
+                    PSLiteral("5", NumType),
                 ),
             "y" to
                 VariableInfo(
                     NumType,
-                    Expression.Literal("5", NumType),
+                    PSLiteral("5", NumType),
                 ),
         ),
     )

@@ -2,13 +2,10 @@ package interpreter
 
 import domain.Either
 import domain.PSLiteral
-import interpreter.environment.Event
 
 fun interface BuiltInFunction {
-    fun execute(args: List<PSLiteral>): Either<RuntimeError, FunctionResult>
+    fun execute(
+        args: List<PSLiteral>,
+        io: InterpreterIO,
+    ): Either<RuntimeError, PSLiteral?>
 }
-
-data class FunctionResult(
-    val returnValue: PSLiteral? = null,
-    val events: List<Event> = emptyList(),
-)

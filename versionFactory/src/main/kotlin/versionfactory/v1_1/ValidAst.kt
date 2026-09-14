@@ -1,6 +1,7 @@
 package versionfactory.v1_1
 
 import ast.ASTType
+import interpreter.statement.ConditionalEvaluator
 import interpreter.statement.StatementEvaluator
 import parser.BlockParser
 import parser.ExpressionParser
@@ -22,4 +23,4 @@ internal val v1_1StatementParsers: List<StatementParser> =
     }
 
 internal val v1_1StatementEvaluators: Map<ASTType, StatementEvaluator> =
-    v1_0StatementEvaluators
+    v1_0StatementEvaluators + mapOf(ASTType.CONDITIONAL to ConditionalEvaluator())

@@ -72,4 +72,18 @@ val FAILURE_CASES =
                 ),
             expectedFailure = RuntimeError.MATH_ERROR,
         ),
+        FailureCase(
+            name = "reassignment to immutable variable",
+            program =
+                Program(
+                    listOf(DECLARATION_Statement_X_NUMBER_5_IMMUTABLE, ASSIGNMENT_Statement_X_TO_10),
+                    POS, POS,
+                ),
+            expectedFailure = RuntimeError.VARIABLE_NOT_MUTABLE,
+        ),
+        FailureCase(
+            name = "if condition is not a boolean",
+            program = Program(listOf(IF_NON_BOOLEAN_CONDITION), POS, POS),
+            expectedFailure = RuntimeError.MISSING_IF_CONDITION,
+        ),
     )

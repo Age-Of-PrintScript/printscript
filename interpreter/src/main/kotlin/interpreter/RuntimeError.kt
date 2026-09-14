@@ -12,6 +12,9 @@ enum class RuntimeError(
     STRING_REPETITION_REQUIRES_INT("string repetition requires a positive integer"),
     MISSING_ASSIGNATION("Variable cannot be assigned to void"),
     MISSING_EVALUATOR_FOR_AST("AST evaluator not found"),
+    INVALID_CAST("Cannot cast value to the expected type"),
+    VARIABLE_NOT_MUTABLE("Variable is not mutable"),
+    MISSING_IF_CONDITION("Condition not found"),
     ;
 
     override fun getMessage(): String = reason
