@@ -16,7 +16,7 @@ interface Formatter {
     fun execute(
         file: File,
         configPath: String,
-    ): Either<Error, String>
+    ): FormatResult<String, String>
 
     companion object {
         fun new(
@@ -33,7 +33,7 @@ class FormatterExecutor(
     override fun execute(
         file: File,
         configPath: String,
-    ): Either<Error, String> {
+    ): FormatResult<String, String> {
         val psVersion =
             PSVersion.getVersion(psVersion).getOrReturn {
                 throw IllegalArgumentException("Unsupported version: $psVersion")
@@ -44,18 +44,18 @@ class FormatterExecutor(
         val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
         val parser = Parser.new(psVersion.statementParsers)
 
-        val tokens = lexer.tokenize(source).getOrReturn { return Failure(it) }
-        val program = parser.parse(tokens).getOrReturn { return Failure(it) }
+        val tokens = lexer.tokenize(source).getOrReturn { return FormatError(it.getMessage()) }
+        val program = parser.parse(tokens).getOrReturn { return FormatError(it.getMessage()) }
 
-        val providedConfig = applyJsonConfig(config, File(configPath)).getOrReturn { return Failure(it) }
+        val providedConfig = applyJsonConfig(config, File(configPath)).getOrReturn { return FormatError(it.getMessage()) }
 
         val result = StringBuilder()
         for (ast in program.trees) {
-            val formatter = formatterFor(ast, providedConfig).getOrReturn { return Failure(it) }
-            val piece = formatter.format(ast).getOrReturn { return Failure(it) }
+            val formatter = formatterFor(ast, providedConfig).getOrReturn { return FormatError(it.getMessage()) }
+            val piece = formatter.format(ast).getOrReturn { return FormatError(it.getMessage()) }
             result.append(piece)
         }
-        return Success(result.toString())
+        return FormatSuccess(result.toString())
     }
 
     private fun formatterFor(
