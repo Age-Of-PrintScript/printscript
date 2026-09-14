@@ -28,10 +28,22 @@ val readInputFunction =
         Success(PSLiteral(input, StrType))
     }
 
+val readEnvFunction =
+    BuiltInFunction { args, io ->
+        val key =
+            args.firstOrNull()?.raw
+                ?: return@BuiltInFunction domain.Failure(RuntimeError.MISSING_ARGUMENT)
+        val value =
+            io.envProvider.readEnv(key)
+                ?: return@BuiltInFunction domain.Failure(RuntimeError.ENV_VARIABLE_NOT_FOUND)
+        domain.Success(PSLiteral(value, StrType))
+    }
+
 val testBuiltInFunctions: Map<String, BuiltInFunction> =
     mapOf(
         "println" to printlnFunction,
         "readInput" to readInputFunction,
+        "readEnv" to readEnvFunction,
     )
 
 enum class Operators(
