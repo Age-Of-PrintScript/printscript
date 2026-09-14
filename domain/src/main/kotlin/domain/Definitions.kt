@@ -6,6 +6,8 @@ interface PSType {
 
 object BoolType : PSType {
     override val name = "boolean"
+
+    fun isTrue(raw: String): Boolean = raw == "true"
 }
 
 object StrType : PSType {

@@ -126,4 +126,28 @@ val SUCCESS_CASES =
             expectedEnv = ENV_WITH_X_EQUAL_TO_10,
             expectedEvents = EVENTS_WITH_PRINT_5_THEN_10,
         ),
+        SuccessCase(
+            name = "if true executes the if block",
+            program = Program(listOf(IF_TRUE_DECLARE_X_5), POS, POS),
+            expectedEnv = ENV_WITH_X_EQUAL_TO_5,
+            expectedEvents = EMPTY_EVENTS,
+        ),
+        SuccessCase(
+            name = "if false skips the if block (no else)",
+            program = Program(listOf(IF_FALSE_DECLARE_X_5), POS, POS),
+            expectedEnv = EMPTY_ENV,
+            expectedEvents = EMPTY_EVENTS,
+        ),
+        SuccessCase(
+            name = "if true with else executes the if block",
+            program = Program(listOf(IF_TRUE_PRINTLN_HOLA_ELSE_PRINTLN_MUNDO), POS, POS),
+            expectedEnv = EMPTY_ENV,
+            expectedEvents = EVENTS_WITH_PRINT_HOLA,
+        ),
+        SuccessCase(
+            name = "if false with else executes the else block",
+            program = Program(listOf(IF_FALSE_PRINTLN_HOLA_ELSE_PRINTLN_MUNDO), POS, POS),
+            expectedEnv = EMPTY_ENV,
+            expectedEvents = EVENTS_WITH_PRINT_MUNDO,
+        ),
     )

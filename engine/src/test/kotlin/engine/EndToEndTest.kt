@@ -58,12 +58,15 @@ class EndToEndTest {
     @Test
     fun `sequential executions preserve execution context`() {
         val logger1 = TestLogger()
-        val result1 = engine.execute("let x: number = 42;", logger1)
+        val io1 = EngineIO(emitter = {}, provider = { "" })
+        val result1 = engine.execute("let x: number = 42;", io1, logger1)
         assertEquals(ExitCode.SUCCESS, result1.exitCode)
 
         val logger2 = TestLogger()
-        val result2 = engine.execute("println(x);", logger2, result1.context)
+        val prints2 = mutableListOf<String>()
+        val io2 = EngineIO(emitter = { prints2.add(it) }, provider = { "" })
+        val result2 = engine.execute("println(x);", io2, logger2, result1.context)
         assertEquals(ExitCode.SUCCESS, result2.exitCode)
-        assertEquals(listOf("42"), logger2.getPrints())
+        assertEquals(listOf("42"), prints2)
     }
 }

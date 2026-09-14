@@ -1,10 +1,10 @@
 package interpreter.environment
 
-import ast.Expression.Literal
+import domain.PSLiteral
 import domain.PSType
 
 data class VariableInfo(
     val type: PSType,
-    val value: Literal?,
+    val value: PSLiteral?,
     val mutable: Boolean = true,
 )

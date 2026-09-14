@@ -2,18 +2,12 @@ package versionfactory.v1_0
 
 import domain.Success
 import interpreter.BuiltInFunction
-import interpreter.FunctionResult
-import interpreter.environment.PrintEvent
 
 internal val printlnFunction =
-    BuiltInFunction { args ->
+    BuiltInFunction { args, io ->
         val message = if (args.isNotEmpty()) args.first().raw else ""
-        Success(
-            FunctionResult(
-                returnValue = null,
-                events = listOf(PrintEvent(message)),
-            ),
-        )
+        io.emitter.print(message)
+        Success(null)
     }
 
 internal val v1_0builtInFunctions: Map<String, BuiltInFunction> =

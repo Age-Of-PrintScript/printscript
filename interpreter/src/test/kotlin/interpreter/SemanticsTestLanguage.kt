@@ -1,32 +1,37 @@
 package interpreter
 
 import ast.ASTType
+import domain.BoolType
 import domain.Failure
 import domain.NumType
 import domain.PSLiteral
 import domain.PSOperator
 import domain.StrType
 import domain.Success
-import interpreter.environment.PrintEvent
 import interpreter.statement.AssignmentEvaluator
+import interpreter.statement.ConditionalEvaluator
 import interpreter.statement.DeclarationEvaluator
 import interpreter.statement.ExpressionStatementEvaluator
 import interpreter.statement.StatementEvaluator
 
 val printlnFunction =
-    BuiltInFunction { args ->
+    BuiltInFunction { args, io ->
         val message = if (args.isNotEmpty()) args.first().raw else ""
-        Success(
-            FunctionResult(
-                returnValue = null,
-                events = listOf(PrintEvent(message)),
-            ),
-        )
+        io.emitter.print(message)
+        Success(null)
+    }
+
+val readInputFunction =
+    BuiltInFunction { args, io ->
+        val prompt = if (args.isNotEmpty()) args.first().raw else ""
+        val input = io.provider.readInput(prompt)
+        Success(PSLiteral(input, StrType))
     }
 
 val testBuiltInFunctions: Map<String, BuiltInFunction> =
     mapOf(
         "println" to printlnFunction,
+        "readInput" to readInputFunction,
     )
 
 enum class Operators(
@@ -122,6 +127,29 @@ val testStatementEvaluators: Map<ASTType, StatementEvaluator> =
         ASTType.DECLARATION to DeclarationEvaluator(),
         ASTType.ASSIGNMENT to AssignmentEvaluator(),
         ASTType.EXPRESSION_STATEMENT to ExpressionStatementEvaluator(),
+        ASTType.CONDITIONAL to ConditionalEvaluator(),
+    )
+
+val testStrToNum =
+    TypeCast { value ->
+        val num =
+            value.raw.toDoubleOrNull()
+                ?: return@TypeCast Failure(RuntimeError.INVALID_CAST)
+        Success(PSLiteral(num.toString(), NumType))
+    }
+
+val testStrToBool =
+    TypeCast { value ->
+        val bool =
+            value.raw.toBooleanStrictOrNull()
+                ?: return@TypeCast Failure(RuntimeError.INVALID_CAST)
+        Success(PSLiteral(bool.toString(), BoolType))
+    }
+
+val testTypeCasters: Map<CastKey, TypeCast> =
+    mapOf(
+        CastKey(StrType, NumType) to testStrToNum,
+        CastKey(StrType, BoolType) to testStrToBool,
     )
 
 val testSemantics: LanguageSemantics =
@@ -129,4 +157,5 @@ val testSemantics: LanguageSemantics =
         functions = testBuiltInFunctions,
         operations = testBinaryOperations,
         statementEvaluators = testStatementEvaluators,
+        typeCasters = testTypeCasters,
     )

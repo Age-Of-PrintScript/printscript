@@ -3,7 +3,9 @@ package versionfactory
 import ast.ASTType
 import interpreter.BinaryOperation
 import interpreter.BuiltInFunction
+import interpreter.CastKey
 import interpreter.OperationKey
+import interpreter.TypeCast
 import interpreter.statement.StatementEvaluator
 import parser.builders.StatementParser
 import tokens.TokenType
@@ -27,4 +29,6 @@ internal class PSVersion1_0 : PSVersion {
         get() = v1_0StatementParsers
     override val statementEvaluators: Map<ASTType, StatementEvaluator>
         get() = v1_0StatementEvaluators
+    override val typeCasters: Map<CastKey, TypeCast>
+        get() = emptyMap()
 }

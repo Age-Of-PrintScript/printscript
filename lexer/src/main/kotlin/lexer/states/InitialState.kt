@@ -17,6 +17,7 @@ internal class InitialState(
     override fun canConsume(chr: Char): Boolean =
         chr.isDigit() ||
             chr.isLetter() ||
+            chr == '_' ||
             chr == '\'' ||
             chr == '"' ||
             stateMap.containsKey(chr) ||
@@ -25,7 +26,7 @@ internal class InitialState(
     override fun consume(chr: Char): Either<LexerError, State> =
         when {
             chr.isDigit() -> Success(IntegerState())
-            chr.isLetter() -> Success(IdentifierState())
+            chr.isLetter() || chr == '_' -> Success(IdentifierState())
             chr == '\'' || chr == '"' -> Success(StringState(chr))
             chr.isWhitespace() -> Success(WhiteSpaceState())
             else -> {

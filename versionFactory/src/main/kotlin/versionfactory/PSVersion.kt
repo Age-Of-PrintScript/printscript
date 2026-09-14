@@ -6,7 +6,9 @@ import domain.Failure
 import domain.Success
 import interpreter.BinaryOperation
 import interpreter.BuiltInFunction
+import interpreter.CastKey
 import interpreter.OperationKey
+import interpreter.TypeCast
 import interpreter.statement.StatementEvaluator
 import parser.builders.StatementParser
 import tokens.TokenType
@@ -18,6 +20,7 @@ interface PSVersion {
     val symbols: Map<Char, TokenType>
     val statementParsers: List<StatementParser>
     val statementEvaluators: Map<ASTType, StatementEvaluator>
+    val typeCasters: Map<CastKey, TypeCast>
 
     companion object {
         fun getVersion(version: String): Either<VersionError, PSVersion> =

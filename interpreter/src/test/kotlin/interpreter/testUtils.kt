@@ -8,10 +8,16 @@ internal fun assertSuccessCase(
     interpreter: Interpreter,
     case: SuccessCase,
 ) {
-    when (val result = interpreter.execute(case.program)) {
+    val emittedPrints = mutableListOf<String>()
+    val io =
+        InterpreterIO(
+            emitter = { emittedPrints.add(it) },
+            provider = { "" },
+        )
+    when (val result = interpreter.execute(case.program, io, null)) {
         is Success -> {
-            assertEquals(case.expectedEnv, result.value.runtimeEnvironment, "RuntimeEnvironment mismatch for case: ${case.name}")
-            assertEquals(case.expectedEvents, result.value.runtimeEvents, "RuntimeEvents mismatch for case: ${case.name}")
+            assertEquals(case.expectedEnv, result.value, "RuntimeEnvironment mismatch for case: ${case.name}")
+            assertEquals(case.expectedEvents, emittedPrints, "RuntimeEvents mismatch for case: ${case.name}")
         }
         is Failure -> {
             throw AssertionError("Expected success for case '${case.name}', but failed with: ${result.value}")
@@ -23,7 +29,12 @@ internal fun assertFailureCase(
     interpreter: Interpreter,
     case: FailureCase,
 ) {
-    when (val result = interpreter.execute(case.program)) {
+    val io =
+        InterpreterIO(
+            emitter = {},
+            provider = { "" },
+        )
+    when (val result = interpreter.execute(case.program, io, null)) {
         is Success -> {
             throw AssertionError("Expected failure with error '${case.expectedFailure}' for case '${case.name}', but succeeded with: ${result.value}")
         }
