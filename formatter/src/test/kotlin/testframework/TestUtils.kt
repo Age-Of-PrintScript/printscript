@@ -1,12 +1,14 @@
 package testframework
 
 import ast.AST
+import ast.Block
 import ast.Expression
 import domain.NumType
-import domain.PSOperator
 import domain.PSType
 import domain.StrType
-import versionfactory.v1_0.Operators
+import domain.getOrReturn
+import formatter.formattokens.FormatTokenizer
+import formatter.formattokens.FormatTokens
 
 fun createDeclaration(
     name: String,
@@ -44,8 +46,18 @@ fun createStringLiteralExpression(value: String): Expression.Literal = Expressio
 
 fun createVariableExpression(name: String): Expression.Variable = Expression.Variable(name)
 
-fun createOperationExpression(
-    left: Expression,
-    right: Expression,
-    operator: PSOperator = Operators.SUM,
-): Expression.Operation = Expression.Operation(left, operator, right)
+fun createConditional(
+    condition: Expression = createVariableExpression("x"),
+    ifBlock: List<AST> = listOf(createPrintln(createStringLiteralExpression("hi"))),
+    elseBlock: List<AST>? = null,
+): AST.ConditionalStatement =
+    AST.ConditionalStatement(
+        condition = condition,
+        ifBlock = Block(ifBlock),
+        elseBlock = elseBlock?.let { Block(it) },
+    )
+
+fun tokensFrom(
+    tokenizer: FormatTokenizer,
+    ast: AST,
+): FormatTokens = tokenizer.tokenize(ast).getOrReturn { error("tokenizer fallo: $it") }

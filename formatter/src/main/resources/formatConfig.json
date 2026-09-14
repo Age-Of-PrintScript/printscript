@@ -1,8 +1,23 @@
 {
-    "rules": [
-        {"space before colon": false},
-        {"space after colon": false},
-        {"spaces around assign": true},
-        {"lines before call": 0}
-    ]
+    "declarationTuple" : {
+        "ast": "declaration",
+        "rules": [
+            {"spaceAfterColon": true},
+            {"spaceBeforeColon": true}
+        ]
+    },
+    "callTuple" : {
+        "ast": "call",
+        "rules": [
+            {"linesAfterCall" : 2}
+        ]
+    },
+    "assignmentTuple" : {
+        "ast": "assignment",
+        "rules": [
+            {"spacesAroundAssign" :  true}
+        ]
+    }
 }
+
+

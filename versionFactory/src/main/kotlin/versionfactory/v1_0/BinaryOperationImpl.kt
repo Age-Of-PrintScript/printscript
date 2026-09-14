@@ -8,10 +8,17 @@ import domain.Success
 import interpreter.BinaryOperation
 import interpreter.RuntimeError
 
+private fun Double.toFormattedString(): String =
+    if (this % 1.0 == 0.0) {
+        this.toLong().toString()
+    } else {
+        this.toString()
+    }
+
 internal val sumNumAndNum =
     BinaryOperation { l, r ->
         val result = l.raw.toDouble() + r.raw.toDouble()
-        Success(PSLiteral(result.toString(), NumType))
+        Success(PSLiteral(result.toFormattedString(), NumType))
     }
 
 internal val sumStrAndStr =
@@ -32,13 +39,13 @@ internal val sumNumAndStr =
 internal val subNumAndNum =
     BinaryOperation { l, r ->
         val result = l.raw.toDouble() - r.raw.toDouble()
-        Success(PSLiteral(result.toString(), NumType))
+        Success(PSLiteral(result.toFormattedString(), NumType))
     }
 
 internal val multNumAndNum =
     BinaryOperation { l, r ->
         val result = l.raw.toDouble() * r.raw.toDouble()
-        Success(PSLiteral(result.toString(), NumType))
+        Success(PSLiteral(result.toFormattedString(), NumType))
     }
 
 internal val divNumAndNum =
@@ -48,7 +55,7 @@ internal val divNumAndNum =
             Failure(RuntimeError.MATH_ERROR)
         } else {
             val result = l.raw.toDouble() / rightVal
-            Success(PSLiteral(result.toString(), NumType))
+            Success(PSLiteral(result.toFormattedString(), NumType))
         }
     }
 
