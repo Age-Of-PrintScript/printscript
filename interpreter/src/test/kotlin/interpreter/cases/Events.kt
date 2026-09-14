@@ -19,3 +19,5 @@ val EVENTS_WITH_PRINT_HOLA_5 = listOf("hola5")
 val EVENTS_WITH_PRINT_5_HOLA = listOf("5hola")
 
 val EVENTS_WITH_PRINT_HOLA_MUNDO = listOf("hola mundo")
+
+val EVENTS_WITH_PRINT_MUNDO = listOf(" mundo")
