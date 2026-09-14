@@ -1,6 +1,7 @@
 package cli.commands
 
 import cli.adapters.ConsoleLogger
+import cli.adapters.engineIO
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.help
@@ -21,6 +22,6 @@ class Run(
 
     override fun run() {
         val source = file.readText()
-        engine.execute(source, logger, version = version)
+        engine.execute(source, engineIO, logger, version = version)
     }
 }

@@ -5,23 +5,21 @@ import domain.Either
 import domain.Failure
 import domain.Success
 import domain.getOrReturn
+import interpreter.InterpreterIO
 import interpreter.LanguageSemantics
 import interpreter.RuntimeError
 import interpreter.environment.RuntimeEnvironment
-import interpreter.environment.RuntimeEvents
 
 class ExpressionStatementEvaluator : StatementEvaluator {
     override fun evaluate(
         statement: AST,
         env: RuntimeEnvironment,
-        events: RuntimeEvents,
+        io: InterpreterIO,
         semantics: LanguageSemantics,
-    ): Either<RuntimeError, Pair<RuntimeEnvironment, RuntimeEvents>> {
+    ): Either<RuntimeError, RuntimeEnvironment> {
         val exprStatement = statement as AST.ExpressionStatement
-        val result =
-            solveExpression(exprStatement.expression, env, semantics)
-                .getOrReturn { return Failure(it) }
-        val updatedEvents = events + result.events
-        return Success(Pair(env, updatedEvents))
+        solveExpression(exprStatement.expression, env, io, semantics)
+            .getOrReturn { return Failure(it) }
+        return Success(env)
     }
 }

@@ -18,9 +18,15 @@ internal fun assertCorrectExecution(
     expectedOutputs: List<String>,
 ) {
     val logger = TestLogger()
-    val result = engine.execute(input, logger)
+    val prints = mutableListOf<String>()
+    val io =
+        EngineIO(
+            emitter = { prints.add(it) },
+            provider = { "" },
+        )
+    val result = engine.execute(input, io, logger)
     assertEquals(ExitCode.SUCCESS, result.exitCode, "Execution was expected to succeed")
-    assertEquals(expectedOutputs, logger.getPrints())
+    assertEquals(expectedOutputs, prints)
     assertEquals(listOf("Build Successful"), logger.logs.takeLast(1))
 }
 
@@ -29,7 +35,12 @@ internal fun assertFailedExecution(
     input: String,
 ) {
     val logger = TestLogger()
-    val result = engine.execute(input, logger)
+    val io =
+        EngineIO(
+            emitter = {},
+            provider = { "" },
+        )
+    val result = engine.execute(input, io, logger)
     assertEquals(ExitCode.FAILURE, result.exitCode, "Execution was expected to fail")
     assertEquals("Build Failed", logger.logs.lastOrNull())
 }

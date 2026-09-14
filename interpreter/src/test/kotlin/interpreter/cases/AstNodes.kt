@@ -1,7 +1,9 @@
 package interpreter.cases
 
 import ast.AST
+import ast.Block
 import ast.Expression
+import domain.BoolType
 import domain.NumType
 import domain.Position
 import domain.StrType
@@ -13,6 +15,14 @@ val DECLARATION_Statement_X_NUMBER_5 =
         id = "x",
         type = NumType,
         mutable = true,
+        value = LITERAL_NUMBER_5,
+    )
+
+val DECLARATION_Statement_X_NUMBER_5_IMMUTABLE =
+    AST.DeclarationStatement(
+        id = "x",
+        type = NumType,
+        mutable = false,
         value = LITERAL_NUMBER_5,
     )
 
@@ -180,4 +190,44 @@ val CALL_PRINTLN_OPERATION_X_PLUS_1 =
             name = "println",
             args = listOf(OPERATION_X_PLUS_1),
         ),
+    )
+
+val LITERAL_BOOL_TRUE = Expression.Literal("true", BoolType)
+val LITERAL_BOOL_FALSE = Expression.Literal("false", BoolType)
+
+// if (true) { let x: number = 5; }
+val IF_TRUE_DECLARE_X_5 =
+    AST.ConditionalStatement(
+        condition = LITERAL_BOOL_TRUE,
+        ifBlock = Block(listOf(DECLARATION_Statement_X_NUMBER_5)),
+    )
+
+// if (false) { let x: number = 5; }
+val IF_FALSE_DECLARE_X_5 =
+    AST.ConditionalStatement(
+        condition = LITERAL_BOOL_FALSE,
+        ifBlock = Block(listOf(DECLARATION_Statement_X_NUMBER_5)),
+    )
+
+// if (true) { println("hola"); } else { println(" mundo"); }
+val IF_TRUE_PRINTLN_HOLA_ELSE_PRINTLN_MUNDO =
+    AST.ConditionalStatement(
+        condition = LITERAL_BOOL_TRUE,
+        ifBlock = Block(listOf(CALL_PRINTLN_HOLA)),
+        elseBlock = Block(listOf(CALL_PRINTLN_MUNDO)),
+    )
+
+// if (false) { println("hola"); } else { println(" mundo"); }
+val IF_FALSE_PRINTLN_HOLA_ELSE_PRINTLN_MUNDO =
+    AST.ConditionalStatement(
+        condition = LITERAL_BOOL_FALSE,
+        ifBlock = Block(listOf(CALL_PRINTLN_HOLA)),
+        elseBlock = Block(listOf(CALL_PRINTLN_MUNDO)),
+    )
+
+// if (5) { ... }  — not a boolean, should fail
+val IF_NON_BOOLEAN_CONDITION =
+    AST.ConditionalStatement(
+        condition = LITERAL_NUMBER_5,
+        ifBlock = Block(listOf(CALL_PRINTLN_HOLA)),
     )
