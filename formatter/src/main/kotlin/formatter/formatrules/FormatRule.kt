@@ -151,7 +151,11 @@ class EnsureSingleSpace(
         val list = tokens.list
         for ((i, token) in list.withIndex()) {
             val prev = list.getOrNull(i - 1)
+            if (isText(token, "(") && prev !is WhiteSpace) { // <- nueva: espacio ANTES del "("
+                newList.add(WhiteSpace)
+            }
             if (isText(token, ")") && prev !is WhiteSpace && !isText(prev ?: token, "(")) {
+                // manejo defensivo de null, prev puede ser nulo, por lo que le paso token que siempre devuelve false
                 newList.add(WhiteSpace)
             }
             newList.add(token)

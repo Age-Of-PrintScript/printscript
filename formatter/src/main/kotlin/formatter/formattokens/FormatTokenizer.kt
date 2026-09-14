@@ -69,42 +69,52 @@ class ExpressionFormatTokenizer : FormatTokenizer {
 class ConditionalFormatTokenizer(
     private val statementFormatters: Set<FormatTokenizer>,
 ) : FormatTokenizer {
-    override fun tokenize(ast: AST): Either<FormattingError, FormatTokens> {
+    override fun tokenize(ast: AST) = tokenizeAtDepth(ast, 1)
+
+    private fun tokenizeAtDepth(
+        ast: AST,
+        depth: Int,
+    ): Either<FormattingError, FormatTokens> {
         if (ast !is AST.ConditionalStatement) {
             return Failure(FormattingError.UNKNOWN_AST_TYPE)
         }
         val conditionTokens = expressionToFormatTokens(ast.condition)
-        val thenTokens = tokenizeBlock(ast.ifBlock).getOrReturn { return Failure(it) }
+        val thenTokens = tokenizeBlock(ast.ifBlock, depth).getOrReturn { return Failure(it) }
         val elseTokens =
             ast.elseBlock?.let { elseBlock ->
-                tokenizeBlock(elseBlock).getOrReturn { error -> return Failure(error) }
+                tokenizeBlock(elseBlock, depth).getOrReturn { error -> return Failure(error) }
             }
 
         val header =
             listOf(Text("if"), WhiteSpace, Text("(")) + conditionTokens + listOf(Text(")"), WhiteSpace, Text("{"), EOL)
+        val closingIndent = List(depth - 1) { Indent }
         val tail =
             elseTokens?.let {
-                listOf(Text("}"), WhiteSpace, Text("else"), WhiteSpace, Text("{"), EOL) + it.list + listOf(Text("}"), EOL)
-            } ?: listOf(Text("}"), EOL)
+                closingIndent + listOf(Text("}"), WhiteSpace, Text("else"), WhiteSpace, Text("{"), EOL) +
+                    it.list + closingIndent + listOf(Text("}"), EOL)
+            } ?: (closingIndent + listOf(Text("}"), EOL))
 
         return Success(FormatTokens(header + thenTokens.list + tail))
     }
 
-    // Cada sentencia del bloque puede ser cualquier AST (declaración, asignación, expresión,
-    // incluso otro Conditional anidado) y no sabemos cuál de antemano: probamos cada tokenizer
-    // conocido hasta encontrar el que puede parsearla, igual que hace Executor.formatterFor
-    // a nivel de programa completo, y le aplicamos sus propias reglas.
-
-    private fun tokenizeBlock(block: Block): Either<FormattingError, FormatTokens> {
+    private fun tokenizeBlock(
+        block: Block,
+        depth: Int,
+    ): Either<FormattingError, FormatTokens> {
         val tokens = mutableListOf<FormatToken>()
         for (statement in block.statements) {
             val tokenizer =
                 statementFormatters.firstOrNull { it.tokenize(statement) is Success }
                     ?: return Failure(FormattingError.UNKNOWN_AST_TYPE)
 
-            val statementTokens = tokenizer.tokenize(statement).getOrReturn { return Failure(it) }
+            val statementTokens =
+                if (tokenizer is ConditionalFormatTokenizer) {
+                    tokenizer.tokenizeAtDepth(statement, depth + 1).getOrReturn { return Failure(it) }
+                } else {
+                    tokenizer.tokenize(statement).getOrReturn { return Failure(it) }
+                }
 
-            tokens += Indent
+            repeat(depth) { tokens += Indent }
             tokens += statementTokens.list
         }
         return Success(FormatTokens(tokens))

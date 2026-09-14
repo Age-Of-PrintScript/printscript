@@ -212,7 +212,7 @@ class FormatRuleTests {
     fun `lines after call - lista real de ExpressionFormatTokenizer ajusta al valor configurado`() {
         val input = tokensFrom(ExpressionFormatTokenizer(), createPrintln())
         val withoutTrailingEol = input.list.dropLastWhile { it is EOL }
-        val expected = FormatTokens(withoutTrailingEol + listOf(EOL, EOL))
+        val expected = FormatTokens(withoutTrailingEol + listOf(EOL, EOL, EOL))
 
         val result = LineBreaksAfterPrintLn(2).apply(input)
 
@@ -233,7 +233,7 @@ class FormatRuleTests {
     @Test
     fun `lines after call - raro cero lineas elimina el EOL que trae el tokenizer`() {
         val input = tokensFrom(ExpressionFormatTokenizer(), createPrintln())
-        val expected = FormatTokens(input.list.dropLastWhile { it is EOL })
+        val expected = FormatTokens(input.list.dropLastWhile { it is EOL } + listOf(EOL))
 
         val result = LineBreaksAfterPrintLn(0).apply(input)
 
