@@ -14,6 +14,7 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
+            artifactId = project.name.lowercase()
         }
     }
     repositories {
