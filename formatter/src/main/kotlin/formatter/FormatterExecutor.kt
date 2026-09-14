@@ -12,14 +12,33 @@ import parser.Parser
 import versionfactory.PSVersion
 import java.io.File
 
-class Executor(
-    val config: ConfigProvider,
-    val psVersion: PSVersion,
-) {
+interface Formatter {
     fun execute(
         file: File,
         configPath: String,
+    ): Either<Error, String>
+
+    companion object {
+        fun new(
+            config: ConfigProvider,
+            psVersion: String,
+        ) = FormatterExecutor(config, psVersion)
+    }
+}
+
+class FormatterExecutor(
+    val config: ConfigProvider,
+    val psVersion: String,
+) : Formatter {
+    override fun execute(
+        file: File,
+        configPath: String,
     ): Either<Error, String> {
+        val psVersion =
+            PSVersion.getVersion(psVersion).getOrReturn {
+                throw IllegalArgumentException("Unsupported version: $psVersion")
+            }
+
         val source = file.readText()
 
         val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
