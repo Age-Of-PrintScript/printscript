@@ -13,12 +13,12 @@ object SuccessfulPrograms {
             SuccessCase(
                 "variable declaration and arithmetic calculation",
                 "let x: number = 10;\nlet y: number = 20;\nprintln(x + y);",
-                listOf("30.0"),
+                listOf("30"),
             ),
             SuccessCase(
                 "variable reassignment and operation",
                 "let count: number = 1;\ncount = count + 2;\nprintln(count);",
-                listOf("3.0"),
+                listOf("3"),
             ),
             SuccessCase(
                 "string and number concatenation",
@@ -33,7 +33,7 @@ object SuccessfulPrograms {
                     "println(msg + a * b);\n" +
                     "a = a + 1;\n" +
                     "println(\"Updated: \" + a);",
-                listOf("Total: 10.0", "Updated: 6.0"),
+                listOf("Total: 10", "Updated: 6"),
             ),
         )
 }
