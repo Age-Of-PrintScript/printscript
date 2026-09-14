@@ -1,10 +1,17 @@
 package formatter.formattokens
 
 import ast.Expression
+import domain.StrType
 
 fun expressionToFormatTokens(expression: Expression): List<FormatToken> =
     when (expression) {
-        is Expression.Literal -> listOf(Text(expression.value))
+        is Expression.Literal -> {
+            if (expression.type == StrType) {
+                listOf(Text("\"")) + listOf(Text(expression.value)) + listOf(Text("\""))
+            } else {
+                listOf(Text(expression.value))
+            }
+        }
         is Expression.Variable -> listOf(Text(expression.name))
         is Expression.Operation -> operationToFormatTokens(expression)
         is Expression.Call -> callToFormatTokens(expression)

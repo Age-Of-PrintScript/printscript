@@ -4,10 +4,12 @@
 [versions]
 guava = "33.4.6-jre"
 junit-jupiter = "5.12.1"
+clikt = "4.4.0"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.2.0" }

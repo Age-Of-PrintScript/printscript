@@ -1,9 +1,20 @@
 plugins {
     kotlin("jvm")
     `java-library`
+    `maven-publish`
     id("org.jlleitschuh.gradle.ktlint")
     id("io.gitlab.arturbosch.detekt")
     jacoco
+}
+
+group = "printscript.grupo1"
+version = "1.0.0"
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+        }
+    }
 }
 
 repositories {
