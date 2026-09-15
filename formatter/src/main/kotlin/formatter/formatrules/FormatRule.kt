@@ -18,7 +18,19 @@ private fun isText(
 
 data class FormatRules(
     val list: List<FormatRule>,
-)
+) {
+    fun add(rule: FormatRule): FormatRules {
+        val newList = list.toMutableList()
+        newList.add(rule)
+        return FormatRules(newList)
+    }
+
+    fun remove(rule: FormatRule): FormatRules {
+        val newList = list.toMutableList()
+        newList.remove(rule)
+        return FormatRules(newList)
+    }
+}
 
 class EnsureSpaceAroundEquals(
     val activated: Boolean,
@@ -105,8 +117,9 @@ class LineBreaksAfterPrintLn(
     override fun apply(tokens: FormatTokens): FormatTokens =
         FormatTokens(
             splitIntoLines(tokens.list).flatMap { line ->
-                if (isText(line.first(), "println")) {
-                    line.dropLastWhile { it is EOL } + List(lines.toInt().coerceAtLeast(0)) { EOL }
+                val firstSignificantToken = line.firstOrNull { it !is Indent && it !is WhiteSpace }
+                if (firstSignificantToken != null && isText(firstSignificantToken, "println")) {
+                    line.dropLastWhile { it is EOL } + List((lines.toInt().coerceAtLeast(0) + 1)) { EOL }
                 } else {
                     line
                 }
@@ -131,6 +144,64 @@ class LineBreaksAfterPrintLn(
         }
         if (current.isNotEmpty()) lines.add(current)
         return lines
+    }
+}
+
+class EnsureSingleSpace(
+    val activated: Boolean,
+) : FormatRule {
+    override fun apply(tokens: FormatTokens): FormatTokens {
+        if (!activated) return tokens
+
+        var result = EnsureSpaceAroundEquals(true).apply(tokens)
+        result = EnsureSpaceBeforeColon(true).apply(result)
+        result = EnsureSpaceAfterColon(true).apply(result)
+        return ensureSpaceInsideParens(result)
+    }
+
+    private fun ensureSpaceInsideParens(tokens: FormatTokens): FormatTokens {
+        val newList = mutableListOf<FormatToken>()
+        val list = tokens.list
+        for ((i, token) in list.withIndex()) {
+            val prev = list.getOrNull(i - 1)
+            if (isText(token, "(") && prev !is WhiteSpace) { // <- nueva: espacio ANTES del "("
+                newList.add(WhiteSpace)
+            }
+            if (isText(token, ")") && prev !is WhiteSpace && !isText(prev ?: token, "(")) {
+                // manejo defensivo de null, prev puede ser nulo, por lo que le paso token que siempre devuelve false
+                newList.add(WhiteSpace)
+            }
+            newList.add(token)
+            val next = list.getOrNull(i + 1)
+            if (isText(token, "(") && next !is WhiteSpace && !isText(next ?: token, ")")) {
+                newList.add(WhiteSpace)
+            }
+        }
+        return FormatTokens(newList)
+    }
+}
+
+class EnsureSpacesSurroundingOperations(
+    val activated: Boolean,
+) : FormatRule {
+    private val operatorSymbols = setOf("+", "-", "*", "/")
+
+    override fun apply(tokens: FormatTokens): FormatTokens {
+        if (!activated) return tokens
+
+        val newList = mutableListOf<FormatToken>()
+        val list = tokens.list
+        for ((i, token) in list.withIndex()) {
+            val isOperator = token is Text && token.value in operatorSymbols
+            if (isOperator && list.getOrNull(i - 1) !is WhiteSpace) {
+                newList.add(WhiteSpace)
+            }
+            newList.add(token)
+            if (isOperator && list.getOrNull(i + 1) !is WhiteSpace) {
+                newList.add(WhiteSpace)
+            }
+        }
+        return FormatTokens(newList)
     }
 }
 
