@@ -36,7 +36,12 @@ internal fun assertIncorrectSource(
 ) {
     val result = lexer.tokenize(input)
     assertTrue(result is Failure, "Tokenization shouldn't have succeeded")
-    assertEquals(expected, (result as Failure<LexerError, List<Token>>).value)
+    val actual = (result as Failure<LexerError, List<Token>>).value
+    if (expected.start != null) {
+        assertEquals(expected, actual)
+    } else {
+        assertEquals(expected.getMessage(), actual.getMessage())
+    }
 }
 
 internal fun createTokens(types: List<TokenType>): List<Token> =

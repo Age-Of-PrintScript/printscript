@@ -28,15 +28,27 @@ internal class LexerStateMachine(
             val currentPos = Position(currentLine, currentColumn)
 
             val result = state.consume(chr)
-            val newState = result.getOrReturn { return Failure(it) }
+            val newState =
+                result.getOrReturn {
+                    val errWithPos = if (it.start == null) it.withPosition(currentPos, currentPos) else it
+                    return Failure(errWithPos)
+                }
 
-            builder = builder.addChar(chr, currentPos).getOrReturn { return Failure(it) }
+            builder =
+                builder.addChar(chr, currentPos).getOrReturn {
+                    val errWithPos = if (it.start == null) it.withPosition(currentPos, currentPos) else it
+                    return Failure(errWithPos)
+                }
             state = newState
 
             val shouldCloseToken = cannotConsumeNextChar(i, source, state)
 
             if (shouldCloseToken) {
-                val token = builder.build().getOrReturn { return Failure(it) }
+                val token =
+                    builder.build().getOrReturn {
+                        val errWithPos = if (it.start == null) it.withPosition(currentPos, currentPos) else it
+                        return Failure(errWithPos)
+                    }
                 tokenList.add(token)
                 builder = TokenBuilder(lexicon)
                 state = InitialState(lexicon)
