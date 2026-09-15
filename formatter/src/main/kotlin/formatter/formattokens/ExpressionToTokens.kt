@@ -21,12 +21,14 @@ fun expressionToFormatTokens(expression: Expression): List<FormatToken> =
 private fun operationToFormatTokens(operation: Expression.Operation): List<FormatToken> {
     val leftTokens =
         formatChild(
-            operation.left, parentOp = operation.operator,
+            operation.left,
+            parentOp = operation.operator,
             isRight = false,
         )
     val rightTokens =
         formatChild(
-            operation.right, parentOp = operation.operator,
+            operation.right,
+            parentOp = operation.operator,
             isRight = true,
         )
 
@@ -41,12 +43,10 @@ private fun formatChild(
     val tokens = expressionToFormatTokens(child)
     if (child !is Expression.Operation) return tokens
 
-    val needsParens =
-        if (!isRight) {
-            child.operator.precedence < parentOp.precedence
-        } else {
-            child.operator.precedence < parentOp.precedence
-        }
+    val isLowerPrecedence = child.operator.precedence < parentOp.precedence
+    val isNonAssociativeRight = isRight && child.operator.precedence == parentOp.precedence && parentOp.symbol in listOf("-", "/")
+
+    val needsParens = isLowerPrecedence || isNonAssociativeRight
 
     return if (needsParens) {
         listOf(Text("(")) + tokens + listOf(Text(")"))
