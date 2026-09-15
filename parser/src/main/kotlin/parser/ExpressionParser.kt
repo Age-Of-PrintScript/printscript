@@ -6,6 +6,7 @@ import domain.Failure
 import domain.PSOperator
 import domain.Success
 import domain.getOrReturn
+import parser.tokenConsumers.TokenConsumer
 import tokens.Call
 import tokens.CloseParen
 import tokens.Identifier

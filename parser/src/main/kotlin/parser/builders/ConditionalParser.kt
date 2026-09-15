@@ -9,7 +9,11 @@ import domain.getOrReturn
 import parser.BlockParser
 import parser.ExpressionParser
 import parser.SyntaxError
-import parser.TokenConsumer
+import parser.tokenConsumers.TokenConsumer
+import parser.tokenConsumers.consumeBalancedUntil
+import parser.tokenConsumers.consumeExpected
+import parser.tokenConsumers.consumeIf
+import parser.tokenConsumers.consumeUntil
 import tokens.CloseBraces
 import tokens.Else
 import tokens.If
