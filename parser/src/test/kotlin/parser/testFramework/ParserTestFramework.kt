@@ -78,7 +78,7 @@ internal class ParserFileTests {
         val actualTrees: Either<SyntaxError, List<AST>> =
             when (actual) {
                 is Success -> Success(actual.value.trees.map { stripPositions(it) })
-                is Failure -> Failure(actual.value)
+                is Failure -> Failure(actual.value.copy(start = null, end = null))
             }
         val expectedTrees: Either<SyntaxError, List<AST>> =
             when (testCase.expected) {

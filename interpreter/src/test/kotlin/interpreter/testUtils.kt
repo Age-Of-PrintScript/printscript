@@ -39,7 +39,11 @@ internal fun assertFailureCase(
             throw AssertionError("Expected failure with error '${case.expectedFailure}' for case '${case.name}', but succeeded with: ${result.value}")
         }
         is Failure -> {
-            assertEquals(case.expectedFailure, result.value, "Error mismatch for case: ${case.name}")
+            if (case.expectedFailure.start != null) {
+                assertEquals(case.expectedFailure, result.value, "Error mismatch for case: ${case.name}")
+            } else {
+                assertEquals(case.expectedFailure.getMessage(), result.value.getMessage(), "Error message mismatch for case: ${case.name}")
+            }
         }
     }
 }

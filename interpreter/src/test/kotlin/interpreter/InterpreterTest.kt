@@ -351,8 +351,8 @@ class InterpreterTest {
         org.junit.jupiter.api.Assertions
             .assertTrue(result is domain.Failure)
         org.junit.jupiter.api.Assertions.assertEquals(
-            RuntimeError.INVALID_CAST,
-            (result as domain.Failure).value,
+            RuntimeError.INVALID_CAST.reason,
+            (result as domain.Failure).value.reason,
         )
     }
 
@@ -383,8 +383,8 @@ class InterpreterTest {
         org.junit.jupiter.api.Assertions
             .assertTrue(result is domain.Failure)
         org.junit.jupiter.api.Assertions.assertEquals(
-            RuntimeError.INVALID_CAST,
-            (result as domain.Failure).value,
+            RuntimeError.INVALID_CAST.reason,
+            (result as domain.Failure).value.reason,
         )
     }
 
@@ -491,12 +491,11 @@ class InterpreterTest {
 
         val result = interpreter.execute(program, io, null)
 
-        // solveExpression in Utils.kt flattens all built-in failures to MATH_ERROR (preexisting limitation)
         org.junit.jupiter.api.Assertions
             .assertTrue(result is domain.Failure)
         org.junit.jupiter.api.Assertions.assertEquals(
-            RuntimeError.MATH_ERROR,
-            (result as domain.Failure).value,
+            RuntimeError.ENV_VARIABLE_NOT_FOUND.reason,
+            (result as domain.Failure).value.reason,
         )
     }
 
@@ -525,12 +524,11 @@ class InterpreterTest {
 
         val result = interpreter.execute(program, io, null)
 
-        // solveExpression in Utils.kt flattens all built-in failures to MATH_ERROR (preexisting limitation)
         org.junit.jupiter.api.Assertions
             .assertTrue(result is domain.Failure)
         org.junit.jupiter.api.Assertions.assertEquals(
-            RuntimeError.MATH_ERROR,
-            (result as domain.Failure).value,
+            RuntimeError.MISSING_ARGUMENT.reason,
+            (result as domain.Failure).value.reason,
         )
     }
 

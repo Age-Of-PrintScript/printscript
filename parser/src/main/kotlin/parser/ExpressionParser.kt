@@ -19,7 +19,10 @@ class ExpressionParser {
         if (tokens.isEmpty()) return Failure(SyntaxError.INCOMPLETE_STATEMENT)
         val consumer = TokenConsumer(tokens)
         val result = parseExpression(consumer, 0).getOrReturn { return Failure(it) }
-        if (consumer.hasNext()) return Failure(SyntaxError.INVALID_TOKEN)
+        if (consumer.hasNext()) {
+            val token = consumer.peek()
+            return Failure(SyntaxError.INVALID_TOKEN.withPosition(token.start, token.end))
+        }
         return Success(result)
     }
 
@@ -52,7 +55,7 @@ class ExpressionParser {
             is Identifier -> Success(Expression.Variable(type.name))
             is Call -> parseCall(type.name, consumer)
             is OpenParen -> parseGrouped(consumer)
-            else -> Failure(SyntaxError.WRONG_TOKEN_TYPE)
+            else -> Failure(SyntaxError.WRONG_TOKEN_TYPE.withPosition(token.start, token.end))
         }
     }
 
@@ -61,8 +64,10 @@ class ExpressionParser {
         name: String,
         consumer: TokenConsumer,
     ): Either<SyntaxError, Expression> {
-        if (!consumer.hasNext() || consumer.peek().type !is OpenParen) {
-            return Failure(SyntaxError.INVALID_TOKEN)
+        if (!consumer.hasNext()) return Failure(SyntaxError.INCOMPLETE_STATEMENT)
+        val peekToken = consumer.peek()
+        if (peekToken.type !is OpenParen) {
+            return Failure(SyntaxError.INVALID_TOKEN.withPosition(peekToken.start, peekToken.end))
         }
         consumer.consume() // Consume '('
 
@@ -73,7 +78,8 @@ class ExpressionParser {
 
         val arg = parseExpression(consumer, 0).getOrReturn { return Failure(it) }
         if (!consumer.hasNext() || consumer.peek().type !is CloseParen) {
-            return Failure(SyntaxError.MISSING_CLOSING_PARENTHESIS)
+            val closingToken = if (consumer.hasNext()) consumer.peek() else null
+            return Failure(SyntaxError.MISSING_CLOSING_PARENTHESIS.withPosition(closingToken?.start, closingToken?.end))
         }
         consumer.consume() // Consume ')'
         return Success(Expression.Call(name, listOf(arg)))
@@ -83,7 +89,8 @@ class ExpressionParser {
     private fun parseGrouped(consumer: TokenConsumer): Either<SyntaxError, Expression> {
         val inner = parseExpression(consumer, 0).getOrReturn { return Failure(it) }
         if (!consumer.hasNext() || consumer.peek().type !is CloseParen) {
-            return Failure(SyntaxError.MISSING_CLOSING_PARENTHESIS)
+            val closingToken = if (consumer.hasNext()) consumer.peek() else null
+            return Failure(SyntaxError.MISSING_CLOSING_PARENTHESIS.withPosition(closingToken?.start, closingToken?.end))
         }
         consumer.consume() // Consume ')'
         return Success(inner)

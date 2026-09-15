@@ -18,14 +18,7 @@ internal fun solveExpression(
     env: RuntimeEnvironment,
     io: InterpreterIO,
     semantics: LanguageSemantics,
-): Either<RuntimeError, PSLiteral?> {
-    val result =
-        ExpressionSolver
-            .solve(expression, env.getVariableMapWithValues(), io, semantics)
-            .getOrReturn { return Failure(RuntimeError.MATH_ERROR) }
-
-    return Success(result)
-}
+): Either<RuntimeError, PSLiteral?> = ExpressionSolver.solve(expression, env.getVariableMapWithValues(), io, semantics)
 
 internal fun resolveWithCast(
     value: PSLiteral,

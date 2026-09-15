@@ -17,8 +17,12 @@ internal fun executeBlock(
     for (ast in statements) {
         val evaluator =
             semantics.statementEvaluators[ast.astType]
-                ?: return Failure(RuntimeError.MISSING_EVALUATOR_FOR_AST)
-        env = evaluator.evaluate(ast, env, io, semantics).getOrReturn { return Failure(it) }
+                ?: return Failure(RuntimeError.MISSING_EVALUATOR_FOR_AST.withPosition(ast.start, ast.end))
+        env =
+            evaluator.evaluate(ast, env, io, semantics).getOrReturn {
+                val errorWithPos = if (it.start == null) it.withPosition(ast.start, ast.end) else it
+                return Failure(errorWithPos)
+            }
     }
     return Success(env)
 }

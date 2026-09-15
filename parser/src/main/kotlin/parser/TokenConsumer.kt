@@ -28,10 +28,13 @@ class TokenConsumer(
         expectedType: KClass<out TokenType>,
         errorOnMismatch: SyntaxError,
     ): Either<SyntaxError, Token> {
-        if (!hasNext()) return Failure(SyntaxError.INCOMPLETE_STATEMENT)
+        if (!hasNext()) {
+            val lastEnd = tokens.lastOrNull()?.end ?: domain.Position.START
+            return Failure(SyntaxError.INCOMPLETE_STATEMENT.withPosition(lastEnd, lastEnd))
+        }
         val token = peek()
         if (!expectedType.isInstance(token.type)) {
-            return Failure(errorOnMismatch)
+            return Failure(errorOnMismatch.withPosition(token.start, token.end))
         }
         return Success(consume())
     }

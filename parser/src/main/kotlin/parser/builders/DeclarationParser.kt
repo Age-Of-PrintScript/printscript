@@ -46,7 +46,7 @@ class DeclarationParser(
 
         val semicolonToken = consumer.consumeIf(Semicolon::class)
         if (semicolonToken != null) {
-            if (!isMutable) return Failure(SyntaxError.INVALID_TOKEN)
+            if (!isMutable) return Failure(SyntaxError.INVALID_TOKEN.withPosition(semicolonToken.start, semicolonToken.end))
             return Success(
                 AST.DeclarationStatement(
                     id = id,
