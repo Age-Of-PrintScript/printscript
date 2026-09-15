@@ -8,21 +8,6 @@ import domain.PSType
 import domain.StrType
 import domain.getOrReturn
 import formatter.ConfigProvider
-import formatter.formatrules.EnsureNoSpaceAroundEquals
-import formatter.formatrules.EnsureSingleSpace
-import formatter.formatrules.EnsureSpaceAfterColon
-import formatter.formatrules.EnsureSpaceAroundEquals
-import formatter.formatrules.EnsureSpaceBeforeColon
-import formatter.formatrules.EnsureSpacesSurroundingOperations
-import formatter.formatrules.FormatRules
-import formatter.formatrules.IfBraceBelowLine
-import formatter.formatrules.IfBraceSameLine
-import formatter.formatrules.IndentsInsideIf
-import formatter.formatrules.LineBreaksAfterPrintLn
-import formatter.formattokens.AssignmentFormatTokenizer
-import formatter.formattokens.ConditionalFormatTokenizer
-import formatter.formattokens.DeclarationFormatTokenizer
-import formatter.formattokens.ExpressionFormatTokenizer
 import formatter.formattokens.FormatTokenizer
 import formatter.formattokens.FormatTokens
 
@@ -78,59 +63,6 @@ fun tokensFrom(
     ast: AST,
 ): FormatTokens = tokenizer.tokenize(ast).getOrReturn { error("tokenizer fallo: $it") }
 
-fun createDefaultConfig10(): ConfigProvider {
-    val defaultRules =
-        FormatRules(
-            listOf(
-                EnsureSpacesSurroundingOperations(false),
-                EnsureSingleSpace(false),
-                EnsureSpaceAroundEquals(false),
-                EnsureNoSpaceAroundEquals(false),
-                EnsureSpaceBeforeColon(false),
-                EnsureSpaceAfterColon(false),
-                LineBreaksAfterPrintLn(0),
-            ),
-        )
-    return ConfigProvider(
-        mapOf(
-            DeclarationFormatTokenizer() to defaultRules,
-            AssignmentFormatTokenizer() to defaultRules,
-            ExpressionFormatTokenizer() to defaultRules,
-        ),
-    )
-}
+fun createDefaultConfig10(): ConfigProvider = ConfigProvider.default10()
 
-fun createDefaultConfig11(): ConfigProvider {
-    val defaultRules =
-        FormatRules(
-            listOf(
-                EnsureSpacesSurroundingOperations(false),
-                EnsureSingleSpace(false),
-                EnsureSpaceAroundEquals(false),
-                EnsureNoSpaceAroundEquals(false),
-                EnsureSpaceBeforeColon(false),
-                EnsureSpaceAfterColon(false),
-                IfBraceSameLine(false),
-                IfBraceBelowLine(false),
-                IndentsInsideIf(0),
-                LineBreaksAfterPrintLn(0),
-            ),
-        )
-    val stmts =
-        mutableSetOf<FormatTokenizer>(
-            DeclarationFormatTokenizer(),
-            AssignmentFormatTokenizer(),
-            ExpressionFormatTokenizer(),
-        )
-    val conditionalTokenizer = ConditionalFormatTokenizer(stmts)
-    stmts.add(conditionalTokenizer)
-
-    return ConfigProvider(
-        mapOf(
-            DeclarationFormatTokenizer() to defaultRules,
-            AssignmentFormatTokenizer() to defaultRules,
-            ExpressionFormatTokenizer() to defaultRules,
-            conditionalTokenizer to defaultRules,
-        ),
-    )
-}
+fun createDefaultConfig11(): ConfigProvider = ConfigProvider.default11()
