@@ -16,7 +16,7 @@ internal fun assertCorrectSource(
     val result = lexer.tokenize(input)
     assertTrue(result is Success, "Tokenization wasn't successful")
     val givenTokens = (result as Success<LexerError, List<Token>>).value
-    assertEqualTokenList(createTokens(expected), givenTokens)
+    assertEquals(expected, givenTokens.map { it.type })
 }
 
 internal fun assertEqualTokenList(
@@ -25,7 +25,7 @@ internal fun assertEqualTokenList(
 ) {
     if (expected.size != actual.size) error("Expected ${expected.size} tokenlist size || Actual ${actual.size} token list size")
     for (i in expected.indices) {
-        assertEquals(expected[i], actual[i], "Expected: ${expected[i]} || Actual: ${actual[i]}")
+        assertEquals(expected[i].type, actual[i].type, "Expected: ${expected[i].type} || Actual: ${actual[i].type}")
     }
 }
 
@@ -43,7 +43,7 @@ internal fun createTokens(types: List<TokenType>): List<Token> =
     types.map {
         Token(
             it,
-            Position(0, 0),
-            Position(0, 0),
+            Position.START,
+            Position.START,
         )
     }

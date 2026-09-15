@@ -16,11 +16,19 @@ import tokens.Whitespace
 internal data class TokenBuilder(
     val lexicon: Lexicon,
     val type: TokenType? = null,
+    val start: Position? = null,
+    val end: Position? = null,
 ) {
-    fun addChar(chr: Char): Either<LexerError, TokenBuilder> {
+    fun addChar(
+        chr: Char,
+        pos: Position,
+    ): Either<LexerError, TokenBuilder> {
+        val currentStart = start ?: pos
+        val currentEnd = pos
+
         if (type is Literal && !charIsQuote(chr)) {
             val newType = updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
-            return Success(copy(type = newType))
+            return Success(copy(type = newType, start = currentStart, end = currentEnd))
         }
 
         when {
@@ -32,7 +40,7 @@ internal data class TokenBuilder(
                         updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
                     }
 
-                return Success(copy(type = newType))
+                return Success(copy(type = newType, start = currentStart, end = currentEnd))
             }
 
             chr.isLetter() || chr == '_' -> {
@@ -43,7 +51,7 @@ internal data class TokenBuilder(
                         updateTypeWithLiteral(type, chr).getOrReturn { return Failure(it) }
                     }
 
-                return Success(copy(type = newType))
+                return Success(copy(type = newType, start = currentStart, end = currentEnd))
             }
 
             chr == '\'' || chr == '"' -> {
@@ -54,16 +62,16 @@ internal data class TokenBuilder(
                         else -> return Failure(LexerError.INVALID_CHARACTER)
                     }
 
-                return Success(copy(type = newType))
+                return Success(copy(type = newType, start = currentStart, end = currentEnd))
             }
 
             chr == '.' -> return Failure(LexerError.INVALID_CHARACTER)
 
-            chr.isWhitespace() -> return Success(copy(type = Whitespace))
+            chr.isWhitespace() -> return Success(copy(type = Whitespace, start = currentStart, end = currentEnd))
 
             else -> {
                 return if (lexicon.symbols.containsKey(chr)) {
-                    Success(copy(type = lexicon.symbols.getValue(chr)))
+                    Success(copy(type = lexicon.symbols.getValue(chr), start = currentStart, end = currentEnd))
                 } else {
                     Failure(LexerError.INVALID_CHARACTER)
                 }
@@ -87,8 +95,8 @@ internal data class TokenBuilder(
         return Success(
             Token(
                 finalType,
-                Position(0, 0),
-                Position(0, 0),
+                start ?: Position.START,
+                end ?: start ?: Position.START,
             ),
         )
     }

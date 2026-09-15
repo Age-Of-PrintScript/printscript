@@ -2,6 +2,7 @@ package lexer
 
 import domain.Either
 import domain.Failure
+import domain.Position
 import domain.Success
 import domain.getOrReturn
 import lexer.states.InitialState
@@ -19,13 +20,17 @@ internal class LexerStateMachine(
 
         val tokenList = mutableListOf<Token>()
 
+        var currentLine = 1
+        var currentColumn = 1
+
         for (i in source.indices) {
             val chr = source[i]
+            val currentPos = Position(currentLine, currentColumn)
 
             val result = state.consume(chr)
             val newState = result.getOrReturn { return Failure(it) }
 
-            builder = builder.addChar(chr).getOrReturn { return Failure(it) }
+            builder = builder.addChar(chr, currentPos).getOrReturn { return Failure(it) }
             state = newState
 
             val shouldCloseToken = cannotConsumeNextChar(i, source, state)
@@ -35,6 +40,13 @@ internal class LexerStateMachine(
                 tokenList.add(token)
                 builder = TokenBuilder(lexicon)
                 state = InitialState(lexicon)
+            }
+
+            if (chr == '\n') {
+                currentLine++
+                currentColumn = 1
+            } else {
+                currentColumn++
             }
         }
         return Success(tokenList.filter { it.type != Whitespace })
