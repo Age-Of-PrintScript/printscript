@@ -117,7 +117,8 @@ class LineBreaksAfterPrintLn(
     override fun apply(tokens: FormatTokens): FormatTokens =
         FormatTokens(
             splitIntoLines(tokens.list).flatMap { line ->
-                if (isText(line.first(), "println")) {
+                val firstSignificantToken = line.firstOrNull { it !is Indent && it !is WhiteSpace }
+                if (firstSignificantToken != null && isText(firstSignificantToken, "println")) {
                     line.dropLastWhile { it is EOL } + List((lines.toInt().coerceAtLeast(0) + 1)) { EOL }
                 } else {
                     line
