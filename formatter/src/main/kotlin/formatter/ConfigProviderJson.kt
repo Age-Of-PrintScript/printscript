@@ -80,7 +80,7 @@ private fun isActivated(rule: FormatRule): Boolean =
 // json; si esa contraparte está activada la usa, si no deja la default tal cual.
 // Si el archivo no existe/no se puede leer, o el json es inválido, se devuelve el
 // error correspondiente en vez de dejar propagar la excepción cruda.
-fun applyJsonConfig(
+internal fun applyJsonConfig(
     default: ConfigProvider,
     path: File,
 ): Either<Error, ConfigProvider> {
@@ -94,21 +94,25 @@ fun applyJsonConfig(
 
     val parsedRules =
         try {
-            formatRulesFromJson(json).list
+            formatRulesFromJson(json)
         } catch (e: SerializationException) {
             System.err.println("El json de configuración es inválido: ${e.message}")
             return Failure(FormattingError.INVALID_JSON)
         }
 
-    val mergedRuleSet =
-        default.ruleSet.mapValues { (_, defaultRules) ->
-            FormatRules(
-                defaultRules.list.map { defaultRule ->
-                    val fromJson = parsedRules.firstOrNull { it::class == defaultRule::class }
-                    if (fromJson != null && isActivated(fromJson)) fromJson else defaultRule
-                },
-            )
-        }
+    fun replaceToRulesFromJson(
+        defaultRules: FormatRules,
+        parsedRules: FormatRules,
+    ): FormatRules =
+        FormatRules(
+            defaultRules.list.map { defaultRule ->
+                val fromJson = parsedRules.list.firstOrNull { it::class == defaultRule::class }
+                // no puedo desacoplar pq el metodo necesita saber si esta activado
+                if (fromJson != null && isActivated(fromJson)) fromJson else defaultRule
+            },
+        )
 
-    return Success(ConfigProvider(mergedRuleSet))
+    val configRules = replaceToRulesFromJson(default.rules, parsedRules)
+
+    return Success(ConfigProvider(default.tokenizers, configRules))
 }

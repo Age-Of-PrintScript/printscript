@@ -3,7 +3,7 @@ package formatter.formattokens
 import ast.Expression
 import domain.StrType
 
-fun expressionToFormatTokens(expression: Expression): List<FormatToken> =
+internal fun expressionToFormatTokens(expression: Expression): List<FormatToken> =
     when (expression) {
         is Expression.Literal -> {
             if (expression.type == StrType) {

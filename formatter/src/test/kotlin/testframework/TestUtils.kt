@@ -57,7 +57,7 @@ fun createConditional(
         elseBlock = elseBlock?.let { Block(it) },
     )
 
-fun tokensFrom(
+internal fun tokensFrom(
     tokenizer: FormatTokenizer,
     ast: AST,
 ): FormatTokens = tokenizer.tokenize(ast).getOrReturn { error("tokenizer fallo: $it") }

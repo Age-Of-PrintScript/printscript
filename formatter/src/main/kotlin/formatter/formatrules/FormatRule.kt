@@ -7,7 +7,7 @@ import formatter.formattokens.Indent
 import formatter.formattokens.Text
 import formatter.formattokens.WhiteSpace
 
-interface FormatRule { // Las reglas tienen que ir en orden, sino se rompe. Ojo cuando armen la config
+internal interface FormatRule { // Las reglas tienen que ir en orden, sino se rompe. Ojo cuando armen la config
     fun apply(tokens: FormatTokens): FormatTokens
 }
 
@@ -16,7 +16,7 @@ private fun isText(
     value: String,
 ) = token is Text && token.value == value
 
-data class FormatRules(
+internal data class FormatRules(
     val list: List<FormatRule>,
 ) {
     fun add(rule: FormatRule): FormatRules {
@@ -32,7 +32,7 @@ data class FormatRules(
     }
 }
 
-class EnsureSpaceAroundEquals(
+internal class EnsureSpaceAroundEquals(
     val activated: Boolean,
 ) : FormatRule {
     override fun apply(tokens: FormatTokens): FormatTokens {
@@ -53,7 +53,7 @@ class EnsureSpaceAroundEquals(
     }
 }
 
-class EnsureNoSpaceAroundEquals(
+internal class EnsureNoSpaceAroundEquals(
     val activated: Boolean,
 ) : FormatRule {
     override fun apply(tokens: FormatTokens): FormatTokens {
@@ -75,7 +75,7 @@ class EnsureNoSpaceAroundEquals(
     }
 }
 
-class EnsureSpaceBeforeColon(
+internal class EnsureSpaceBeforeColon(
     val activated: Boolean,
 ) : FormatRule {
     override fun apply(tokens: FormatTokens): FormatTokens {
@@ -93,7 +93,7 @@ class EnsureSpaceBeforeColon(
     }
 }
 
-class EnsureSpaceAfterColon(
+internal class EnsureSpaceAfterColon(
     val activated: Boolean,
 ) : FormatRule {
     override fun apply(tokens: FormatTokens): FormatTokens {
@@ -111,7 +111,7 @@ class EnsureSpaceAfterColon(
     }
 }
 
-class LineBreaksAfterPrintLn(
+internal class LineBreaksAfterPrintLn(
     val lines: Number,
 ) : FormatRule {
     override fun apply(tokens: FormatTokens): FormatTokens =
@@ -146,7 +146,7 @@ class LineBreaksAfterPrintLn(
     }
 }
 
-class EnsureSingleSpace(
+internal class EnsureSingleSpace(
     val activated: Boolean,
 ) : FormatRule {
     override fun apply(tokens: FormatTokens): FormatTokens {
@@ -180,7 +180,7 @@ class EnsureSingleSpace(
     }
 }
 
-class EnsureSpacesSurroundingOperations(
+internal class EnsureSpacesSurroundingOperations(
     val activated: Boolean,
 ) : FormatRule {
     private val operatorSymbols = setOf("+", "-", "*", "/")
@@ -206,7 +206,7 @@ class EnsureSpacesSurroundingOperations(
 
 // ---------------- 1.1 ---------------------
 
-class IfBraceSameLine(
+internal class IfBraceSameLine(
     val activated: Boolean,
 ) : FormatRule {
     override fun apply(tokens: FormatTokens): FormatTokens {
@@ -225,7 +225,7 @@ class IfBraceSameLine(
     }
 }
 
-class IfBraceBelowLine(
+internal class IfBraceBelowLine(
     val activated: Boolean,
 ) : FormatRule {
     override fun apply(tokens: FormatTokens): FormatTokens {
@@ -244,7 +244,7 @@ class IfBraceBelowLine(
     }
 }
 
-class IndentsInsideIf(
+internal class IndentsInsideIf(
     val indents: Int,
 ) : FormatRule {
     override fun apply(tokens: FormatTokens): FormatTokens =

@@ -1,18 +1,18 @@
 package formatter.formattokens
 
-sealed interface FormatToken
+internal sealed interface FormatToken
 
-object WhiteSpace : FormatToken // ' '
+internal object WhiteSpace : FormatToken // ' '
 
-object EOL : FormatToken // '/n'
+internal object EOL : FormatToken // '/n'
 
-object Indent : FormatToken // '/t'
+internal object Indent : FormatToken // '/t'
 
-data class Text(
+internal data class Text(
     val value: String,
 ) : FormatToken
 
-data class FormatTokens(
+internal data class FormatTokens(
     val list: List<FormatToken>,
 ) {
     fun add(token: FormatToken): FormatTokens {

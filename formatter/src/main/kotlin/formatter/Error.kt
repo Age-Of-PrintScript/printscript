@@ -8,6 +8,7 @@ enum class FormattingError(
     INVALID_JSON("Formatting rules are invalid"),
     FILE_NOT_FOUND("Rules file could not be read"),
     UNKNOWN_AST_TYPE("Unknown Ast type of data"),
+    INVALID_VERSION("Invalid version"),
     ;
 
     override fun getMessage(): String = reason

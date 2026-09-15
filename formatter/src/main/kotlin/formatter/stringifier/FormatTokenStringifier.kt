@@ -7,7 +7,7 @@ import formatter.formattokens.Indent
 import formatter.formattokens.Text
 import formatter.formattokens.WhiteSpace
 
-fun stringify(tokens: FormatTokens): String {
+internal fun stringify(tokens: FormatTokens): String {
     var result = ""
     for (token in tokens.list) {
         result += translateToken(token)
@@ -15,7 +15,7 @@ fun stringify(tokens: FormatTokens): String {
     return result
 }
 
-fun translateToken(token: FormatToken): String =
+internal fun translateToken(token: FormatToken): String =
     when (token) {
         is Text -> token.value
         is WhiteSpace -> " "

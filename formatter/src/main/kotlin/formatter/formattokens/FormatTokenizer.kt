@@ -8,13 +8,13 @@ import domain.Success
 import domain.getOrReturn
 import formatter.FormattingError
 
-interface FormatTokenizer {
+internal interface FormatTokenizer {
     fun tokenize(ast: AST): Either<FormattingError, FormatTokens>
 }
 
 // 1.0
 
-class DeclarationFormatTokenizer : FormatTokenizer {
+internal class DeclarationFormatTokenizer : FormatTokenizer {
     override fun tokenize(ast: AST): Either<FormattingError, FormatTokens> {
         if (ast !is AST.DeclarationStatement) {
             return Failure(FormattingError.UNKNOWN_AST_TYPE)
@@ -35,7 +35,7 @@ class DeclarationFormatTokenizer : FormatTokenizer {
     }
 }
 
-class AssignmentFormatTokenizer : FormatTokenizer {
+internal class AssignmentFormatTokenizer : FormatTokenizer {
     override fun tokenize(ast: AST): Either<FormattingError, FormatTokens> {
         if (ast !is AST.AssignmentStatement) {
             return Failure(FormattingError.UNKNOWN_AST_TYPE)
@@ -50,7 +50,7 @@ class AssignmentFormatTokenizer : FormatTokenizer {
     }
 }
 
-class ExpressionFormatTokenizer : FormatTokenizer {
+internal class ExpressionFormatTokenizer : FormatTokenizer {
     override fun tokenize(ast: AST): Either<FormattingError, FormatTokens> {
         if (ast !is AST.ExpressionStatement) {
             return Failure(FormattingError.UNKNOWN_AST_TYPE)
@@ -66,7 +66,7 @@ class ExpressionFormatTokenizer : FormatTokenizer {
 
 // 1.1
 
-class ConditionalFormatTokenizer(
+internal class ConditionalFormatTokenizer(
     private val statementFormatters: Set<FormatTokenizer>,
 ) : FormatTokenizer {
     override fun tokenize(ast: AST) = tokenizeAtDepth(ast, 1)
