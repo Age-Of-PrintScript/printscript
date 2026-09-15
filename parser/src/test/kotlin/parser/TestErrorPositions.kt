@@ -8,11 +8,13 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import parser.builders.DeclarationParser
 import tokens.Assign
+import tokens.Call
 import tokens.Colon
 import tokens.DataType
 import tokens.Identifier
 import tokens.Let
 import tokens.Literal
+import tokens.OpenParen
 import tokens.Token
 
 class TestErrorPositions {
@@ -56,5 +58,50 @@ class TestErrorPositions {
         assertEquals("Missing colon in declaration", error.getMessage())
         assertEquals(Position(5, 16), error.start)
         assertEquals(Position(5, 17), error.end)
+    }
+
+    @Test
+    fun `syntax error captures token position on unclosed grouped expression`() {
+        // (1 + 2 (missing closing paren)
+        val tokens =
+            listOf(
+                Token(OpenParen, Position(3, 1), Position(3, 1)),
+                Token(Literal("1", NumType), Position(3, 2), Position(3, 2)),
+                Token(
+                    tokens.Operator(
+                        object : domain.PSOperator {
+                            override val symbol = "+"
+                            override val precedence = 1
+                        },
+                    ),
+                    Position(3, 4), Position(3, 4),
+                ),
+                Token(Literal("2", NumType), Position(3, 6), Position(3, 6)),
+            )
+
+        val result = expressionParser.parse(tokens)
+        assertTrue(result is Failure)
+        val error = (result as Failure).value
+        assertEquals("Missing closing parenthesis of expression", error.getMessage())
+        assertEquals(Position(3, 6), error.start)
+        assertEquals(Position(3, 6), error.end)
+    }
+
+    @Test
+    fun `syntax error captures token position on unclosed call expression`() {
+        // println(42 (missing closing paren)
+        val tokens =
+            listOf(
+                Token(Call("println"), Position(4, 1), Position(4, 7)),
+                Token(OpenParen, Position(4, 8), Position(4, 8)),
+                Token(Literal("42", NumType), Position(4, 9), Position(4, 10)),
+            )
+
+        val result = expressionParser.parse(tokens)
+        assertTrue(result is Failure)
+        val error = (result as Failure).value
+        assertEquals("Missing closing parenthesis of expression", error.getMessage())
+        assertEquals(Position(4, 10), error.start)
+        assertEquals(Position(4, 10), error.end)
     }
 }
