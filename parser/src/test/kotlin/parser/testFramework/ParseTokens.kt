@@ -24,7 +24,7 @@ import tokens.Semicolon
 import tokens.Token
 import tokens.TokenType
 
-private val dummyPosition = Position(0, 0)
+private val dummyPosition = Position.START
 
 internal enum class TestOperator(
     override val symbol: String,

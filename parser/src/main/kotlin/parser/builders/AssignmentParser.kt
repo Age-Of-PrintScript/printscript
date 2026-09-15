@@ -30,11 +30,19 @@ class AssignmentParser(
             .getOrReturn { return Failure(it) }
 
         val exprTokens = consumer.consumeUntil(Semicolon::class)
-        consumer
-            .consumeExpected(Semicolon::class, SyntaxError.MISSING_SEMICOLON)
-            .getOrReturn { return Failure(it) }
+        val semicolonToken =
+            consumer
+                .consumeExpected(Semicolon::class, SyntaxError.MISSING_SEMICOLON)
+                .getOrReturn { return Failure(it) }
 
         val expr = expressionParser.parse(exprTokens).getOrReturn { return Failure(it) }
-        return Success(AST.AssignmentStatement(id, expr))
+        return Success(
+            AST.AssignmentStatement(
+                id = id,
+                value = expr,
+                start = idToken.start,
+                end = semicolonToken.end,
+            ),
+        )
     }
 }

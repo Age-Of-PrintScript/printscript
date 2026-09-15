@@ -19,11 +19,19 @@ class ExpressionStatementParser(
 
     override fun parse(consumer: TokenConsumer): Either<SyntaxError, AST> {
         val exprTokens = consumer.consumeUntil(Semicolon::class)
-        consumer
-            .consumeExpected(Semicolon::class, SyntaxError.MISSING_SEMICOLON)
-            .getOrReturn { return Failure(it) }
+        val startPos = exprTokens.firstOrNull()?.start ?: domain.Position.START
+        val semicolonToken =
+            consumer
+                .consumeExpected(Semicolon::class, SyntaxError.MISSING_SEMICOLON)
+                .getOrReturn { return Failure(it) }
 
         val expr = expressionParser.parse(exprTokens).getOrReturn { return Failure(it) }
-        return Success(AST.ExpressionStatement(expr))
+        return Success(
+            AST.ExpressionStatement(
+                expression = expr,
+                start = startPos,
+                end = semicolonToken.end,
+            ),
+        )
     }
 }

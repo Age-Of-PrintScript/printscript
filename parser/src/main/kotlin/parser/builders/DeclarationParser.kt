@@ -44,30 +44,51 @@ class DeclarationParser(
                 .getOrReturn { return Failure(it) }
         val psType = (typeToken.type as DataType).name
 
-        if (consumer.consumeIf(Semicolon::class) != null) {
+        val semicolonToken = consumer.consumeIf(Semicolon::class)
+        if (semicolonToken != null) {
             if (!isMutable) return Failure(SyntaxError.INVALID_TOKEN)
-            return Success(AST.DeclarationStatement(id, psType, mutable = true, value = null))
+            return Success(
+                AST.DeclarationStatement(
+                    id = id,
+                    type = psType,
+                    mutable = true,
+                    value = null,
+                    start = keywordToken.start,
+                    end = semicolonToken.end,
+                ),
+            )
         }
 
         consumer
             .consumeExpected(Assign::class, SyntaxError.INVALID_TOKEN_AFTER_TYPE)
             .getOrReturn { return Failure(it) }
 
-        return parseAssignedValue(id, psType, isMutable, consumer)
+        return parseAssignedValue(keywordToken.start, id, psType, isMutable, consumer)
     }
 
     private fun parseAssignedValue(
+        startPos: domain.Position,
         id: String,
         type: PSType,
         isMutable: Boolean,
         consumer: TokenConsumer,
     ): Either<SyntaxError, AST> {
         val exprTokens = consumer.consumeUntil(Semicolon::class)
-        consumer
-            .consumeExpected(Semicolon::class, SyntaxError.MISSING_SEMICOLON)
-            .getOrReturn { return Failure(it) }
+        val semicolonToken =
+            consumer
+                .consumeExpected(Semicolon::class, SyntaxError.MISSING_SEMICOLON)
+                .getOrReturn { return Failure(it) }
 
         val expr = expressionParser.parse(exprTokens).getOrReturn { return Failure(it) }
-        return Success(AST.DeclarationStatement(id, type, mutable = isMutable, value = expr))
+        return Success(
+            AST.DeclarationStatement(
+                id = id,
+                type = type,
+                mutable = isMutable,
+                value = expr,
+                start = startPos,
+                end = semicolonToken.end,
+            ),
+        )
     }
 }

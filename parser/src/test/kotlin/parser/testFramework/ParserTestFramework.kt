@@ -77,11 +77,30 @@ internal class ParserFileTests {
         val actual = parser.parse(testCase.inputTokens)
         val actualTrees: Either<SyntaxError, List<AST>> =
             when (actual) {
-                is Success -> Success(actual.value.trees)
+                is Success -> Success(actual.value.trees.map { stripPositions(it) })
                 is Failure -> Failure(actual.value)
             }
-        assertEquals(testCase.expected, actualTrees)
+        val expectedTrees: Either<SyntaxError, List<AST>> =
+            when (testCase.expected) {
+                is Success -> Success(testCase.expected.value.map { stripPositions(it) })
+                is Failure -> Failure(testCase.expected.value)
+            }
+        assertEquals(expectedTrees, actualTrees)
     }
+
+    private fun stripPositions(ast: AST): AST =
+        when (ast) {
+            is AST.DeclarationStatement -> ast.copy(start = domain.Position.START, end = domain.Position.START)
+            is AST.AssignmentStatement -> ast.copy(start = domain.Position.START, end = domain.Position.START)
+            is AST.ExpressionStatement -> ast.copy(start = domain.Position.START, end = domain.Position.START)
+            is AST.ConditionalStatement ->
+                ast.copy(
+                    start = domain.Position.START,
+                    end = domain.Position.START,
+                    ifBlock = ast.ifBlock.copy(statements = ast.ifBlock.statements.map { stripPositions(it) }),
+                    elseBlock = ast.elseBlock?.let { block -> block.copy(statements = block.statements.map { stripPositions(it) }) },
+                )
+        }
 
     private fun parseTestFile(text: String): TestCase {
         val version = text.lines().first { it.isNotBlank() }.trim()

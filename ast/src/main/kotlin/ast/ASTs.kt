@@ -12,23 +12,31 @@ enum class ASTType {
 
 sealed interface AST {
     val astType: ASTType
+    val start: Position
+    val end: Position
 
     data class DeclarationStatement(
         val id: String,
         val type: PSType,
         val mutable: Boolean,
         val value: Expression?,
+        override val start: Position = Position.START,
+        override val end: Position = Position.START,
         override val astType: ASTType = ASTType.DECLARATION,
     ) : AST
 
     data class AssignmentStatement(
         val id: String,
         val value: Expression,
+        override val start: Position = Position.START,
+        override val end: Position = Position.START,
         override val astType: ASTType = ASTType.ASSIGNMENT,
     ) : AST
 
     data class ExpressionStatement(
         val expression: Expression,
+        override val start: Position = Position.START,
+        override val end: Position = Position.START,
         override val astType: ASTType = ASTType.EXPRESSION_STATEMENT,
     ) : AST
 
@@ -36,6 +44,8 @@ sealed interface AST {
         val condition: Expression,
         val ifBlock: Block,
         val elseBlock: Block? = null,
+        override val start: Position = Position.START,
+        override val end: Position = Position.START,
         override val astType: ASTType = ASTType.CONDITIONAL,
     ) : AST
 }
