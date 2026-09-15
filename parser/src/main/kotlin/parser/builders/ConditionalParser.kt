@@ -29,35 +29,53 @@ class ConditionalParser(
     override fun parse(consumer: TokenConsumer): Either<SyntaxError, AST> {
         if (!consumer.hasNext()) return Failure(SyntaxError.INCOMPLETE_STATEMENT)
 
-        consumer
-            .consumeExpected(If::class, SyntaxError.INVALID_TOKEN)
-            .getOrReturn { return Failure(it) }
+        val ifToken =
+            consumer
+                .consumeExpected(If::class, SyntaxError.INVALID_TOKEN)
+                .getOrReturn { return Failure(it) }
 
         val conditionTokens = consumer.consumeUntil(OpenBraces::class)
         val condition = expressionParser.parse(conditionTokens).getOrReturn { return Failure(it) }
 
-        val ifBlock = parseBracedBlock(consumer).getOrReturn { return Failure(it) }
+        val (ifBlock, ifEnd) = parseBracedBlock(consumer).getOrReturn { return Failure(it) }
 
         if (consumer.consumeIf(Else::class) != null) {
-            val elseBlock = parseBracedBlock(consumer).getOrReturn { return Failure(it) }
-            return Success(AST.ConditionalStatement(condition, ifBlock, elseBlock))
+            val (elseBlock, elseEnd) = parseBracedBlock(consumer).getOrReturn { return Failure(it) }
+            return Success(
+                AST.ConditionalStatement(
+                    condition = condition,
+                    ifBlock = ifBlock,
+                    elseBlock = elseBlock,
+                    start = ifToken.start,
+                    end = elseEnd,
+                ),
+            )
         }
 
-        return Success(AST.ConditionalStatement(condition, ifBlock, null))
+        return Success(
+            AST.ConditionalStatement(
+                condition = condition,
+                ifBlock = ifBlock,
+                elseBlock = null,
+                start = ifToken.start,
+                end = ifEnd,
+            ),
+        )
     }
 
-    private fun parseBracedBlock(consumer: TokenConsumer): Either<SyntaxError, Block> {
+    private fun parseBracedBlock(consumer: TokenConsumer): Either<SyntaxError, Pair<Block, domain.Position>> {
         consumer
             .consumeExpected(OpenBraces::class, SyntaxError.INVALID_TOKEN)
             .getOrReturn { return Failure(it) }
 
         val blockTokens = consumer.consumeBalancedUntil(OpenBraces::class, CloseBraces::class)
 
-        consumer
-            .consumeExpected(CloseBraces::class, SyntaxError.INVALID_TOKEN)
-            .getOrReturn { return Failure(it) }
+        val closeBraceToken =
+            consumer
+                .consumeExpected(CloseBraces::class, SyntaxError.INVALID_TOKEN)
+                .getOrReturn { return Failure(it) }
 
         val statements = blockParser.parse(TokenConsumer(blockTokens)).getOrReturn { return Failure(it) }
-        return Success(Block(statements))
+        return Success(Block(statements) to closeBraceToken.end)
     }
 }

@@ -1,23 +1,35 @@
 package interpreter
 
 import domain.Error
+import domain.Position
 
-enum class RuntimeError(
+data class RuntimeError(
     val reason: String,
+    override val start: Position? = null,
+    override val end: Position? = null,
 ) : Error {
-    VARIABLE_ALREADY_DEFINED("Variable already defined"),
-    VARIABLE_DOESNT_EXIST("Variable doesn't exist"),
-    MATH_ERROR("cannot resolve operation"),
-    VARIABLE_HAS_DIFFERENT_TYPE("That variable exists with a different type"),
-    STRING_REPETITION_REQUIRES_INT("string repetition requires a positive integer"),
-    MISSING_ASSIGNATION("Variable cannot be assigned to void"),
-    MISSING_EVALUATOR_FOR_AST("AST evaluator not found"),
-    INVALID_CAST("Cannot cast value to the expected type"),
-    VARIABLE_NOT_MUTABLE("Variable is not mutable"),
-    MISSING_IF_CONDITION("Condition not found"),
-    MISSING_ARGUMENT("Missing required argument"),
-    ENV_VARIABLE_NOT_FOUND("Environment variable not found"),
-    ;
-
     override fun getMessage(): String = reason
+
+    fun withPosition(
+        start: Position?,
+        end: Position? = null,
+    ): RuntimeError = copy(start = start, end = end)
+
+    companion object {
+        val VARIABLE_ALREADY_DEFINED = RuntimeError("Variable already defined")
+        val VARIABLE_DOESNT_EXIST = RuntimeError("Variable doesn't exist")
+        val VARIABLE_NOT_INITIALIZED = RuntimeError("Variable is not initialized")
+        val UNSUPPORTED_OPERATION = RuntimeError("Unsupported operation")
+        val FUNCTION_NOT_FOUND = RuntimeError("Function not found")
+        val MATH_ERROR = RuntimeError("cannot resolve operation")
+        val VARIABLE_HAS_DIFFERENT_TYPE = RuntimeError("That variable exists with a different type")
+        val STRING_REPETITION_REQUIRES_INT = RuntimeError("string repetition requires a positive integer")
+        val MISSING_ASSIGNATION = RuntimeError("Variable cannot be assigned to void")
+        val MISSING_EVALUATOR_FOR_AST = RuntimeError("AST evaluator not found")
+        val INVALID_CAST = RuntimeError("Cannot cast value to the expected type")
+        val VARIABLE_NOT_MUTABLE = RuntimeError("Variable is not mutable")
+        val MISSING_IF_CONDITION = RuntimeError("Condition not found")
+        val MISSING_ARGUMENT = RuntimeError("Missing required argument")
+        val ENV_VARIABLE_NOT_FOUND = RuntimeError("Environment variable not found")
+    }
 }

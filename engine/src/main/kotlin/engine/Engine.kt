@@ -101,9 +101,17 @@ class Engine {
     private fun logFailure(
         error: Error,
         logger: Logger,
-    ) = logFailure(error.toString(), logger)
+    ) = logFailure(formatError(error), logger)
 
-    // TODO: eliminar esto
+    private fun formatError(error: Error): String {
+        val start = error.start
+        return if (start != null) {
+            "[$start] ${error.getMessage()}"
+        } else {
+            error.getMessage()
+        }
+    }
+
     private fun logFailure(
         error: String,
         logger: Logger,

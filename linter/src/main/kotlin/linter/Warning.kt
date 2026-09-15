@@ -7,11 +7,13 @@ data class Warning(
     val message: String,
     val position: Position,
 ) {
+    override fun toString(): String = "[$position] $message"
+
     companion object {
         fun fromError(error: Error): Warning =
             Warning(
                 error.getMessage(),
-                Position(0, 0),
+                error.start ?: Position.START,
             )
     }
 }

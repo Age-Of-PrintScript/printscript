@@ -31,7 +31,15 @@ internal class InterpreterImpl(
         val env = runtimeEnvironment ?: RuntimeEnvironment()
         val evaluator =
             semantics.statementEvaluators[statement.astType]
-                ?: return Failure(RuntimeError.MISSING_EVALUATOR_FOR_AST)
-        return evaluator.evaluate(statement, env, io, semantics)
+                ?: return Failure(RuntimeError.MISSING_EVALUATOR_FOR_AST.withPosition(statement.start, statement.end))
+        val result = evaluator.evaluate(statement, env, io, semantics)
+        return when (result) {
+            is Failure -> {
+                val err = result.value
+                val errWithPos = if (err.start == null) err.withPosition(statement.start, statement.end) else err
+                Failure(errWithPos)
+            }
+            is Success -> result
+        }
     }
 }

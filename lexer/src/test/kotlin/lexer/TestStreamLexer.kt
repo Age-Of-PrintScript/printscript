@@ -67,11 +67,12 @@ class TestStreamLexer {
     fun `nextToken returns failure on invalid character and unterminated string`() {
         val invalidReader = StringReader("@")
         val res = lexer.nextToken(invalidReader)
-        assertTrue(res is Failure && res.value == LexerError.INVALID_CHARACTER)
+        assertTrue(res is Failure && res.value.getMessage() == LexerError.INVALID_CHARACTER.getMessage())
+        assertEquals(domain.Position(1, 1), (res as Failure).value.start)
 
         val unterminatedReader = StringReader("\"hello")
         val res2 = lexer.nextToken(unterminatedReader)
-        assertTrue(res2 is Failure && res2.value == LexerError.UNTERMINATED_STRING)
+        assertTrue(res2 is Failure && res2.value.getMessage() == LexerError.UNTERMINATED_STRING.getMessage())
     }
 
     @Test

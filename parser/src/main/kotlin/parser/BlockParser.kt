@@ -16,7 +16,7 @@ data class BlockParser(
         val nextToken = consumer.peek()
         val parser =
             statementParsers.firstOrNull { it.canParse(nextToken.type) }
-                ?: return Failure(SyntaxError.INVALID_TOKEN)
+                ?: return Failure(SyntaxError.INVALID_TOKEN.withPosition(nextToken.start, nextToken.end))
 
         return parser.parse(consumer)
     }

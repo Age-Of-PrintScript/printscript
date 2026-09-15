@@ -15,6 +15,8 @@ interface TokenConsumer {
 
     fun consume(): Token
 
+    val lastPosition: domain.Position? get() = null
+
     companion object {
         operator fun invoke(tokens: List<Token>): TokenConsumer = ListTokenConsumer(tokens)
 
@@ -34,10 +36,13 @@ fun TokenConsumer.consumeExpected(
     expectedType: KClass<out TokenType>,
     errorOnMismatch: SyntaxError,
 ): Either<SyntaxError, Token> {
-    if (!hasNext()) return Failure(SyntaxError.INCOMPLETE_STATEMENT)
+    if (!hasNext()) {
+        val lastEnd = lastPosition ?: domain.Position.START
+        return Failure(SyntaxError.INCOMPLETE_STATEMENT.withPosition(lastEnd, lastEnd))
+    }
     val token = peek()
     if (!expectedType.isInstance(token.type)) {
-        return Failure(errorOnMismatch)
+        return Failure(errorOnMismatch.withPosition(token.start, token.end))
     }
     return Success(consume())
 }

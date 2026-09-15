@@ -1,7 +1,6 @@
 package linter.rules
 
 import ast.AST
-import domain.Position
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import linter.IdentifierConvention
@@ -20,7 +19,7 @@ internal class IdentifierFormatRule(
         } else {
             Warning(
                 "Identifier '$id' does not follow ${convention.name} convention",
-                Position(0, 0),
+                ast.start,
             )
         }
     }

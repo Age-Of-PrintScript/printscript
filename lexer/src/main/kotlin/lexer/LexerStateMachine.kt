@@ -2,6 +2,7 @@ package lexer
 
 import domain.Either
 import domain.Failure
+import domain.Position
 import domain.Success
 import domain.getOrReturn
 import lexer.states.InitialState
@@ -15,6 +16,8 @@ internal class LexerStateMachine(
 ) {
     // se guarda el proximo caracter a consumir
     private var peekedChar: Int? = null
+    private var currentLine = 1
+    private var currentColumn = 1
 
     // retorna -1 si llego al EOF (contrato de java.io.Reader).
     private fun peekNextChar(reader: Reader): Int {
@@ -37,22 +40,48 @@ internal class LexerStateMachine(
         var builder = TokenBuilder(lexicon)
 
         while (peekNextChar(reader) != -1) {
+            val currentPos = Position(currentLine, currentColumn)
             val chr = consumeChar(reader).toChar()
 
-            val nextState = state.consume(chr).getOrReturn { return Failure(it) }
-            builder = builder.addChar(chr).getOrReturn { return Failure(it) }
+            val nextState =
+                state.consume(chr).getOrReturn {
+                    val errWithPos = if (it.start == null) it.withPosition(currentPos, currentPos) else it
+                    return Failure(errWithPos)
+                }
+
+            builder =
+                builder.addChar(chr, currentPos).getOrReturn {
+                    val errWithPos = if (it.start == null) it.withPosition(currentPos, currentPos) else it
+                    return Failure(errWithPos)
+                }
             state = nextState
 
-            val nextInt = peekNextChar(reader)
-            val shouldCloseToken = nextInt == -1 || !state.canConsume(nextInt.toChar())
+            if (chr == '\n') {
+                currentLine++
+                currentColumn = 1
+            } else {
+                currentColumn++
+            }
 
-            if (shouldCloseToken) {
-                return builder.build()
+            val nextInt = peekNextChar(reader)
+
+            if (shouldCloseToken(nextInt, state)) {
+                val token =
+                    builder.build().getOrReturn {
+                        val errWithPos = if (it.start == null) it.withPosition(currentPos, currentPos) else it
+                        return Failure(errWithPos)
+                    }
+                return Success(token)
             }
         }
 
         return null
     }
+
+    private fun shouldCloseToken(
+        nextInt: Int,
+        state: State,
+    ): Boolean = nextInt == -1 || !state.canConsume(nextInt.toChar())
 
     // Devuelve el próximo token no-whitespace, o null si llegó al EOF.
     // Equivale al .filter { it.type != Whitespace } del tokenize original.

@@ -4,6 +4,7 @@ import ast.Expression
 import domain.Either
 import domain.Failure
 import domain.PSOperator
+import domain.Position
 import domain.Success
 import domain.getOrReturn
 import parser.tokenConsumers.TokenConsumer
@@ -20,7 +21,10 @@ class ExpressionParser {
         if (tokens.isEmpty()) return Failure(SyntaxError.INCOMPLETE_STATEMENT)
         val consumer = TokenConsumer(tokens)
         val result = parseExpression(consumer, 0).getOrReturn { return Failure(it) }
-        if (consumer.hasNext()) return Failure(SyntaxError.INVALID_TOKEN)
+        if (consumer.hasNext()) {
+            val token = consumer.peek()
+            return Failure(SyntaxError.INVALID_TOKEN.withPosition(token.start, token.end))
+        }
         return Success(result)
     }
 
@@ -45,7 +49,10 @@ class ExpressionParser {
 
     // Parsea un valor atómico: literal, variable, llamada a función, o expresión entre paréntesis
     private fun parsePrimary(consumer: TokenConsumer): Either<SyntaxError, Expression> {
-        if (!consumer.hasNext()) return Failure(SyntaxError.INCOMPLETE_STATEMENT)
+        if (!consumer.hasNext()) {
+            val pos = lastTokenEnd(consumer)
+            return Failure(SyntaxError.INCOMPLETE_STATEMENT.withPosition(pos, pos))
+        }
 
         val token = consumer.consume()
         return when (val type = token.type) {
@@ -53,7 +60,7 @@ class ExpressionParser {
             is Identifier -> Success(Expression.Variable(type.name))
             is Call -> parseCall(type.name, consumer)
             is OpenParen -> parseGrouped(consumer)
-            else -> Failure(SyntaxError.WRONG_TOKEN_TYPE)
+            else -> Failure(SyntaxError.WRONG_TOKEN_TYPE.withPosition(token.start, token.end))
         }
     }
 
@@ -62,8 +69,13 @@ class ExpressionParser {
         name: String,
         consumer: TokenConsumer,
     ): Either<SyntaxError, Expression> {
-        if (!consumer.hasNext() || consumer.peek().type !is OpenParen) {
-            return Failure(SyntaxError.INVALID_TOKEN)
+        if (!consumer.hasNext()) {
+            val pos = lastTokenEnd(consumer)
+            return Failure(SyntaxError.INCOMPLETE_STATEMENT.withPosition(pos, pos))
+        }
+        val peekToken = consumer.peek()
+        if (peekToken.type !is OpenParen) {
+            return Failure(SyntaxError.INVALID_TOKEN.withPosition(peekToken.start, peekToken.end))
         }
         consumer.consume() // Consume '('
 
@@ -74,7 +86,15 @@ class ExpressionParser {
 
         val arg = parseExpression(consumer, 0).getOrReturn { return Failure(it) }
         if (!consumer.hasNext() || consumer.peek().type !is CloseParen) {
-            return Failure(SyntaxError.MISSING_CLOSING_PARENTHESIS)
+            val (errStart, errEnd) =
+                if (consumer.hasNext()) {
+                    val nextToken = consumer.peek()
+                    nextToken.start to nextToken.end
+                } else {
+                    val pos = lastTokenEnd(consumer)
+                    pos to pos
+                }
+            return Failure(SyntaxError.MISSING_CLOSING_PARENTHESIS.withPosition(errStart, errEnd))
         }
         consumer.consume() // Consume ')'
         return Success(Expression.Call(name, listOf(arg)))
@@ -84,11 +104,21 @@ class ExpressionParser {
     private fun parseGrouped(consumer: TokenConsumer): Either<SyntaxError, Expression> {
         val inner = parseExpression(consumer, 0).getOrReturn { return Failure(it) }
         if (!consumer.hasNext() || consumer.peek().type !is CloseParen) {
-            return Failure(SyntaxError.MISSING_CLOSING_PARENTHESIS)
+            val (errStart, errEnd) =
+                if (consumer.hasNext()) {
+                    val nextToken = consumer.peek()
+                    nextToken.start to nextToken.end
+                } else {
+                    val pos = lastTokenEnd(consumer)
+                    pos to pos
+                }
+            return Failure(SyntaxError.MISSING_CLOSING_PARENTHESIS.withPosition(errStart, errEnd))
         }
         consumer.consume() // Consume ')'
         return Success(inner)
     }
+
+    private fun lastTokenEnd(consumer: TokenConsumer): Position = consumer.lastPosition ?: Position.START
 
     // Devuelve el operador si el siguiente token es un operador con precedencia suficiente, o null si hay que parar
     private fun nextOperator(

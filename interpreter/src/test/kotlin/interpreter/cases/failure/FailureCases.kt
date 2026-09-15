@@ -38,12 +38,12 @@ val FAILURE_CASES =
         FailureCase(
             name = "declaration with invalid operation in initializer",
             program = Program(listOf(DECLARATION_Statement_X_NUMBER_WITH_INVALID_OPERATION), POS, POS),
-            expectedFailure = RuntimeError.MATH_ERROR,
+            expectedFailure = RuntimeError.UNSUPPORTED_OPERATION,
         ),
         FailureCase(
             name = "println with undeclared variable",
             program = Program(listOf(CALL_PRINTLN_UNDECLARED_A), POS, POS),
-            expectedFailure = RuntimeError.MATH_ERROR,
+            expectedFailure = RuntimeError.VARIABLE_DOESNT_EXIST,
         ),
         FailureCase(
             name = "println with uninitialized variable used in operation",
@@ -52,7 +52,7 @@ val FAILURE_CASES =
                     listOf(DECLARATION_Statement_X_NUMBER_NO_VALUE, CALL_PRINTLN_OPERATION_X_PLUS_1),
                     POS, POS,
                 ),
-            expectedFailure = RuntimeError.MATH_ERROR,
+            expectedFailure = RuntimeError.VARIABLE_NOT_INITIALIZED,
         ),
         FailureCase(
             name = "declaration initializing variable with uninitialized variable",
@@ -61,7 +61,7 @@ val FAILURE_CASES =
                     listOf(DECLARATION_Statement_X_NUMBER_NO_VALUE, DECLARATION_Statement_Y_NUMBER_WITH_X_VALUE),
                     POS, POS,
                 ),
-            expectedFailure = RuntimeError.MATH_ERROR,
+            expectedFailure = RuntimeError.VARIABLE_NOT_INITIALIZED,
         ),
         FailureCase(
             name = "assignment to variable using uninitialized variable",
@@ -70,7 +70,7 @@ val FAILURE_CASES =
                     listOf(DECLARATION_Statement_X_NUMBER_NO_VALUE, DECLARATION_Statement_Y_NUMBER_NO_VALUE, ASSIGNMENT_Statement_Y_TO_X),
                     POS, POS,
                 ),
-            expectedFailure = RuntimeError.MATH_ERROR,
+            expectedFailure = RuntimeError.VARIABLE_NOT_INITIALIZED,
         ),
         FailureCase(
             name = "reassignment to immutable variable",
