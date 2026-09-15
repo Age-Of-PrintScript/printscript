@@ -30,7 +30,7 @@ interface PSVersion {
                 else -> Failure(VersionError.VERSION_DOESNT_EXISTS)
             }
 
-        fun getLatestVersion(): PSVersion = version1_0
+        fun getLatestVersion(): PSVersion = version1_1
     }
 }
 
