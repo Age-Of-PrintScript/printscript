@@ -59,6 +59,18 @@ object FormatterSuccessCases {
                     """.trimIndent(),
                 expectedOutput = "let result: number = 1 + 2 * 3;\nprintln(result);\n\nlet y: number = 10;\n",
             ),
+            FormatterSuccessCase(
+                name = "v1.0 - mandatory single space separation",
+                version = "1.0",
+                source = "let name:string=\"John\"; println(name);",
+                configJson =
+                    """
+                    {
+                        "mandatory-single-space-separation": true
+                    }
+                    """.trimIndent(),
+                expectedOutput = "let name : string = \"John\";\nprintln ( name );\n",
+            ),
             // ----------------- v1.1 Cases -----------------
             FormatterSuccessCase(
                 name = "v1.1 - if statement same line brace with indentation",
