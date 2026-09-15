@@ -13,16 +13,15 @@ import java.io.Reader
 internal class LexerStateMachine(
     val lexicon: Lexicon,
 ) {
-    // Buffer de lookahead de 1 carácter.
+    // se guarda el proximo caracter a consumir
     private var peekedChar: Int? = null
 
-    // Retorna -1 si llegó al EOF (contrato de java.io.Reader).
+    // retorna -1 si llego al EOF (contrato de java.io.Reader).
     private fun peekNextChar(reader: Reader): Int {
         if (peekedChar == null) peekedChar = reader.read()
         return peekedChar!!
     }
 
-    // Marca el char del buffer como consumido y lo retorna.
     private fun consumeChar(reader: Reader): Int {
         val ch = peekNextChar(reader)
         peekedChar = null
