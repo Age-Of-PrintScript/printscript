@@ -34,7 +34,7 @@ jobs:
                     echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
             -   name: Run checks
-                run: ./gradlew check -x jacocoTestCoverageVerification --no-configuration-cache
+                run: ./gradlew check --no-configuration-cache
 
             -   name: Publish to GitHub Packages
                 run: ./gradlew publish -Pversion=${{ env.VERSION }} --no-configuration-cache

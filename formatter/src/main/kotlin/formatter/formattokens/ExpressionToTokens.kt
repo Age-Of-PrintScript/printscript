@@ -1,6 +1,7 @@
 package formatter.formattokens
 
 import ast.Expression
+import domain.PSOperator
 import domain.StrType
 
 fun expressionToFormatTokens(expression: Expression): List<FormatToken> =
@@ -17,10 +18,42 @@ fun expressionToFormatTokens(expression: Expression): List<FormatToken> =
         is Expression.Call -> callToFormatTokens(expression)
     }
 
-private fun operationToFormatTokens(operation: Expression.Operation): List<FormatToken> =
-    expressionToFormatTokens(operation.left) +
-        Text(operation.operator.symbol) +
-        expressionToFormatTokens(operation.right)
+private fun operationToFormatTokens(operation: Expression.Operation): List<FormatToken> {
+    val leftTokens =
+        formatChild(
+            operation.left, parentOp = operation.operator,
+            isRight = false,
+        )
+    val rightTokens =
+        formatChild(
+            operation.right, parentOp = operation.operator,
+            isRight = true,
+        )
+
+    return leftTokens + Text(operation.operator.symbol) + rightTokens
+}
+
+private fun formatChild(
+    child: Expression,
+    parentOp: PSOperator,
+    isRight: Boolean,
+): List<FormatToken> {
+    val tokens = expressionToFormatTokens(child)
+    if (child !is Expression.Operation) return tokens
+
+    val needsParens =
+        if (!isRight) {
+            child.operator.precedence < parentOp.precedence
+        } else {
+            child.operator.precedence < parentOp.precedence
+        }
+
+    return if (needsParens) {
+        listOf(Text("(")) + tokens + listOf(Text(")"))
+    } else {
+        tokens
+    }
+}
 
 private fun callToFormatTokens(call: Expression.Call): List<FormatToken> {
     val argsTokens =
