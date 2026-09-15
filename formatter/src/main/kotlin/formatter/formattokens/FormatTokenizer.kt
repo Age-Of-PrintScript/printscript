@@ -19,12 +19,18 @@ class DeclarationFormatTokenizer : FormatTokenizer {
         if (ast !is AST.DeclarationStatement) {
             return Failure(FormattingError.UNKNOWN_AST_TYPE)
         }
+        val first =
+            if (ast.mutable) {
+                Text("let")
+            } else {
+                Text("const")
+            }
         val valueTokens =
             ast.value?.let { listOf(Text("=")) + expressionToFormatTokens(it) } ?: emptyList()
         return Success(
             FormatTokens(
                 listOf(
-                    Text("let"),
+                    first,
                     WhiteSpace,
                     Text(ast.id),
                     Text(":"),
