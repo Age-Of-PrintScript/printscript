@@ -7,6 +7,7 @@ import domain.PSOperator
 import domain.Position
 import domain.Success
 import domain.getOrReturn
+import parser.tokenConsumers.TokenConsumer
 import tokens.Call
 import tokens.CloseParen
 import tokens.Identifier
@@ -117,7 +118,7 @@ class ExpressionParser {
         return Success(inner)
     }
 
-    private fun lastTokenEnd(consumer: TokenConsumer): Position = consumer.tokens.lastOrNull()?.end ?: Position.START
+    private fun lastTokenEnd(consumer: TokenConsumer): Position = consumer.lastPosition ?: Position.START
 
     // Devuelve el operador si el siguiente token es un operador con precedencia suficiente, o null si hay que parar
     private fun nextOperator(

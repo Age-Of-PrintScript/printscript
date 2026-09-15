@@ -8,7 +8,10 @@ import domain.Success
 import domain.getOrReturn
 import parser.ExpressionParser
 import parser.SyntaxError
-import parser.TokenConsumer
+import parser.tokenConsumers.TokenConsumer
+import parser.tokenConsumers.consumeExpected
+import parser.tokenConsumers.consumeIf
+import parser.tokenConsumers.consumeUntil
 import tokens.Assign
 import tokens.Colon
 import tokens.Const

@@ -7,13 +7,25 @@ import domain.getOrReturn
 import interpreter.Interpreter
 import interpreter.LanguageSemantics
 import lexer.Lexer
+import lexer.LexerError
 import lexer.Lexicon
 import parser.Parser
+import parser.tokenConsumers.TokenConsumer
 import versionfactory.PSVersion
+import java.io.Reader
+import java.io.StringReader
 
 class Engine {
     fun execute(
         source: String,
+        io: EngineIO,
+        logger: Logger,
+        context: ExecutionContext = ExecutionContext(),
+        version: String? = null,
+    ): EngineResult = execute(StringReader(source), io, logger, context, version)
+
+    fun execute(
+        reader: Reader,
         io: EngineIO,
         logger: Logger,
         context: ExecutionContext = ExecutionContext(),
@@ -42,39 +54,45 @@ class Engine {
                     ),
                 )
 
-        val tokensResult = lexer.tokenize(source)
-        if (tokensResult is Failure) {
-            logFailure(tokensResult.value, logger)
-            return EngineResult(ExitCode.FAILURE, context)
-        }
-
-        val programResult = parser.parse((tokensResult as Success).value)
-        if (programResult is Failure) {
-            logFailure(programResult.value, logger)
-            return EngineResult(ExitCode.FAILURE, context)
-        }
-
         val interpreterIO = toInterpreterIO(io)
+        var currentEnv = context.environment
+        var lexerError: LexerError? = null
 
-        val executionResult =
-            interpreter.execute(
-                (programResult as Success).value,
-                interpreterIO,
-                context.environment,
-            )
-
-        return when (executionResult) {
-            is Failure -> {
-                logFailure(executionResult.value, logger)
-                EngineResult(ExitCode.FAILURE, context)
+        val consumer =
+            TokenConsumer.from {
+                if (lexerError != null) return@from null
+                when (val result = lexer.nextToken(reader)) {
+                    null -> null
+                    is Success -> result.value
+                    is Failure -> {
+                        lexerError = result.value
+                        null
+                    }
+                }
             }
-            is Success -> {
+
+        while (true) {
+            val parseResult = parser.parseNext(consumer)
+            if (lexerError != null) {
+                logFailure(lexerError!!, logger)
+                return EngineResult(ExitCode.FAILURE, ExecutionContext(currentEnv))
+            }
+            if (parseResult == null) {
                 logSuccess(logger)
-                EngineResult(
-                    ExitCode.SUCCESS,
-                    ExecutionContext(executionResult.value),
-                )
+                return EngineResult(ExitCode.SUCCESS, ExecutionContext(currentEnv))
             }
+            val statement =
+                parseResult.getOrReturn { syntaxError ->
+                    logFailure(syntaxError, logger)
+                    return EngineResult(ExitCode.FAILURE, ExecutionContext(currentEnv))
+                }
+
+            val execResult = interpreter.executeStatement(statement, interpreterIO, currentEnv)
+            currentEnv =
+                execResult.getOrReturn { runtimeError ->
+                    logFailure(runtimeError, logger)
+                    return EngineResult(ExitCode.FAILURE, ExecutionContext(currentEnv))
+                }
         }
     }
 
@@ -106,6 +124,12 @@ class Engine {
         source: String,
         logger: Logger,
         version: String? = null,
+    ): ExitCode = validate(StringReader(source), logger, version)
+
+    fun validate(
+        reader: Reader,
+        logger: Logger,
+        version: String? = null,
     ): ExitCode {
         val psVersion =
             if (version != null) {
@@ -119,7 +143,7 @@ class Engine {
         val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
         val parser = Parser.new(psVersion.statementParsers)
 
-        val tokensResult = lexer.tokenize(source)
+        val tokensResult = lexer.tokenize(reader.readText())
         if (tokensResult is Failure) {
             logFailure(tokensResult.value, logger)
             return ExitCode.FAILURE

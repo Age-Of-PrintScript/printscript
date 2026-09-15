@@ -8,28 +8,43 @@ import domain.getOrReturn
 import lexer.states.InitialState
 import lexer.states.State
 import tokens.Token
-import tokens.TokenList
 import tokens.Whitespace
+import java.io.Reader
 
 internal class LexerStateMachine(
     val lexicon: Lexicon,
 ) {
-    fun tokenize(source: String): Either<LexerError, TokenList> {
+    // se guarda el proximo caracter a consumir
+    private var peekedChar: Int? = null
+    private var currentLine = 1
+    private var currentColumn = 1
+
+    // retorna -1 si llego al EOF (contrato de java.io.Reader).
+    private fun peekNextChar(reader: Reader): Int {
+        if (peekedChar == null) peekedChar = reader.read()
+        return peekedChar!!
+    }
+
+    private fun consumeChar(reader: Reader): Int {
+        val ch = peekNextChar(reader)
+        peekedChar = null
+        return ch
+    }
+
+    // DFA puro: lee caracteres hasta cerrar UN token (puede ser Whitespace).
+    // Retorna null si el stream está vacío (EOF).
+    private fun readRawToken(reader: Reader): Either<LexerError, Token>? {
+        if (peekNextChar(reader) == -1) return null
+
         var state: State = InitialState(lexicon)
         var builder = TokenBuilder(lexicon)
 
-        val tokenList = mutableListOf<Token>()
-
-        var currentLine = 1
-        var currentColumn = 1
-
-        for (i in source.indices) {
-            val chr = source[i]
+        while (peekNextChar(reader) != -1) {
             val currentPos = Position(currentLine, currentColumn)
+            val chr = consumeChar(reader).toChar()
 
-            val result = state.consume(chr)
-            val newState =
-                result.getOrReturn {
+            val nextState =
+                state.consume(chr).getOrReturn {
                     val errWithPos = if (it.start == null) it.withPosition(currentPos, currentPos) else it
                     return Failure(errWithPos)
                 }
@@ -39,20 +54,7 @@ internal class LexerStateMachine(
                     val errWithPos = if (it.start == null) it.withPosition(currentPos, currentPos) else it
                     return Failure(errWithPos)
                 }
-            state = newState
-
-            val shouldCloseToken = cannotConsumeNextChar(i, source, state)
-
-            if (shouldCloseToken) {
-                val token =
-                    builder.build().getOrReturn {
-                        val errWithPos = if (it.start == null) it.withPosition(currentPos, currentPos) else it
-                        return Failure(errWithPos)
-                    }
-                tokenList.add(token)
-                builder = TokenBuilder(lexicon)
-                state = InitialState(lexicon)
-            }
+            state = nextState
 
             if (chr == '\n') {
                 currentLine++
@@ -60,17 +62,36 @@ internal class LexerStateMachine(
             } else {
                 currentColumn++
             }
+
+            val nextInt = peekNextChar(reader)
+
+            if (shouldCloseToken(nextInt, state)) {
+                val token =
+                    builder.build().getOrReturn {
+                        val errWithPos = if (it.start == null) it.withPosition(currentPos, currentPos) else it
+                        return Failure(errWithPos)
+                    }
+                return Success(token)
+            }
         }
-        return Success(tokenList.filter { it.type != Whitespace })
+
+        return null
     }
 
-    private fun cannotConsumeNextChar(
-        i: Int,
-        source: String,
+    private fun shouldCloseToken(
+        nextInt: Int,
         state: State,
-    ): Boolean {
-        val isLastChar = (i == source.length - 1)
-        val nextChar = if (!isLastChar) source[i + 1] else null
-        return nextChar == null || !state.canConsume(nextChar)
+    ): Boolean = nextInt == -1 || !state.canConsume(nextInt.toChar())
+
+    // Devuelve el próximo token no-whitespace, o null si llegó al EOF.
+    // Equivale al .filter { it.type != Whitespace } del tokenize original.
+    fun nextToken(reader: Reader): Either<LexerError, Token>? {
+        var raw = readRawToken(reader)
+        while (raw != null) {
+            val token = raw.getOrReturn { return Failure(it) }
+            if (token.type !is Whitespace) return Success(token)
+            raw = readRawToken(reader)
+        }
+        return null
     }
 }
