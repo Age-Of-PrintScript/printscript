@@ -1,5 +1,6 @@
 package engine
 
+import engine.cases.ValidationCases
 import org.junit.jupiter.api.Assertions.assertEquals
 
 class TestLogger : Logger {
@@ -14,53 +15,56 @@ class TestLogger : Logger {
 
 internal fun assertCorrectExecution(
     engine: Engine,
-    input: String,
-    expectedOutputs: List<String>,
+    case: SuccessCase,
 ) {
     val logger = TestLogger()
     val prints = mutableListOf<String>()
+    val inputIterator = case.inputs.iterator()
     val io =
         EngineIO(
             emitter = { prints.add(it) },
-            provider = { "" },
+            provider = { if (inputIterator.hasNext()) inputIterator.next() else "" },
+            envProvider = { case.env[it] },
         )
-    val result = engine.execute(input, io, logger)
+    val result = engine.execute(case.input, io, logger, version = case.version)
     assertEquals(ExitCode.SUCCESS, result.exitCode, "Execution was expected to succeed")
-    assertEquals(expectedOutputs, prints)
+    assertEquals(case.expectedOutputs, prints)
     assertEquals(listOf("Build Successful"), logger.logs.takeLast(1))
 }
 
 internal fun assertFailedExecution(
     engine: Engine,
-    input: String,
+    case: FailureCase,
 ) {
     val logger = TestLogger()
+    val inputIterator = case.inputs.iterator()
     val io =
         EngineIO(
             emitter = {},
-            provider = { "" },
+            provider = { if (inputIterator.hasNext()) inputIterator.next() else "" },
+            envProvider = { case.env[it] },
         )
-    val result = engine.execute(input, io, logger)
+    val result = engine.execute(case.input, io, logger, version = case.version)
     assertEquals(ExitCode.FAILURE, result.exitCode, "Execution was expected to fail")
     assertEquals("Build Failed", logger.logs.lastOrNull())
 }
 
 internal fun assertCorrectValidation(
     engine: Engine,
-    input: String,
+    case: ValidationCases.Case,
 ) {
     val logger = TestLogger()
-    val result = engine.validate(input, logger)
+    val result = engine.validate(case.input, logger, version = case.version)
     assertEquals(ExitCode.SUCCESS, result, "Validation was expected to succeed")
     assertEquals(listOf("Validation Successful"), logger.logs)
 }
 
 internal fun assertFailedValidation(
     engine: Engine,
-    input: String,
+    case: ValidationCases.Case,
 ) {
     val logger = TestLogger()
-    val result = engine.validate(input, logger)
+    val result = engine.validate(case.input, logger, version = case.version)
     assertEquals(ExitCode.FAILURE, result, "Validation was expected to fail")
     assertEquals("Build Failed", logger.logs.lastOrNull())
 }

@@ -13,11 +13,17 @@ data class SuccessCase(
     val name: String,
     val input: String,
     val expectedOutputs: List<String>,
+    val version: String? = null,
+    val inputs: List<String> = emptyList(),
+    val env: Map<String, String> = emptyMap(),
 )
 
 data class FailureCase(
     val name: String,
     val input: String,
+    val version: String? = null,
+    val inputs: List<String> = emptyList(),
+    val env: Map<String, String> = emptyMap(),
 )
 
 class EndToEndTest {
@@ -27,7 +33,7 @@ class EndToEndTest {
     fun `successful program executions`(): List<DynamicNode> =
         SuccessfulPrograms.cases().map { case ->
             dynamicTest(case.name) {
-                assertCorrectExecution(engine, case.input, case.expectedOutputs)
+                assertCorrectExecution(engine, case)
             }
         }
 
@@ -35,7 +41,7 @@ class EndToEndTest {
     fun `failed program executions`(): List<DynamicNode> =
         FailedPrograms.cases().map { case ->
             dynamicTest(case.name) {
-                assertFailedExecution(engine, case.input)
+                assertFailedExecution(engine, case)
             }
         }
 
@@ -43,7 +49,7 @@ class EndToEndTest {
     fun `successful validations`(): List<DynamicNode> =
         ValidationCases.successfulCases().map { case ->
             dynamicTest(case.name) {
-                assertCorrectValidation(engine, case.input)
+                assertCorrectValidation(engine, case)
             }
         }
 
@@ -51,7 +57,7 @@ class EndToEndTest {
     fun `failed validations`(): List<DynamicNode> =
         ValidationCases.failedCases().map { case ->
             dynamicTest(case.name) {
-                assertFailedValidation(engine, case.input)
+                assertFailedValidation(engine, case)
             }
         }
 
