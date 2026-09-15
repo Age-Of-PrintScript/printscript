@@ -3,7 +3,7 @@ package parser.builders
 import ast.AST
 import domain.Either
 import parser.SyntaxError
-import parser.TokenConsumer
+import parser.tokenConsumers.TokenConsumer
 import tokens.TokenType
 
 interface StatementParser {
