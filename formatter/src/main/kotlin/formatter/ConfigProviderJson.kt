@@ -5,9 +5,11 @@ import domain.Error
 import domain.Failure
 import domain.Success
 import formatter.formatrules.EnsureNoSpaceAroundEquals
+import formatter.formatrules.EnsureSingleSpace
 import formatter.formatrules.EnsureSpaceAfterColon
 import formatter.formatrules.EnsureSpaceAroundEquals
 import formatter.formatrules.EnsureSpaceBeforeColon
+import formatter.formatrules.EnsureSpacesSurroundingOperations
 import formatter.formatrules.FormatRule
 import formatter.formatrules.FormatRules
 import formatter.formatrules.IfBraceBelowLine
@@ -27,6 +29,8 @@ private data class RawFormatterConfig(
     @SerialName("enforce-no-spacing-around-equals") val enforceNoSpacingAroundEquals: Boolean = false,
     @SerialName("enforce-spacing-before-colon-in-declaration") val enforceSpacingBeforeColon: Boolean = false,
     @SerialName("enforce-spacing-after-colon-in-declaration") val enforceSpacingAfterColon: Boolean = false,
+    @SerialName("mandatory-single-space-separation") val enforceSingleSpaces: Boolean = false,
+    @SerialName("mandatory-space-surrounding-operations") val enforceSpacingSurroundingOperations: Boolean = false,
     @SerialName("if-brace-same-line") val ifBraceSameLine: Boolean = false,
     @SerialName("if-brace-below-line") val ifBraceBelowLine: Boolean = false,
     @SerialName("indent-inside-if") val indentInsideIf: Int = 0,
@@ -40,6 +44,8 @@ private fun formatRulesFromJson(json: String): FormatRules {
     val raw = configJson.decodeFromString<RawFormatterConfig>(json)
     return FormatRules(
         listOf(
+            EnsureSpacesSurroundingOperations(raw.enforceSpacingSurroundingOperations),
+            EnsureSingleSpace(raw.enforceSingleSpaces),
             EnsureSpaceAroundEquals(raw.enforceSpacingAroundEquals),
             EnsureNoSpaceAroundEquals(raw.enforceNoSpacingAroundEquals),
             EnsureSpaceBeforeColon(raw.enforceSpacingBeforeColon),
@@ -66,6 +72,8 @@ private fun isActivated(rule: FormatRule): Boolean =
         is IfBraceBelowLine -> rule.activated
         is IndentsInsideIf -> rule.indents != 0
         is LineBreaksAfterPrintLn -> rule.lines.toInt() != 0
+        is EnsureSpacesSurroundingOperations -> rule.activated
+        is EnsureSingleSpace -> rule.activated
         else -> false
     }
 

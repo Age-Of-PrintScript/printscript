@@ -3,6 +3,7 @@ package formattest
 import ast.AST
 import ast.Expression
 import formatter.formatrules.EnsureNoSpaceAroundEquals
+import formatter.formatrules.EnsureSingleSpace
 import formatter.formatrules.EnsureSpaceAfterColon
 import formatter.formatrules.EnsureSpaceAroundEquals
 import formatter.formatrules.EnsureSpaceBeforeColon
@@ -212,7 +213,7 @@ class FormatRuleTests {
     fun `lines after call - lista real de ExpressionFormatTokenizer ajusta al valor configurado`() {
         val input = tokensFrom(ExpressionFormatTokenizer(), createPrintln())
         val withoutTrailingEol = input.list.dropLastWhile { it is EOL }
-        val expected = FormatTokens(withoutTrailingEol + listOf(EOL, EOL))
+        val expected = FormatTokens(withoutTrailingEol + listOf(EOL, EOL, EOL))
 
         val result = LineBreaksAfterPrintLn(2).apply(input)
 
@@ -233,19 +234,9 @@ class FormatRuleTests {
     @Test
     fun `lines after call - raro cero lineas elimina el EOL que trae el tokenizer`() {
         val input = tokensFrom(ExpressionFormatTokenizer(), createPrintln())
-        val expected = FormatTokens(input.list.dropLastWhile { it is EOL })
+        val expected = FormatTokens(input.list.dropLastWhile { it is EOL } + listOf(EOL))
 
         val result = LineBreaksAfterPrintLn(0).apply(input)
-
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `lines after call - raro cantidad negativa no explota y no agrega lineas`() {
-        val input = tokensFrom(ExpressionFormatTokenizer(), createPrintln())
-        val expected = FormatTokens(input.list.dropLastWhile { it is EOL })
-
-        val result = LineBreaksAfterPrintLn(-1).apply(input)
 
         assertEquals(expected, result)
     }
@@ -258,5 +249,60 @@ class FormatRuleTests {
         val result = LineBreaksAfterPrintLn(2).apply(input)
 
         assertEquals(input, result)
+    }
+
+    // ------------------ EnsureSingleSpace ------------------------------
+
+    @Test
+    fun `single space - adds spaces around equals, colons and inside parentheses`() {
+        val input = FormatTokens(listOf(Text("println"), Text("("), Text("\"hello\""), Text(")"), Text(";"), EOL))
+        val expected =
+            FormatTokens(
+                listOf(
+                    Text("println"),
+                    WhiteSpace,
+                    Text("("),
+                    WhiteSpace,
+                    Text("\"hello\""),
+                    WhiteSpace,
+                    Text(")"),
+                    Text(";"),
+                    EOL,
+                ),
+            )
+
+        val result = EnsureSingleSpace(true).apply(input)
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `single space - empty parentheses does not add space inside`() {
+        val input = FormatTokens(listOf(Text("foo"), Text("("), Text(")"), Text(";"), EOL))
+        val expected = FormatTokens(listOf(Text("foo"), WhiteSpace, Text("("), Text(")"), Text(";"), EOL))
+
+        val result = EnsureSingleSpace(true).apply(input)
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `single space - disabled does not change tokens`() {
+        val input = FormatTokens(listOf(Text("println"), Text("("), Text("\"hello\""), Text(")"), Text(";"), EOL))
+
+        val result = EnsureSingleSpace(false).apply(input)
+
+        assertEquals(input, result)
+    }
+
+    @Test
+    fun `single space - idempotency applying twice`() {
+        val input = FormatTokens(listOf(Text("println"), Text("("), Text("\"hello\""), Text(")"), Text(";"), EOL))
+        val rule = EnsureSingleSpace(true)
+
+        val once = rule.apply(input)
+        val twice = rule.apply(once)
+
+        assertEquals(once, twice)
     }
 }

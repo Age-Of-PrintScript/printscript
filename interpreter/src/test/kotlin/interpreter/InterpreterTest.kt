@@ -431,4 +431,144 @@ class InterpreterTest {
         org.junit.jupiter.api.Assertions
             .assertEquals(listOf("20.0"), prints)
     }
+
+    @org.junit.jupiter.api.Test
+    fun `readEnv assigns environment variable value to declared variable`() {
+        val io =
+            InterpreterIO(
+                emitter = {},
+                provider = { "" },
+                envProvider = { key -> if (key == "MY_VAR") "hello" else null },
+            )
+        val pos = domain.Position(0, 0)
+        val program =
+            Program(
+                listOf(
+                    ast.AST.DeclarationStatement(
+                        id = "x",
+                        type = domain.StrType,
+                        mutable = true,
+                        value = ast.Expression.Call("readEnv", listOf(ast.Expression.Literal("MY_VAR", domain.StrType))),
+                    ),
+                ),
+                pos,
+                pos,
+            )
+
+        val result = interpreter.execute(program, io, null)
+
+        org.junit.jupiter.api.Assertions
+            .assertTrue(result is domain.Success)
+        val env = (result as domain.Success).value
+        org.junit.jupiter.api.Assertions.assertEquals(
+            domain.PSLiteral("hello", domain.StrType),
+            env.getVariableMapWithValues()["x"],
+        )
+    }
+
+    @org.junit.jupiter.api.Test
+    fun `readEnv fails when environment variable is not found`() {
+        val io =
+            InterpreterIO(
+                emitter = {},
+                provider = { "" },
+                envProvider = { null },
+            )
+        val pos = domain.Position(0, 0)
+        val program =
+            Program(
+                listOf(
+                    ast.AST.DeclarationStatement(
+                        id = "x",
+                        type = domain.StrType,
+                        mutable = true,
+                        value = ast.Expression.Call("readEnv", listOf(ast.Expression.Literal("MISSING_VAR", domain.StrType))),
+                    ),
+                ),
+                pos,
+                pos,
+            )
+
+        val result = interpreter.execute(program, io, null)
+
+        // solveExpression in Utils.kt flattens all built-in failures to MATH_ERROR (preexisting limitation)
+        org.junit.jupiter.api.Assertions
+            .assertTrue(result is domain.Failure)
+        org.junit.jupiter.api.Assertions.assertEquals(
+            RuntimeError.MATH_ERROR,
+            (result as domain.Failure).value,
+        )
+    }
+
+    @org.junit.jupiter.api.Test
+    fun `readEnv fails when called with no arguments`() {
+        val io =
+            InterpreterIO(
+                emitter = {},
+                provider = { "" },
+                envProvider = { null },
+            )
+        val pos = domain.Position(0, 0)
+        val program =
+            Program(
+                listOf(
+                    ast.AST.DeclarationStatement(
+                        id = "x",
+                        type = domain.StrType,
+                        mutable = true,
+                        value = ast.Expression.Call("readEnv", emptyList()),
+                    ),
+                ),
+                pos,
+                pos,
+            )
+
+        val result = interpreter.execute(program, io, null)
+
+        // solveExpression in Utils.kt flattens all built-in failures to MATH_ERROR (preexisting limitation)
+        org.junit.jupiter.api.Assertions
+            .assertTrue(result is domain.Failure)
+        org.junit.jupiter.api.Assertions.assertEquals(
+            RuntimeError.MATH_ERROR,
+            (result as domain.Failure).value,
+        )
+    }
+
+    @org.junit.jupiter.api.Test
+    fun `readEnv value can be used in println`() {
+        val prints = mutableListOf<String>()
+        val io =
+            InterpreterIO(
+                emitter = { prints.add(it) },
+                provider = { "" },
+                envProvider = { key -> if (key == "GREETING") "world" else null },
+            )
+        val pos = domain.Position(0, 0)
+        val program =
+            Program(
+                listOf(
+                    ast.AST.DeclarationStatement(
+                        id = "msg",
+                        type = domain.StrType,
+                        mutable = true,
+                        value = ast.Expression.Call("readEnv", listOf(ast.Expression.Literal("GREETING", domain.StrType))),
+                    ),
+                    ast.AST.ExpressionStatement(
+                        ast.Expression.Call(
+                            name = "println",
+                            args = listOf(ast.Expression.Variable("msg")),
+                        ),
+                    ),
+                ),
+                pos,
+                pos,
+            )
+
+        val result = interpreter.execute(program, io, null)
+
+        org.junit.jupiter.api.Assertions
+            .assertTrue(result is domain.Success)
+        org.junit.jupiter.api.Assertions
+            .assertEquals(listOf("world"), prints)
+    }
 }

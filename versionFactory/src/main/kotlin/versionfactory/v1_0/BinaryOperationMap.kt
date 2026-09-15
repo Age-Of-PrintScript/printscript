@@ -13,7 +13,5 @@ internal val v1_0BinaryOperations: Map<OperationKey, BinaryOperation> =
         OperationKey(Operators.SUM, NumType, StrType) to sumNumAndStr,
         OperationKey(Operators.SUBTRACT, NumType, NumType) to subNumAndNum,
         OperationKey(Operators.MULTIPLY, NumType, NumType) to multNumAndNum,
-        OperationKey(Operators.MULTIPLY, NumType, StrType) to multNumAndString,
-        OperationKey(Operators.MULTIPLY, StrType, NumType) to multStringAndNum,
         OperationKey(Operators.DIVIDE, NumType, NumType) to divNumAndNum,
     )

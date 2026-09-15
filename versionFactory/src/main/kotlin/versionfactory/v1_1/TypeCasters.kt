@@ -9,13 +9,14 @@ import domain.Success
 import interpreter.CastKey
 import interpreter.RuntimeError
 import interpreter.TypeCast
+import versionfactory.v1_0.toFormattedString
 
 internal val strToNum =
     TypeCast { value ->
         val num =
             value.raw.toDoubleOrNull()
                 ?: return@TypeCast Failure(RuntimeError.INVALID_CAST)
-        Success(PSLiteral(num.toString(), NumType))
+        Success(PSLiteral(num.toFormattedString(), NumType))
     }
 
 internal val strToBool =

@@ -27,6 +27,5 @@ jobs:
             - name: Grant execute permission for gradlew
               run: chmod +x gradlew
 
-            # El coverage deberia ser habilitado mas tarde
             - name: Run checks (Tests, Linter, Detekt, Coverage)
-              run: ./gradlew check -x jacocoTestCoverageVerification
+              run: ./gradlew check

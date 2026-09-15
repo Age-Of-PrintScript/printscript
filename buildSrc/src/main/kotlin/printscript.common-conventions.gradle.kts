@@ -8,11 +8,23 @@ plugins {
 }
 
 group = "printscript.grupo1"
-version = "1.0.0"
+version = project.findProperty("version")?.toString()?.takeIf { it != "unspecified" }
+    ?: "1.0.0-SNAPSHOT"
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
+            artifactId = project.name.lowercase()
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Age-Of-PrintScript/printscript")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }

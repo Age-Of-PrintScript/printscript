@@ -1,14 +1,19 @@
 package interpreter
 
-fun interface PrintEmitter {
+fun interface InterpreterPrintEmitter {
     fun print(message: String)
 }
 
-fun interface InputProvider {
+fun interface InterpreterInputProvider {
     fun readInput(prompt: String): String
 }
 
+fun interface EnvProvider {
+    fun readEnv(key: String): String?
+}
+
 data class InterpreterIO(
-    val emitter: PrintEmitter,
-    val provider: InputProvider,
+    val emitter: InterpreterPrintEmitter,
+    val provider: InterpreterInputProvider,
+    val envProvider: EnvProvider = EnvProvider { null },
 )

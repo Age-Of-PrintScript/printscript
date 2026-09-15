@@ -8,7 +8,7 @@ import domain.Success
 import interpreter.BinaryOperation
 import interpreter.RuntimeError
 
-private fun Double.toFormattedString(): String =
+internal fun Double.toFormattedString(): String =
     if (this % 1.0 == 0.0) {
         this.toLong().toString()
     } else {
