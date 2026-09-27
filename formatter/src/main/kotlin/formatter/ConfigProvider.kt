@@ -16,11 +16,22 @@ import formatter.formattokens.ConditionalFormatTokenizer
 import formatter.formattokens.DeclarationFormatTokenizer
 import formatter.formattokens.ExpressionFormatTokenizer
 import formatter.formattokens.FormatTokenizer
+import versionfactory.PSVersion
+import versionfactory.version1_0
+import versionfactory.version1_1
 
 data class ConfigProvider(
     val ruleSet: Map<FormatTokenizer, FormatRules>,
 ) {
     companion object {
+        fun defaultFor(version: PSVersion): ConfigProvider =
+            when (version) {
+                version1_0 -> default10()
+                version1_1 -> default11()
+                else -> error("Unsupported PrintScript version")
+            }
+
+        @Deprecated("Resolve the version with PSVersion.getVersion before selecting formatter defaults")
         fun defaultFor(version: String = "1.0"): ConfigProvider = if (version == "1.1") default11() else default10()
 
         fun default10(): ConfigProvider {

@@ -20,6 +20,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import versionfactory.PSVersion
 import java.io.File
 import java.io.IOException
 
@@ -40,7 +41,7 @@ private data class FormatterConfigPatch(
 private val formatterConfigJson = Json { ignoreUnknownKeys = true }
 
 internal fun resolveFormatterConfig(
-    version: String,
+    version: PSVersion,
     configJson: String?,
 ): Either<Error, ConfigProvider> =
     resolveConfigPatch(
