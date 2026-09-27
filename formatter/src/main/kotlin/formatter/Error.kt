@@ -12,3 +12,9 @@ enum class FormattingError(
 
     override fun getMessage(): String = reason
 }
+
+data class FormatterConfigError(
+    private val reason: String,
+) : Error {
+    override fun getMessage(): String = reason
+}

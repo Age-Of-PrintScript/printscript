@@ -47,10 +47,8 @@ class FormatterExecutor(
     ): FormatResult<String, String> {
         val resolvedVersion =
             PSVersion.getVersion(version).getOrReturn { return FormatError("Unknown version") }
-        val defaultConfig = ConfigProvider.defaultFor(version)
         val resolvedConfig =
-            configJson?.let { applyJsonConfig(defaultConfig, it).getOrReturn { return FormatError(it.getMessage()) } }
-                ?: defaultConfig
+            resolveFormatterConfig(version, configJson).getOrReturn { return FormatError(it.getMessage()) }
 
         return formatSource(source, resolvedVersion, resolvedConfig)
     }

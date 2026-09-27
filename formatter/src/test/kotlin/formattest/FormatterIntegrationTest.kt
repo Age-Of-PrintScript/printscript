@@ -1,13 +1,19 @@
 package formattest
 
+import domain.getOrReturn
 import formatter.ConfigProvider
 import formatter.FormatError
 import formatter.FormatResult
 import formatter.FormatSuccess
 import formatter.Formatter
+import formatter.applyJsonConfig
+import formatter.formatrules.EnsureSpaceAroundEquals
+import formatter.formatrules.FormatRules
+import formatter.formattokens.AssignmentFormatTokenizer
 import formattest.cases.FormatterFailureCases
 import formattest.cases.FormatterSuccessCases
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.DynamicNode
 import org.junit.jupiter.api.DynamicTest.dynamicTest
@@ -70,6 +76,7 @@ class FormatterIntegrationTest {
         )
     }
 
+    @Suppress("DEPRECATION")
     @Test
     fun `legacy file api remains compatible`() {
         val scriptFile = tempDir.resolve("legacy-script.ps").toFile()
@@ -81,6 +88,50 @@ class FormatterIntegrationTest {
         val result = formatter.execute(scriptFile, configFile.absolutePath)
 
         assertEquals("let x: number = 1;${System.lineSeparator()}", (result as FormatSuccess).value)
+    }
+
+    @Test
+    fun `formatter validates known request configuration`() {
+        val formatter = Formatter.create()
+
+        val unknownOption = formatter.format("let x:number=1;", "1.0", """{"unknown-option": true}""")
+        val conflictingOptions =
+            formatter.format(
+                "let x:number=1;",
+                "1.0",
+                """{"enforce-spacing-around-equals": true, "enforce-no-spacing-around-equals": true}""",
+            )
+        val invalidValue = formatter.format("let x:number=1;", "1.1", """{"indent-inside-if": -1}""")
+
+        assertInstanceOf(FormatSuccess::class.java, unknownOption)
+        assertEquals(
+            "Options 'enforce-spacing-around-equals' and 'enforce-no-spacing-around-equals' cannot both be enabled",
+            (conflictingOptions as FormatError).value,
+        )
+        assertEquals("Option 'indent-inside-if' must be greater than or equal to 0", (invalidValue as FormatError).value)
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    fun `explicit false overrides a default rule`() {
+        val default =
+            ConfigProvider(
+                mapOf(
+                    AssignmentFormatTokenizer() to FormatRules(listOf(EnsureSpaceAroundEquals(true))),
+                ),
+            )
+
+        val resolved =
+            applyJsonConfig(default, """{"enforce-spacing-around-equals": false}""")
+                .getOrReturn { error("configuration should be valid: ${it.getMessage()}") }
+        val rule =
+            resolved.ruleSet
+                .values
+                .single()
+                .list
+                .single() as EnsureSpaceAroundEquals
+
+        assertFalse(rule.activated)
     }
 
     private fun executeFormatter(

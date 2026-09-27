@@ -24,76 +24,51 @@ import java.io.File
 import java.io.IOException
 
 @Serializable
-private data class RawFormatterConfig(
-    @SerialName("enforce-spacing-around-equals") val enforceSpacingAroundEquals: Boolean = false,
-    @SerialName("enforce-no-spacing-around-equals") val enforceNoSpacingAroundEquals: Boolean = false,
-    @SerialName("enforce-spacing-before-colon-in-declaration") val enforceSpacingBeforeColon: Boolean = false,
-    @SerialName("enforce-spacing-after-colon-in-declaration") val enforceSpacingAfterColon: Boolean = false,
-    @SerialName("mandatory-single-space-separation") val enforceSingleSpaces: Boolean = false,
-    @SerialName("mandatory-space-surrounding-operations") val enforceSpacingSurroundingOperations: Boolean = false,
-    @SerialName("if-brace-same-line") val ifBraceSameLine: Boolean = false,
-    @SerialName("if-brace-below-line") val ifBraceBelowLine: Boolean = false,
-    @SerialName("indent-inside-if") val indentInsideIf: Int = 0,
-    @SerialName("line-breaks-after-println") val lineBreaksAfterPrintln: Int = 0,
+private data class FormatterConfigPatch(
+    @SerialName("enforce-spacing-around-equals") val enforceSpacingAroundEquals: Boolean? = null,
+    @SerialName("enforce-no-spacing-around-equals") val enforceNoSpacingAroundEquals: Boolean? = null,
+    @SerialName("enforce-spacing-before-colon-in-declaration") val enforceSpacingBeforeColon: Boolean? = null,
+    @SerialName("enforce-spacing-after-colon-in-declaration") val enforceSpacingAfterColon: Boolean? = null,
+    @SerialName("mandatory-single-space-separation") val enforceSingleSpaces: Boolean? = null,
+    @SerialName("mandatory-space-surrounding-operations") val enforceSpacingSurroundingOperations: Boolean? = null,
+    @SerialName("if-brace-same-line") val ifBraceSameLine: Boolean? = null,
+    @SerialName("if-brace-below-line") val ifBraceBelowLine: Boolean? = null,
+    @SerialName("indent-inside-if") val indentInsideIf: Int? = null,
+    @SerialName("line-breaks-after-println") val lineBreaksAfterPrintln: Int? = null,
 )
 
-private val configJson = Json { ignoreUnknownKeys = true } // mismo estilo que linter/ConfigParser.kt
+private val formatterConfigJson = Json { ignoreUnknownKeys = true }
 
-// lo ausente queda en su valor "apagado" (false/0).
-private fun formatRulesFromJson(json: String): FormatRules {
-    val raw = configJson.decodeFromString<RawFormatterConfig>(json)
-    return FormatRules(
-        listOf(
-            EnsureSpacesSurroundingOperations(raw.enforceSpacingSurroundingOperations),
-            EnsureSingleSpace(raw.enforceSingleSpaces),
-            EnsureSpaceAroundEquals(raw.enforceSpacingAroundEquals),
-            EnsureNoSpaceAroundEquals(raw.enforceNoSpacingAroundEquals),
-            EnsureSpaceBeforeColon(raw.enforceSpacingBeforeColon),
-            EnsureSpaceAfterColon(raw.enforceSpacingAfterColon),
-            IfBraceSameLine(raw.ifBraceSameLine),
-            IfBraceBelowLine(raw.ifBraceBelowLine),
-            IndentsInsideIf(raw.indentInsideIf),
-            LineBreaksAfterPrintLn(raw.lineBreaksAfterPrintln),
-        ),
+internal fun resolveFormatterConfig(
+    version: String,
+    configJson: String?,
+): Either<Error, ConfigProvider> =
+    resolveConfigPatch(
+        default = ConfigProvider.defaultFor(version),
+        configJson = configJson,
     )
-}
 
-// "Activada": para las reglas booleanas es su propio flag; para las numéricas (sin
-// on/off propio) se toma "distinto del default 0" como activada. Como el default
-// del engine para esas reglas ya es 0, un json que también diga 0 (caso real:
-// line-breaks-after-println: 0) da el mismo resultado se reemplace o no.
-private fun isActivated(rule: FormatRule): Boolean =
-    when (rule) {
-        is EnsureSpaceAroundEquals -> rule.activated
-        is EnsureNoSpaceAroundEquals -> rule.activated
-        is EnsureSpaceBeforeColon -> rule.activated
-        is EnsureSpaceAfterColon -> rule.activated
-        is IfBraceSameLine -> rule.activated
-        is IfBraceBelowLine -> rule.activated
-        is IndentsInsideIf -> rule.indents != 0
-        is LineBreaksAfterPrintLn -> rule.lines.toInt() != 0
-        is EnsureSpacesSurroundingOperations -> rule.activated
-        is EnsureSingleSpace -> rule.activated
-        else -> false
-    }
-
-fun applyJsonConfig(
+private fun resolveConfigPatch(
     default: ConfigProvider,
-    json: String,
+    configJson: String?,
 ): Either<Error, ConfigProvider> {
-    val parsedRules =
+    if (configJson == null) return Success(default)
+
+    val patch =
         try {
-            formatRulesFromJson(json).list
+            // toma la instancia de json (que permite unknown keys) y decodifica la config
+            // usando el FormatterConfigPatch
+            formatterConfigJson.decodeFromString<FormatterConfigPatch>(configJson)
         } catch (_: SerializationException) {
             return Failure(FormattingError.INVALID_JSON)
         }
+    validateConfigPatch(patch)?.let { return Failure(it) }
 
     val mergedRuleSet =
         default.ruleSet.mapValues { (_, defaultRules) ->
             FormatRules(
                 defaultRules.list.map { defaultRule ->
-                    val fromJson = parsedRules.firstOrNull { it::class == defaultRule::class }
-                    if (fromJson != null && isActivated(fromJson)) fromJson else defaultRule
+                    mergeRule(defaultRule, patch)
                 },
             )
         }
@@ -101,7 +76,51 @@ fun applyJsonConfig(
     return Success(ConfigProvider(mergedRuleSet))
 }
 
-@Deprecated("Read the file outside the formatter and call applyJsonConfig(default, json) instead")
+private fun validateConfigPatch(patch: FormatterConfigPatch): FormatterConfigError? {
+    if (patch.enforceSpacingAroundEquals == true && patch.enforceNoSpacingAroundEquals == true) {
+        return FormatterConfigError(
+            "Options 'enforce-spacing-around-equals' and 'enforce-no-spacing-around-equals' cannot both be enabled",
+        )
+    }
+    if (patch.ifBraceSameLine == true && patch.ifBraceBelowLine == true) {
+        return FormatterConfigError("Options 'if-brace-same-line' and 'if-brace-below-line' cannot both be enabled")
+    }
+    if (patch.indentInsideIf != null && patch.indentInsideIf < 0) {
+        return FormatterConfigError("Option 'indent-inside-if' must be greater than or equal to 0")
+    }
+    if (patch.lineBreaksAfterPrintln != null && patch.lineBreaksAfterPrintln < 0) {
+        return FormatterConfigError("Option 'line-breaks-after-println' must be greater than or equal to 0")
+    }
+
+    return null
+}
+
+private fun mergeRule(
+    defaultRule: FormatRule,
+    patch: FormatterConfigPatch,
+): FormatRule =
+    when (defaultRule) {
+        is EnsureSpacesSurroundingOperations ->
+            patch.enforceSpacingSurroundingOperations?.let(::EnsureSpacesSurroundingOperations) ?: defaultRule
+        is EnsureSingleSpace -> patch.enforceSingleSpaces?.let(::EnsureSingleSpace) ?: defaultRule
+        is EnsureSpaceAroundEquals -> patch.enforceSpacingAroundEquals?.let(::EnsureSpaceAroundEquals) ?: defaultRule
+        is EnsureNoSpaceAroundEquals -> patch.enforceNoSpacingAroundEquals?.let(::EnsureNoSpaceAroundEquals) ?: defaultRule
+        is EnsureSpaceBeforeColon -> patch.enforceSpacingBeforeColon?.let(::EnsureSpaceBeforeColon) ?: defaultRule
+        is EnsureSpaceAfterColon -> patch.enforceSpacingAfterColon?.let(::EnsureSpaceAfterColon) ?: defaultRule
+        is IfBraceSameLine -> patch.ifBraceSameLine?.let(::IfBraceSameLine) ?: defaultRule
+        is IfBraceBelowLine -> patch.ifBraceBelowLine?.let(::IfBraceBelowLine) ?: defaultRule
+        is IndentsInsideIf -> patch.indentInsideIf?.let(::IndentsInsideIf) ?: defaultRule
+        is LineBreaksAfterPrintLn -> patch.lineBreaksAfterPrintln?.let(::LineBreaksAfterPrintLn) ?: defaultRule
+        else -> defaultRule
+    }
+
+@Deprecated("Use Formatter.format(source, version, configJson) instead")
+fun applyJsonConfig(
+    default: ConfigProvider,
+    json: String,
+): Either<Error, ConfigProvider> = resolveConfigPatch(default, configJson = json)
+
+@Deprecated("Read the file outside the formatter and call Formatter.format(source, version, configJson) instead")
 fun applyJsonConfig(
     default: ConfigProvider,
     path: File,
@@ -112,5 +131,5 @@ fun applyJsonConfig(
         } catch (_: IOException) {
             return Failure(FormattingError.FILE_NOT_FOUND)
         }
-    return applyJsonConfig(default, json)
+    return resolveConfigPatch(default, configJson = json)
 }
