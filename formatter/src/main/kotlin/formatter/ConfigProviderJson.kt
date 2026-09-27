@@ -77,26 +77,14 @@ private fun isActivated(rule: FormatRule): Boolean =
         else -> false
     }
 
-// json; si esa contraparte está activada la usa, si no deja la default tal cual.
-// Si el archivo no existe/no se puede leer, o el json es inválido, se devuelve el
-// error correspondiente en vez de dejar propagar la excepción cruda.
 fun applyJsonConfig(
     default: ConfigProvider,
-    path: File,
+    json: String,
 ): Either<Error, ConfigProvider> {
-    val json =
-        try {
-            path.readText()
-        } catch (e: IOException) {
-            System.err.println("No se pudo leer el archivo de configuración '$path': ${e.message}")
-            return Failure(FormattingError.FILE_NOT_FOUND)
-        }
-
     val parsedRules =
         try {
             formatRulesFromJson(json).list
-        } catch (e: SerializationException) {
-            System.err.println("El json de configuración es inválido: ${e.message}")
+        } catch (_: SerializationException) {
             return Failure(FormattingError.INVALID_JSON)
         }
 
@@ -111,4 +99,18 @@ fun applyJsonConfig(
         }
 
     return Success(ConfigProvider(mergedRuleSet))
+}
+
+@Deprecated("Read the file outside the formatter and call applyJsonConfig(default, json) instead")
+fun applyJsonConfig(
+    default: ConfigProvider,
+    path: File,
+): Either<Error, ConfigProvider> {
+    val json =
+        try {
+            path.readText()
+        } catch (_: IOException) {
+            return Failure(FormattingError.FILE_NOT_FOUND)
+        }
+    return applyJsonConfig(default, json)
 }

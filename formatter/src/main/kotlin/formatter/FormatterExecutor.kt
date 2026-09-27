@@ -13,12 +13,22 @@ import versionfactory.PSVersion
 import java.io.File
 
 interface Formatter {
+    fun format(
+        source: String,
+        version: String,
+        configJson: String? = null,
+    ): FormatResult<String, String>
+
+    @Deprecated("Use format(source, version, configJson) instead")
     fun execute(
         file: File,
         configPath: String,
     ): FormatResult<String, String>
 
     companion object {
+        fun create(): Formatter = FormatterExecutor()
+
+        @Deprecated("Use create().format(source, version, configJson) instead")
         fun new(
             config: ConfigProvider,
             psVersion: String,
@@ -27,29 +37,55 @@ interface Formatter {
 }
 
 class FormatterExecutor(
-    val config: ConfigProvider,
-    val psVersion: String,
+    private val config: ConfigProvider? = null,
+    private val psVersion: String? = null,
 ) : Formatter {
+    override fun format(
+        source: String,
+        version: String,
+        configJson: String?,
+    ): FormatResult<String, String> {
+        val resolvedVersion =
+            PSVersion.getVersion(version).getOrReturn { return FormatError("Unknown version") }
+        val defaultConfig = ConfigProvider.defaultFor(version)
+        val resolvedConfig =
+            configJson?.let { applyJsonConfig(defaultConfig, it).getOrReturn { return FormatError(it.getMessage()) } }
+                ?: defaultConfig
+
+        return formatSource(source, resolvedVersion, resolvedConfig)
+    }
+
+    @Deprecated("Use format(source, version, configJson) instead")
     override fun execute(
         file: File,
         configPath: String,
     ): FormatResult<String, String> {
-        val psVersion =
-            PSVersion.getVersion(psVersion).getOrReturn { return FormatError("Unknown version") }
+        val legacyConfig = config ?: return FormatError("Legacy formatter configuration is missing")
+        val legacyVersion = psVersion ?: return FormatError("Legacy formatter version is missing")
+        val resolvedVersion =
+            PSVersion.getVersion(legacyVersion).getOrReturn { return FormatError("Unknown version") }
+        val providedConfig =
+            applyJsonConfig(legacyConfig, File(configPath)).getOrReturn { return FormatError(it.getMessage()) }
 
         val source = file.readText()
 
-        val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
-        val parser = Parser.new(psVersion.statementParsers)
+        return formatSource(source, resolvedVersion, providedConfig)
+    }
+
+    private fun formatSource(
+        source: String,
+        version: PSVersion,
+        config: ConfigProvider,
+    ): FormatResult<String, String> {
+        val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
+        val parser = Parser.new(version.statementParsers)
 
         val tokens = lexer.tokenize(source).getOrReturn { return FormatError(it.getMessage()) }
         val program = parser.parse(tokens).getOrReturn { return FormatError(it.getMessage()) }
 
-        val providedConfig = applyJsonConfig(config, File(configPath)).getOrReturn { return FormatError(it.getMessage()) }
-
         val result = StringBuilder()
         for (ast in program.trees) {
-            val formatter = formatterFor(ast, providedConfig).getOrReturn { return FormatError(it.getMessage()) }
+            val formatter = formatterFor(ast, config).getOrReturn { return FormatError(it.getMessage()) }
             val piece = formatter.format(ast).getOrReturn { return FormatError(it.getMessage()) }
             result.append(piece)
         }

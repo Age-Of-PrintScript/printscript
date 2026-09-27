@@ -1,5 +1,6 @@
 package formattest
 
+import formatter.ConfigProvider
 import formatter.FormatError
 import formatter.FormatResult
 import formatter.FormatSuccess
@@ -10,10 +11,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.DynamicNode
 import org.junit.jupiter.api.DynamicTest.dynamicTest
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.io.TempDir
-import testframework.createDefaultConfig10
-import testframework.createDefaultConfig11
 import java.nio.file.Path
 
 class FormatterIntegrationTest {
@@ -35,39 +35,57 @@ class FormatterIntegrationTest {
         }
 
     @TestFactory
-    fun `failed formatting integration cases`(): List<DynamicNode> {
-        val missingConfigPath = tempDir.resolve("missing_config.json").toString()
-        return FormatterFailureCases.cases(missingConfigPath).map { case ->
+    fun `failed formatting integration cases`(): List<DynamicNode> =
+        FormatterFailureCases.cases().map { case ->
             dynamicTest(case.name) {
-                val result = executeFormatter(case.version, case.source, case.configJson, case.customConfigPath)
+                val result = executeFormatter(case.version, case.source, case.configJson)
                 assertInstanceOf(FormatError::class.java, result)
                 case.expectedErrorMessage?.let { expectedMsg ->
                     assertEquals(expectedMsg, (result as FormatError).value)
                 }
             }
         }
+
+    @Test
+    fun `one formatter instance supports independent versioned requests`() {
+        val formatter = Formatter.create()
+
+        val version10 =
+            formatter.format(
+                source = "let x:number=1;",
+                version = "1.0",
+                configJson = """{"enforce-spacing-around-equals": true, "enforce-spacing-after-colon-in-declaration": true}""",
+            )
+        val version11 =
+            formatter.format(
+                source = "if (true) { println(\"hello\"); }",
+                version = "1.1",
+                configJson = """{"if-brace-same-line": true, "indent-inside-if": 2}""",
+            )
+
+        assertEquals("let x: number = 1;${System.lineSeparator()}", (version10 as FormatSuccess).value)
+        assertEquals(
+            "if (true) {${System.lineSeparator()}  println(\"hello\");${System.lineSeparator()}}${System.lineSeparator()}",
+            (version11 as FormatSuccess).value,
+        )
+    }
+
+    @Test
+    fun `legacy file api remains compatible`() {
+        val scriptFile = tempDir.resolve("legacy-script.ps").toFile()
+        scriptFile.writeText("let x:number=1;")
+        val configFile = tempDir.resolve("legacy-rules.json").toFile()
+        configFile.writeText("""{"enforce-spacing-around-equals": true, "enforce-spacing-after-colon-in-declaration": true}""")
+
+        val formatter = Formatter.new(ConfigProvider.defaultFor("1.0"), "1.0")
+        val result = formatter.execute(scriptFile, configFile.absolutePath)
+
+        assertEquals("let x: number = 1;${System.lineSeparator()}", (result as FormatSuccess).value)
     }
 
     private fun executeFormatter(
         version: String,
         source: String,
         configJson: String?,
-        customConfigPath: String? = null,
-    ): FormatResult<String, String> {
-        val scriptFile = tempDir.resolve("script.ps").toFile()
-        scriptFile.writeText(source)
-
-        val configPath =
-            if (customConfigPath != null) {
-                customConfigPath
-            } else {
-                val configFile = tempDir.resolve("rules.json").toFile()
-                configFile.writeText(configJson ?: "{}")
-                configFile.absolutePath
-            }
-
-        val configProvider = if (version == "1.1") createDefaultConfig11() else createDefaultConfig10()
-        val formatter = Formatter.new(configProvider, version)
-        return formatter.execute(scriptFile, configPath)
-    }
+    ): FormatResult<String, String> = Formatter.create().format(source, version, configJson)
 }
