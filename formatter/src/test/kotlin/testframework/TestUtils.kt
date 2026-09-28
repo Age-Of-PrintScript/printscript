@@ -7,7 +7,6 @@ import domain.NumType
 import domain.PSType
 import domain.StrType
 import domain.getOrReturn
-import formatter.ConfigProvider
 import formatter.formattokens.FormatTokenizer
 import formatter.formattokens.FormatTokens
 
@@ -62,7 +61,3 @@ fun tokensFrom(
     tokenizer: FormatTokenizer,
     ast: AST,
 ): FormatTokens = tokenizer.tokenize(ast).getOrReturn { error("tokenizer fallo: $it") }
-
-fun createDefaultConfig10(): ConfigProvider = ConfigProvider.default10()
-
-fun createDefaultConfig11(): ConfigProvider = ConfigProvider.default11()

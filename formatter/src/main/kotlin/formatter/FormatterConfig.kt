@@ -21,8 +21,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import versionfactory.PSVersion
-import java.io.File
-import java.io.IOException
 
 @Serializable
 private data class FormatterConfigPatch(
@@ -43,38 +41,26 @@ private val formatterConfigJson = Json { ignoreUnknownKeys = true }
 internal fun resolveFormatterConfig(
     version: PSVersion,
     configJson: String?,
-): Either<Error, ConfigProvider> =
-    resolveConfigPatch(
-        default = ConfigProvider.defaultFor(version),
-        configJson = configJson,
-    )
-
-private fun resolveConfigPatch(
-    default: ConfigProvider,
-    configJson: String?,
-): Either<Error, ConfigProvider> {
-    if (configJson == null) return Success(default)
+): Either<Error, ResolvedFormatterConfig> {
+    val profile = formattingProfileFor(version)
+    if (configJson == null) {
+        return Success(ResolvedFormatterConfig(profile.tokenizers, profile.defaultRules))
+    }
 
     val patch =
         try {
-            // toma la instancia de json (que permite unknown keys) y decodifica la config
-            // usando el FormatterConfigPatch
             formatterConfigJson.decodeFromString<FormatterConfigPatch>(configJson)
         } catch (_: SerializationException) {
             return Failure(FormattingError.INVALID_JSON)
         }
     validateConfigPatch(patch)?.let { return Failure(it) }
 
-    val mergedRuleSet =
-        default.ruleSet.mapValues { (_, defaultRules) ->
-            FormatRules(
-                defaultRules.list.map { defaultRule ->
-                    mergeRule(defaultRule, patch)
-                },
-            )
-        }
-
-    return Success(ConfigProvider(mergedRuleSet))
+    return Success(
+        ResolvedFormatterConfig(
+            tokenizers = profile.tokenizers,
+            rules = mergeRules(profile.defaultRules, patch),
+        ),
+    )
 }
 
 private fun validateConfigPatch(patch: FormatterConfigPatch): FormatterConfigError? {
@@ -96,6 +82,16 @@ private fun validateConfigPatch(patch: FormatterConfigPatch): FormatterConfigErr
     return null
 }
 
+private fun mergeRules(
+    defaultRules: FormatRules,
+    patch: FormatterConfigPatch,
+): FormatRules =
+    FormatRules(
+        defaultRules.list.map { defaultRule ->
+            mergeRule(defaultRule, patch)
+        },
+    )
+
 private fun mergeRule(
     defaultRule: FormatRule,
     patch: FormatterConfigPatch,
@@ -114,23 +110,3 @@ private fun mergeRule(
         is LineBreaksAfterPrintLn -> patch.lineBreaksAfterPrintln?.let(::LineBreaksAfterPrintLn) ?: defaultRule
         else -> defaultRule
     }
-
-@Deprecated("Use Formatter.format(source, version, configJson) instead")
-fun applyJsonConfig(
-    default: ConfigProvider,
-    json: String,
-): Either<Error, ConfigProvider> = resolveConfigPatch(default, configJson = json)
-
-@Deprecated("Read the file outside the formatter and call Formatter.format(source, version, configJson) instead")
-fun applyJsonConfig(
-    default: ConfigProvider,
-    path: File,
-): Either<Error, ConfigProvider> {
-    val json =
-        try {
-            path.readText()
-        } catch (_: IOException) {
-            return Failure(FormattingError.FILE_NOT_FOUND)
-        }
-    return resolveConfigPatch(default, configJson = json)
-}

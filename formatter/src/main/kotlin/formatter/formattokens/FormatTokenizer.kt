@@ -9,16 +9,21 @@ import domain.getOrReturn
 import formatter.FormattingError
 
 interface FormatTokenizer {
+    fun supports(ast: AST): Boolean
+
     fun tokenize(ast: AST): Either<FormattingError, FormatTokens>
 }
 
 // 1.0
 
 class DeclarationFormatTokenizer : FormatTokenizer {
+    override fun supports(ast: AST): Boolean = ast is AST.DeclarationStatement
+
     override fun tokenize(ast: AST): Either<FormattingError, FormatTokens> {
-        if (ast !is AST.DeclarationStatement) {
+        if (!supports(ast)) {
             return Failure(FormattingError.UNKNOWN_AST_TYPE)
         }
+        ast as AST.DeclarationStatement
         val first =
             if (ast.mutable) {
                 Text("let")
@@ -42,25 +47,32 @@ class DeclarationFormatTokenizer : FormatTokenizer {
 }
 
 class AssignmentFormatTokenizer : FormatTokenizer {
+    override fun supports(ast: AST): Boolean = ast is AST.AssignmentStatement
+
     override fun tokenize(ast: AST): Either<FormattingError, FormatTokens> {
-        if (ast !is AST.AssignmentStatement) {
+        if (!supports(ast)) {
             return Failure(FormattingError.UNKNOWN_AST_TYPE)
         }
+        ast as AST.AssignmentStatement
         return Success(
             FormatTokens(
-                listOf(Text(ast.id), Text("=")) +
-                    expressionToFormatTokens(ast.value) +
-                    listOf(Text(";"), EOL),
+                listOf(
+                    Text(ast.id),
+                    Text("="),
+                ) + expressionToFormatTokens(ast.value) + listOf(Text(";"), EOL),
             ),
         )
     }
 }
 
 class ExpressionFormatTokenizer : FormatTokenizer {
+    override fun supports(ast: AST): Boolean = ast is AST.ExpressionStatement
+
     override fun tokenize(ast: AST): Either<FormattingError, FormatTokens> {
-        if (ast !is AST.ExpressionStatement) {
+        if (!supports(ast)) {
             return Failure(FormattingError.UNKNOWN_AST_TYPE)
         }
+        ast as AST.ExpressionStatement
 
         return Success(
             FormatTokens(
@@ -73,17 +85,20 @@ class ExpressionFormatTokenizer : FormatTokenizer {
 // 1.1
 
 class ConditionalFormatTokenizer(
-    private val statementFormatters: Set<FormatTokenizer>,
+    private val statementTokenizers: () -> List<FormatTokenizer>,
 ) : FormatTokenizer {
+    override fun supports(ast: AST): Boolean = ast is AST.ConditionalStatement
+
     override fun tokenize(ast: AST) = tokenizeAtDepth(ast, 1)
 
     private fun tokenizeAtDepth(
         ast: AST,
         depth: Int,
     ): Either<FormattingError, FormatTokens> {
-        if (ast !is AST.ConditionalStatement) {
+        if (!supports(ast)) {
             return Failure(FormattingError.UNKNOWN_AST_TYPE)
         }
+        ast as AST.ConditionalStatement
         val conditionTokens = expressionToFormatTokens(ast.condition)
         val thenTokens = tokenizeBlock(ast.ifBlock, depth).getOrReturn { return Failure(it) }
         val elseTokens =
@@ -110,7 +125,7 @@ class ConditionalFormatTokenizer(
         val tokens = mutableListOf<FormatToken>()
         for (statement in block.statements) {
             val tokenizer =
-                statementFormatters.firstOrNull { it.tokenize(statement) is Success }
+                statementTokenizers().firstOrNull { it.supports(statement) }
                     ?: return Failure(FormattingError.UNKNOWN_AST_TYPE)
 
             val statementTokens =

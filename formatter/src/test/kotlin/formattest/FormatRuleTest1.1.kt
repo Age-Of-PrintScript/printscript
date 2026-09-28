@@ -26,7 +26,7 @@ private fun tokensFrom(
 
 private fun conditionalTokenizer(): ConditionalFormatTokenizer =
     ConditionalFormatTokenizer(
-        setOf(DeclarationFormatTokenizer(), AssignmentFormatTokenizer(), ExpressionFormatTokenizer()),
+        { listOf(DeclarationFormatTokenizer(), AssignmentFormatTokenizer(), ExpressionFormatTokenizer()) },
     )
 
 class FormatRuleTests1_1 {
