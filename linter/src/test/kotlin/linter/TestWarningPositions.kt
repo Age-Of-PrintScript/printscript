@@ -83,7 +83,7 @@ class TestWarningPositions {
 
     @Test
     fun `linter end-to-end reports accurate positions`() {
-        val linter = Linter.createDefault("1.0")
+        val linter = Linter.create()
         val source =
             """
             let validVar: number = 10;
@@ -91,7 +91,7 @@ class TestWarningPositions {
             println(1 + 2);
             """.trimIndent()
 
-        val warnings = linter.analyse(source)
+        val warnings = linter.analyse(source, "1.0")
         assertEquals(2, warnings.size)
         // Invalid_Var is on line 2, col 1
         assertEquals(Position(2, 1), warnings[0].position)

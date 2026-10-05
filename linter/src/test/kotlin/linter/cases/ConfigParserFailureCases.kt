@@ -20,7 +20,7 @@ internal object ConfigParserFailureCases {
                           ]
                         }
                         """.trimIndent()
-                    parser.parse(json, "1.0")
+                    parser.resolve(json, "1.0")
                 },
                 expectedException = IllegalArgumentException::class,
             ),
@@ -28,7 +28,7 @@ internal object ConfigParserFailureCases {
                 name = "parse invalid json syntax throws SerializationException",
                 execute = { parser ->
                     val json = """{ invalid json }"""
-                    parser.parse(json, "1.0")
+                    parser.resolve(json, "1.0")
                 },
                 expectedException = SerializationException::class,
             ),
@@ -47,7 +47,7 @@ internal object ConfigParserFailureCases {
                           ]
                         }
                         """.trimIndent()
-                    parser.parse(json, "1.0")
+                    parser.resolve(json, "1.0")
                 },
                 expectedException = IllegalArgumentException::class,
             ),
@@ -65,7 +65,7 @@ internal object ConfigParserFailureCases {
                           ]
                         }
                         """.trimIndent()
-                    parser.parse(json, "1.0")
+                    parser.resolve(json, "1.0")
                 },
                 expectedException = IllegalArgumentException::class,
             ),

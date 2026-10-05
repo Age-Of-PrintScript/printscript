@@ -1,23 +1,17 @@
 package linter.cases
 
 import linter.ConfigParserSuccessCase
-import java.io.File
 
 internal object ConfigParserSuccessCases {
     fun cases(): List<ConfigParserSuccessCase> =
         listOf(
             ConfigParserSuccessCase(
-                name = "parse default config from resources",
-                execute = { parser -> parser.parseDefault("1.0") },
+                name = "resolve default config from resources",
+                execute = { parser -> parser.resolve(null, "1.0") },
                 expectedRulesCount = 2,
             ),
             ConfigParserSuccessCase(
-                name = "parse or default with null stream falls back to default",
-                execute = { parser -> parser.parseOrDefault(null, "1.0") },
-                expectedRulesCount = 2,
-            ),
-            ConfigParserSuccessCase(
-                name = "parse or default with custom stream",
+                name = "resolve custom config",
                 execute = { parser ->
                     val json =
                         """
@@ -31,12 +25,12 @@ internal object ConfigParserSuccessCases {
                           ]
                         }
                         """.trimIndent()
-                    parser.parseOrDefault(json.byteInputStream(), "1.0")
+                    parser.resolve(json, "1.0")
                 },
                 expectedRulesCount = 1,
             ),
             ConfigParserSuccessCase(
-                name = "parse json string with some rules disabled",
+                name = "resolve config with disabled rules",
                 execute = { parser ->
                     val json =
                         """
@@ -54,41 +48,17 @@ internal object ConfigParserSuccessCases {
                           ]
                         }
                         """.trimIndent()
-                    parser.parse(json, "1.0")
+                    parser.resolve(json, "1.0")
                 },
                 expectedRulesCount = 1,
             ),
             ConfigParserSuccessCase(
-                name = "parse from file",
-                execute = { parser ->
-                    val tempFile = File.createTempFile("test-config", ".json")
-                    tempFile.deleteOnExit()
-                    tempFile.writeText(
-                        """
-                        {
-                          "rules": [
-                            {
-                              "name": "println-no-expression",
-                              "enabled": true
-                            }
-                          ]
-                        }
-                        """.trimIndent(),
-                    )
-                    parser.parse(tempFile, "1.0")
-                },
-                expectedRulesCount = 1,
-            ),
-            ConfigParserSuccessCase(
-                name = "parse empty rules list",
-                execute = { parser ->
-                    val json = """{ "rules": [] }"""
-                    parser.parse(json, "1.0")
-                },
+                name = "resolve empty rules list",
+                execute = { parser -> parser.resolve("""{ "rules": [] }""", "1.0") },
                 expectedRulesCount = 0,
             ),
             ConfigParserSuccessCase(
-                name = "parse config with unknown root properties ignored",
+                name = "resolve config with unknown root properties",
                 execute = { parser ->
                     val json =
                         """
@@ -102,12 +72,12 @@ internal object ConfigParserSuccessCases {
                           ]
                         }
                         """.trimIndent()
-                    parser.parse(json, "1.0")
+                    parser.resolve(json, "1.0")
                 },
                 expectedRulesCount = 1,
             ),
             ConfigParserSuccessCase(
-                name = "parse config with readInput rule in version 1.1",
+                name = "resolve readInput rule in version 1.1",
                 execute = { parser ->
                     val json =
                         """
@@ -120,7 +90,7 @@ internal object ConfigParserSuccessCases {
                           ]
                         }
                         """.trimIndent()
-                    parser.parse(json, "1.1")
+                    parser.resolve(json, "1.1")
                 },
                 expectedRulesCount = 1,
             ),
