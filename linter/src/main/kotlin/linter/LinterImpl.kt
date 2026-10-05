@@ -18,7 +18,7 @@ interface Linter {
     fun analyse(source: String): List<Warning>
 
     companion object {
-        fun create(): Linter = RequestLinter()
+        fun create(): Linter = LinterImpl()
 
         @Deprecated("Use create().analyse(source, version, configJson) instead")
         fun createDefault(version: String = "1.0"): Linter {
@@ -55,7 +55,7 @@ interface Linter {
                 }
             val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
             val parser = Parser.new(psVersion.statementParsers)
-            return LinterImpl(
+            return LegacyLinter(
                 rulesConfig,
                 lexer = lexer,
                 parser = parser,
@@ -64,23 +64,20 @@ interface Linter {
     }
 }
 
-internal class RequestLinter : Linter {
+internal class LinterImpl(
+    private val analyser: Analyser = Analyser(),
+) : Linter {
     override fun analyse(
         source: String,
         version: String,
         configJson: String?,
-    ): List<Warning> {
-        val configuredLinter =
-            configJson?.let { Linter.fromJson(it, version) }
-                ?: Linter.createDefault(version)
-        return configuredLinter.analyse(source)
-    }
+    ): List<Warning> = analyseRequest(source, version, configJson, analyser)
 
     @Deprecated("Use analyse(source, version, configJson) instead")
     override fun analyse(source: String): List<Warning> = throw UnsupportedOperationException("A PrintScript version is required to analyse source code")
 }
 
-internal class LinterImpl(
+internal class LegacyLinter(
     private val rulesConfig: RulesConfig,
     private val lexer: Lexer,
     private val parser: Parser,
@@ -90,7 +87,7 @@ internal class LinterImpl(
         source: String,
         version: String,
         configJson: String?,
-    ): List<Warning> = Linter.create().analyse(source, version, configJson)
+    ): List<Warning> = analyseRequest(source, version, configJson, analyser)
 
     @Deprecated("Use analyse(source, version, configJson) instead")
     override fun analyse(source: String): List<Warning> {
@@ -98,4 +95,25 @@ internal class LinterImpl(
         val program = parser.parse(tokens).getOrReturn { return listOf(Warning.fromError(it)) }
         return analyser.analyse(program, rulesConfig)
     }
+}
+
+private fun analyseRequest(
+    source: String,
+    version: String,
+    configJson: String?,
+    analyser: Analyser,
+): List<Warning> {
+    val psVersion =
+        PSVersion.getVersion(version).getOrReturn {
+            throw IllegalArgumentException("Unsupported version: $version")
+        }
+    val rulesConfig =
+        configJson?.let { ConfigParser().parse(it, version) }
+            ?: ConfigParser().parseDefault(version)
+    val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
+    val parser = Parser.new(psVersion.statementParsers)
+
+    val tokens = lexer.tokenize(source).getOrReturn { return listOf(Warning.fromError(it)) }
+    val program = parser.parse(tokens).getOrReturn { return listOf(Warning.fromError(it)) }
+    return analyser.analyse(program, rulesConfig)
 }
