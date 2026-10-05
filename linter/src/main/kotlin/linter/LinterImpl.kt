@@ -107,9 +107,7 @@ private fun analyseRequest(
         PSVersion.getVersion(version).getOrReturn {
             throw IllegalArgumentException("Unsupported version: $version")
         }
-    val rulesConfig =
-        configJson?.let { ConfigParser().parse(it, version) }
-            ?: ConfigParser().parseDefault(version)
+    val rulesConfig = ConfigParser().parseJsonOrDefault(configJson, version)
     val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
     val parser = Parser.new(psVersion.statementParsers)
 

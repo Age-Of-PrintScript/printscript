@@ -48,6 +48,11 @@ internal class ConfigParser {
         version: String,
     ): RulesConfig = customConfigStream?.let { parse(it, version) } ?: parseDefault(version)
 
+    fun parseJsonOrDefault(
+        jsonContent: String?,
+        version: String,
+    ): RulesConfig = jsonContent?.let { parse(it, version) } ?: parseDefault(version)
+
     fun parseDefault(version: String): RulesConfig {
         val defaultStream =
             javaClass.classLoader.getResourceAsStream("config.json")
