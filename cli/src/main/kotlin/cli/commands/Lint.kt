@@ -7,6 +7,7 @@ import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
 import linter.Linter
+import java.io.IOException
 
 class Lint : CliktCommand(name = "lint", help = "Analiza un script PrintScript siguiendo las convenciones de codigo") {
     private val file by argument()
@@ -20,24 +21,30 @@ class Lint : CliktCommand(name = "lint", help = "Analiza un script PrintScript s
 
     override fun run() {
         val linterVersion = version ?: "1.0"
-        val linter =
-            // los catch feos son porque detekt se queja
+        val configJson =
             try {
-                config?.let { Linter.fromConfig(it.inputStream(), version = linterVersion) }
-                    ?: Linter.createDefault(version = linterVersion)
+                config?.readText()
+            } catch (e: IOException) {
+                System.err.println("Error accessing configuration file: ${e.message}")
+                return
+            }
+        val source =
+            try {
+                file.readText()
+            } catch (e: IOException) {
+                System.err.println("Error accessing source file: ${e.message}")
+                return
+            }
+        val warnings =
+            try {
+                Linter.create().analyse(source, linterVersion, configJson)
             } catch (e: IllegalArgumentException) {
                 System.err.println("Error initializing linter: ${e.message}")
                 return
             } catch (e: IllegalStateException) {
                 System.err.println("Error initializing linter: ${e.message}")
                 return
-            } catch (e: java.io.IOException) {
-                System.err.println("Error initializing linter: ${e.message}")
-                return
             }
-
-        val source = file.readText()
-        val warnings = linter.analyse(source)
         if (warnings.isNotEmpty()) {
             println(warnings.joinToString("\n"))
         } else {
