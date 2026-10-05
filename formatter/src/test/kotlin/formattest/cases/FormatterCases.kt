@@ -13,6 +13,5 @@ data class FormatterFailureCase(
     val version: String,
     val source: String,
     val configJson: String? = "{}",
-    val customConfigPath: String? = null,
     val expectedErrorMessage: String? = null,
 )

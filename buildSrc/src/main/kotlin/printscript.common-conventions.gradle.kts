@@ -82,6 +82,30 @@ tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
     }
 }
 
+if (project.name == "formatter") {
+    val generatedFormatterConfigClasses = listOf("formatter/FormatterConfigPatch*.class")
+
+    tasks.named<JacocoReport>("jacocoTestReport") {
+        classDirectories.setFrom(
+            files(
+                classDirectories.files.map { directory ->
+                    fileTree(directory) { exclude(generatedFormatterConfigClasses) }
+                },
+            ),
+        )
+    }
+
+    tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+        classDirectories.setFrom(
+            files(
+                classDirectories.files.map { directory ->
+                    fileTree(directory) { exclude(generatedFormatterConfigClasses) }
+                },
+            ),
+        )
+    }
+}
+
 tasks.named("check") {
     dependsOn(tasks.named("jacocoTestCoverageVerification"))
 }

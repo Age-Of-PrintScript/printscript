@@ -1,7 +1,7 @@
 package formattest.cases
 
 object FormatterFailureCases {
-    fun cases(missingConfigPath: String): List<FormatterFailureCase> =
+    fun cases(): List<FormatterFailureCase> =
         listOf(
             FormatterFailureCase(
                 name = "unknown printscript version returns FormatError",
@@ -9,14 +9,6 @@ object FormatterFailureCases {
                 source = "let x: number = 5;",
                 configJson = "{}",
                 expectedErrorMessage = "Unknown version",
-            ),
-            FormatterFailureCase(
-                name = "non-existent config file returns FormatError",
-                version = "1.0",
-                source = "let x: number = 5;",
-                configJson = null,
-                customConfigPath = missingConfigPath,
-                expectedErrorMessage = "Rules file could not be read",
             ),
             FormatterFailureCase(
                 name = "invalid json in config file returns FormatError",

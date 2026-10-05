@@ -10,46 +10,47 @@ import lexer.Lexer
 import lexer.Lexicon
 import parser.Parser
 import versionfactory.PSVersion
-import java.io.File
 
 interface Formatter {
-    fun execute(
-        file: File,
-        configPath: String,
+    fun format(
+        source: String,
+        version: String,
+        configJson: String? = null,
     ): FormatResult<String, String>
 
     companion object {
-        fun new(
-            config: ConfigProvider,
-            psVersion: String,
-        ): Formatter = FormatterExecutor(config, psVersion)
+        fun create(): Formatter = FormatterExecutor()
     }
 }
 
-class FormatterExecutor(
-    val config: ConfigProvider,
-    val psVersion: String,
-) : Formatter {
-    override fun execute(
-        file: File,
-        configPath: String,
+class FormatterExecutor : Formatter {
+    override fun format(
+        source: String,
+        version: String,
+        configJson: String?,
     ): FormatResult<String, String> {
-        val psVersion =
-            PSVersion.getVersion(psVersion).getOrReturn { return FormatError("Unknown version") }
+        val resolvedVersion =
+            PSVersion.getVersion(version).getOrReturn { return FormatError("Unknown version") }
+        val resolvedConfig =
+            resolveFormatterConfig(resolvedVersion, configJson).getOrReturn { return FormatError(it.getMessage()) }
 
-        val source = file.readText()
+        return formatSource(source, resolvedVersion, resolvedConfig)
+    }
 
-        val lexer = Lexer.new(Lexicon(psVersion.symbols, psVersion.keywords))
-        val parser = Parser.new(psVersion.statementParsers)
+    private fun formatSource(
+        source: String,
+        version: PSVersion,
+        config: ResolvedFormatterConfig,
+    ): FormatResult<String, String> {
+        val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
+        val parser = Parser.new(version.statementParsers)
 
         val tokens = lexer.tokenize(source).getOrReturn { return FormatError(it.getMessage()) }
         val program = parser.parse(tokens).getOrReturn { return FormatError(it.getMessage()) }
 
-        val providedConfig = applyJsonConfig(config, File(configPath)).getOrReturn { return FormatError(it.getMessage()) }
-
         val result = StringBuilder()
         for (ast in program.trees) {
-            val formatter = formatterFor(ast, providedConfig).getOrReturn { return FormatError(it.getMessage()) }
+            val formatter = formatterFor(ast, config).getOrReturn { return FormatError(it.getMessage()) }
             val piece = formatter.format(ast).getOrReturn { return FormatError(it.getMessage()) }
             result.append(piece)
         }
@@ -58,11 +59,11 @@ class FormatterExecutor(
 
     private fun formatterFor(
         ast: AST,
-        config: ConfigProvider,
+        config: ResolvedFormatterConfig,
     ): Either<Error, FormatterImplementation> {
-        val entry =
-            config.ruleSet.entries.firstOrNull { (tokenizer, _) -> tokenizer.tokenize(ast) is Success }
+        val tokenizer =
+            config.tokenizers.firstOrNull { it.supports(ast) }
                 ?: return Failure(FormattingError.UNKNOWN_AST_TYPE)
-        return Success(FormatterImplementation(entry.value, entry.key))
+        return Success(FormatterImplementation(config.rules, tokenizer))
     }
 }

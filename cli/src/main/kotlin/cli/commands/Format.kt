@@ -5,11 +5,9 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.help
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
-import formatter.ConfigProvider
 import formatter.FormatError
 import formatter.FormatSuccess
 import formatter.Formatter
-import java.io.File
 import java.io.IOException
 
 class Format : CliktCommand(name = "format", help = "Formatea un script PrintScript siguiendo las convenciones de codigo") {
@@ -24,43 +22,24 @@ class Format : CliktCommand(name = "format", help = "Formatea un script PrintScr
 
     override fun run() {
         val formatVersion = version ?: "1.0"
-        val configProvider =
+        val configJson =
             try {
-                ConfigProvider.defaultFor(formatVersion)
-            } catch (e: IllegalArgumentException) {
-                System.err.println("Error initializing formatter: ${e.message}")
-                return
-            } catch (e: IllegalStateException) {
-                System.err.println("Error initializing formatter: ${e.message}")
-                return
-            }
-
-        val formatter = Formatter.new(configProvider, formatVersion)
-
-        var tempConfigFile: File? = null
-        val configPath =
-            try {
-                if (config != null) {
-                    config!!.absolutePath
-                } else {
-                    val temp = File.createTempFile("ps_formatter_config", ".json")
-                    val resourceStream = javaClass.classLoader.getResourceAsStream("format.config.json")
-                    if (resourceStream != null) {
-                        temp.writeBytes(resourceStream.readBytes())
-                    } else {
-                        temp.writeText("{}")
-                    }
-                    temp.deleteOnExit()
-                    tempConfigFile = temp
-                    temp.absolutePath
-                }
+                config
+                    ?.readText()
+                    ?: javaClass
+                        .classLoader
+                        .getResourceAsStream("format.config.json")
+                        ?.bufferedReader()
+                        ?.use { it.readText() }
+                    ?: "{}"
             } catch (e: IOException) {
                 System.err.println("Error accessing configuration file: ${e.message}")
                 return
             }
+        val formatter = Formatter.create()
 
         try {
-            val result = formatter.execute(file, configPath)
+            val result = formatter.format(file.readText(), formatVersion, configJson)
             when (result) {
                 is FormatSuccess -> {
                     file.writeText(result.value)
@@ -76,8 +55,6 @@ class Format : CliktCommand(name = "format", help = "Formatea un script PrintScr
             System.err.println("Error formatting file: ${e.message}")
         } catch (e: IllegalStateException) {
             System.err.println("Error formatting file: ${e.message}")
-        } finally {
-            tempConfigFile?.delete()
         }
     }
 }
