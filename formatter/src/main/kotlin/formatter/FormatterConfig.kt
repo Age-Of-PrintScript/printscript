@@ -1,7 +1,6 @@
 package formatter
 
 import domain.Either
-import domain.Error
 import domain.Failure
 import domain.Success
 import formatter.formatrules.EnsureNoSpaceAroundEquals
@@ -41,7 +40,7 @@ private val formatterConfigJson = Json { ignoreUnknownKeys = true }
 internal fun resolveFormatterConfig(
     version: PSVersion,
     configJson: String?,
-): Either<Error, ResolvedFormatterConfig> {
+): Either<FormatterError, ResolvedFormatterConfig> {
     val profile = formattingProfileFor(version)
     if (configJson == null) {
         return Success(ResolvedFormatterConfig(profile.tokenizers, profile.defaultRules))

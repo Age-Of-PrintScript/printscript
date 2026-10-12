@@ -24,7 +24,7 @@ class TestWarningPositions {
 
         val warning = Warning.fromError(error)
         assertEquals("Test error", warning.message)
-        assertEquals(Position(5, 12), warning.position)
+        assertEquals(LinterPosition(5, 12), warning.position)
     }
 
     @Test
@@ -36,7 +36,7 @@ class TestWarningPositions {
 
         val warning = Warning.fromError(error)
         assertEquals("Fallback error", warning.message)
-        assertEquals(Position.START, warning.position)
+        assertEquals(LinterPosition(1, 1), warning.position)
     }
 
     @Test
@@ -53,7 +53,7 @@ class TestWarningPositions {
             )
 
         val warning = rule.apply(ast)
-        assertEquals(Position(3, 1), warning?.position)
+        assertEquals(LinterPosition(3, 1), warning?.position)
     }
 
     @Test
@@ -78,7 +78,7 @@ class TestWarningPositions {
             )
 
         val warning = rule.apply(ast)
-        assertEquals(Position(7, 5), warning?.position)
+        assertEquals(LinterPosition(7, 5), warning?.position)
     }
 
     @Test
@@ -94,8 +94,8 @@ class TestWarningPositions {
         val warnings = linter.analyse(source, "1.0")
         assertEquals(2, warnings.size)
         // Invalid_Var is on line 2, col 1
-        assertEquals(Position(2, 1), warnings[0].position)
+        assertEquals(LinterPosition(2, 1), warnings[0].position)
         // println(1 + 2) is on line 3, col 1
-        assertEquals(Position(3, 1), warnings[1].position)
+        assertEquals(LinterPosition(3, 1), warnings[1].position)
     }
 }

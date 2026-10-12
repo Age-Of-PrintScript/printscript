@@ -8,7 +8,7 @@ import domain.Success
 import domain.getOrReturn
 import formatter.FormattingError
 
-interface FormatTokenizer {
+internal interface FormatTokenizer {
     fun supports(ast: AST): Boolean
 
     fun tokenize(ast: AST): Either<FormattingError, FormatTokens>
@@ -16,7 +16,7 @@ interface FormatTokenizer {
 
 // 1.0
 
-class DeclarationFormatTokenizer : FormatTokenizer {
+internal class DeclarationFormatTokenizer : FormatTokenizer {
     override fun supports(ast: AST): Boolean = ast is AST.DeclarationStatement
 
     override fun tokenize(ast: AST): Either<FormattingError, FormatTokens> {
@@ -46,7 +46,7 @@ class DeclarationFormatTokenizer : FormatTokenizer {
     }
 }
 
-class AssignmentFormatTokenizer : FormatTokenizer {
+internal class AssignmentFormatTokenizer : FormatTokenizer {
     override fun supports(ast: AST): Boolean = ast is AST.AssignmentStatement
 
     override fun tokenize(ast: AST): Either<FormattingError, FormatTokens> {
@@ -65,7 +65,7 @@ class AssignmentFormatTokenizer : FormatTokenizer {
     }
 }
 
-class ExpressionFormatTokenizer : FormatTokenizer {
+internal class ExpressionFormatTokenizer : FormatTokenizer {
     override fun supports(ast: AST): Boolean = ast is AST.ExpressionStatement
 
     override fun tokenize(ast: AST): Either<FormattingError, FormatTokens> {
@@ -84,7 +84,7 @@ class ExpressionFormatTokenizer : FormatTokenizer {
 
 // 1.1
 
-class ConditionalFormatTokenizer(
+internal class ConditionalFormatTokenizer(
     private val statementTokenizers: () -> List<FormatTokenizer>,
 ) : FormatTokenizer {
     override fun supports(ast: AST): Boolean = ast is AST.ConditionalStatement

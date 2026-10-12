@@ -1,10 +1,12 @@
 package formatter
 
-import domain.Error
+internal sealed interface FormatterError {
+    fun getMessage(): String
+}
 
-enum class FormattingError(
+internal enum class FormattingError(
     val reason: String,
-) : Error {
+) : FormatterError {
     INVALID_JSON("Formatting rules are invalid"),
     UNKNOWN_AST_TYPE("Unknown Ast type of data"),
     ;
@@ -12,8 +14,8 @@ enum class FormattingError(
     override fun getMessage(): String = reason
 }
 
-data class FormatterConfigError(
+internal data class FormatterConfigError(
     private val reason: String,
-) : Error {
+) : FormatterError {
     override fun getMessage(): String = reason
 }

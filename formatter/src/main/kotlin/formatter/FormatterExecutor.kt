@@ -2,7 +2,6 @@ package formatter
 
 import ast.AST
 import domain.Either
-import domain.Error
 import domain.Failure
 import domain.Success
 import domain.getOrReturn
@@ -60,7 +59,7 @@ class FormatterExecutor : Formatter {
     private fun formatterFor(
         ast: AST,
         config: ResolvedFormatterConfig,
-    ): Either<Error, FormatterImplementation> {
+    ): Either<FormattingError, FormatterImplementation> {
         val tokenizer =
             config.tokenizers.firstOrNull { it.supports(ast) }
                 ?: return Failure(FormattingError.UNKNOWN_AST_TYPE)
