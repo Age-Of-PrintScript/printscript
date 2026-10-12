@@ -3,6 +3,7 @@ package linter.rules
 import ast.AST
 import ast.Expression
 import kotlinx.serialization.json.JsonObject
+import linter.LinterPosition
 import linter.LinterRule
 import linter.LinterRuleFactory
 import linter.Warning
@@ -17,7 +18,7 @@ internal data class CallArgumentRule(
             if (!isValidArgument(arg)) {
                 return Warning(
                     "$name must be called with an identifier or literal",
-                    ast.start,
+                    LinterPosition.fromEnginePosition(ast.start),
                 )
             }
         }
