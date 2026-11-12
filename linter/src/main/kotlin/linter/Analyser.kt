@@ -9,7 +9,7 @@ internal class Analyser {
         rulesConfig: RulesConfig,
     ): List<Warning> = program.trees.flatMap { analyseNode(it, rulesConfig) }
 
-    private fun analyseNode(
+    fun analyseNode(
         ast: AST,
         rulesConfig: RulesConfig,
     ): List<Warning> {
