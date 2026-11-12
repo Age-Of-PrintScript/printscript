@@ -6,9 +6,15 @@ import domain.Failure
 import domain.Success
 import domain.getOrReturn
 import lexer.Lexer
+import lexer.LexerError
 import lexer.Lexicon
 import parser.Parser
+import parser.tokenConsumers.TokenConsumer
 import versionfactory.PSVersion
+import java.io.Reader
+import java.io.StringReader
+import java.io.StringWriter
+import java.io.Writer
 
 interface Formatter {
     fun format(
@@ -16,6 +22,13 @@ interface Formatter {
         version: String,
         configJson: String? = null,
     ): FormatResult<String, String>
+
+    fun format(
+        reader: Reader,
+        writer: Writer,
+        version: String,
+        configJson: String? = null,
+    ): FormatResult<String, Unit>
 
     companion object {
         fun create(): Formatter = FormatterExecutor()
@@ -28,32 +41,62 @@ class FormatterExecutor : Formatter {
         version: String,
         configJson: String?,
     ): FormatResult<String, String> {
+        val writer = StringWriter()
+        format(StringReader(source), writer, version, configJson)
+            .getOrReturn { return FormatError(it) }
+        return FormatSuccess(writer.toString())
+    }
+
+    override fun format(
+        reader: Reader,
+        writer: Writer,
+        version: String,
+        configJson: String?,
+    ): FormatResult<String, Unit> {
         val resolvedVersion =
             PSVersion.getVersion(version).getOrReturn { return FormatError("Unknown version") }
         val resolvedConfig =
             resolveFormatterConfig(resolvedVersion, configJson).getOrReturn { return FormatError(it.getMessage()) }
 
-        return formatSource(source, resolvedVersion, resolvedConfig)
+        return formatSource(reader, writer, resolvedVersion, resolvedConfig)
     }
 
     private fun formatSource(
-        source: String,
+        reader: Reader,
+        writer: Writer,
         version: PSVersion,
         config: ResolvedFormatterConfig,
-    ): FormatResult<String, String> {
+    ): FormatResult<String, Unit> {
         val lexer = Lexer.new(Lexicon(version.symbols, version.keywords))
         val parser = Parser.new(version.statementParsers)
 
-        val tokens = lexer.tokenize(source).getOrReturn { return FormatError(it.getMessage()) }
-        val program = parser.parse(tokens).getOrReturn { return FormatError(it.getMessage()) }
+        var lexerError: LexerError? = null
+        val consumer =
+            TokenConsumer.from {
+                if (lexerError != null) return@from null
+                when (val result = lexer.nextToken(reader)) {
+                    null -> null
+                    is Success -> result.value
+                    is Failure -> {
+                        lexerError = result.value
+                        null
+                    }
+                }
+            }
 
-        val result = StringBuilder()
-        for (ast in program.trees) {
+        while (true) {
+            val parseResult = parser.parseNext(consumer)
+            if (lexerError != null) {
+                return FormatError(lexerError!!.getMessage())
+            }
+            if (parseResult == null) {
+                return FormatSuccess(Unit)
+            }
+            val ast = parseResult.getOrReturn { return FormatError(it.getMessage()) }
             val formatter = formatterFor(ast, config).getOrReturn { return FormatError(it.getMessage()) }
             val piece = formatter.format(ast).getOrReturn { return FormatError(it.getMessage()) }
-            result.append(piece)
+            writer.write(piece)
         }
-        return FormatSuccess(result.toString())
     }
 
     private fun formatterFor(
