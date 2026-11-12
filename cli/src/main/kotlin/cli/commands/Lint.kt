@@ -28,27 +28,24 @@ class Lint : CliktCommand(name = "lint", help = "Analiza un script PrintScript s
                 System.err.println("Error accessing configuration file: ${e.message}")
                 return
             }
-        val source =
-            try {
-                file.readText()
-            } catch (e: IOException) {
-                System.err.println("Error accessing source file: ${e.message}")
-                return
+        try {
+            file.bufferedReader().use { reader ->
+                val warnings = Linter.create().analyse(reader, linterVersion, configJson)
+                var hasWarnings = false
+                for (warning in warnings) {
+                    println(warning)
+                    hasWarnings = true
+                }
+                if (!hasWarnings) {
+                    println("No warnings found")
+                }
             }
-        val warnings =
-            try {
-                Linter.create().analyse(source, linterVersion, configJson)
-            } catch (e: IllegalArgumentException) {
-                System.err.println("Error initializing linter: ${e.message}")
-                return
-            } catch (e: IllegalStateException) {
-                System.err.println("Error initializing linter: ${e.message}")
-                return
-            }
-        if (warnings.isNotEmpty()) {
-            println(warnings.joinToString("\n"))
-        } else {
-            println("No warnings found")
+        } catch (e: IOException) {
+            System.err.println("Error accessing source file: ${e.message}")
+        } catch (e: IllegalArgumentException) {
+            System.err.println("Error initializing linter: ${e.message}")
+        } catch (e: IllegalStateException) {
+            System.err.println("Error initializing linter: ${e.message}")
         }
     }
 }

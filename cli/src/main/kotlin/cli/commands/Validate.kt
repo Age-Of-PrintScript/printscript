@@ -20,7 +20,8 @@ class Validate(
     private val version by option("-v", "--version", help = "Versión de PrintScript")
 
     override fun run() {
-        val source = file.readText()
-        engine.validate(source, logger, version = version)
+        file.bufferedReader().use { reader ->
+            engine.validate(reader, logger, version = version)
+        }
     }
 }
