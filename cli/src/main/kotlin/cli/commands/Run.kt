@@ -21,7 +21,8 @@ class Run(
     private val version by option("-v", "--version", help = "Versión de PrintScript")
 
     override fun run() {
-        val source = file.readText()
-        engine.execute(source, engineIO, logger, version = version)
+        file.bufferedReader().use { reader ->
+            engine.execute(reader, engineIO, logger, version = version)
+        }
     }
 }
